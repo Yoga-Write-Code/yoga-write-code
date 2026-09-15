@@ -8,12 +8,8 @@ const client = new BedrockRuntimeClient({
   },
 });
 
-// CRITICAL: This MUST be an Inference Profile ID (starts with "us.")
-// For Opus 4, use this exact ID:
-const ACTIVE_MODEL_ID = "us.anthropic.claude-opus-4-20250514-v1:0";
-
-// If you ever want to switch back to Sonnet 3.5, use this ID instead:
-// const ACTIVE_MODEL_ID = "us.anthropic.claude-3-5-sonnet-20241022-v2:0";
+// EXACT INFERENCE PROFILE ID FROM YOUR AWS CONSOLE
+const ACTIVE_MODEL_ID = "au.anthropic.claude-opus-4-6-v1";
 
 type GenerateOptions = 
   | string 
