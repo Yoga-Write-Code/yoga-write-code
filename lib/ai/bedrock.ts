@@ -8,8 +8,12 @@ const client = new BedrockRuntimeClient({
   },
 });
 
-// Switched to v1 which is universally enabled by default in Bedrock
-const ACTIVE_MODEL_ID = "anthropic.claude-3-5-sonnet-20240620-v1:0";
+// CRITICAL: This MUST be an Inference Profile ID (starts with "us.")
+// For Opus 4, use this exact ID:
+const ACTIVE_MODEL_ID = "us.anthropic.claude-opus-4-20250514-v1:0";
+
+// If you ever want to switch back to Sonnet 3.5, use this ID instead:
+// const ACTIVE_MODEL_ID = "us.anthropic.claude-3-5-sonnet-20241022-v2:0";
 
 type GenerateOptions = 
   | string 
@@ -43,7 +47,6 @@ export class BedrockAIProvider {
       const responseBody = JSON.parse(new TextDecoder().decode(response.body));
       return responseBody.content?.[0]?.text ?? "";
     } catch (error: any) {
-      // Log the EXACT AWS error so we aren't flying blind
       console.error("[Bedrock Error Details]", error?.name, error?.message);
       throw new Error(`Bedrock failed: ${error?.name || 'Unknown'} - ${error?.message || 'Check AWS credentials'}`);
     }
