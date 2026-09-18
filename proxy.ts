@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { createServerClient } from '@supabase/ssr';
 
-export async function middleware(request: NextRequest) {
+// MUST BE NAMED 'proxy' WHEN THE FILE IS proxy.ts
+export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });
 
   const supabase = createServerClient(
@@ -23,10 +24,12 @@ export async function middleware(request: NextRequest) {
     }
   );
 
+  // Refresh the session to keep the user logged in
   await supabase.auth.getUser();
 
   const { pathname, hostname } = request.nextUrl;
 
+  // Skip static files and Next.js internals
   if (
     pathname.startsWith("/_next") ||
     pathname.startsWith("/api") ||
@@ -38,12 +41,14 @@ export async function middleware(request: NextRequest) {
   const APP_HOST = "app.yogawritecode.com";
   const MARKETING_HOSTS = ["yogawritecode.com", "www.yogawritecode.com"];
 
+  // App subdomain: redirect root to dashboard
   if (hostname === APP_HOST && pathname === "/") {
     const url = request.nextUrl.clone();
     url.pathname = "/dashboard";
     return NextResponse.redirect(url);
   }
 
+  // Marketing domains: send auth/dashboard routes to the app subdomain
   if (MARKETING_HOSTS.includes(hostname)) {
     if (pathname === "/login" || pathname === "/signup" || pathname.startsWith("/dashboard")) {
       const url = request.nextUrl.clone();
