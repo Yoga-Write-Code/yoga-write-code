@@ -6,7 +6,6 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 export async function analyzeWebsite(formData: FormData): Promise<void> {
   const projectId = String(formData.get("projectId") ?? "");
   
-  // 1. LOG EVERYTHING so we can see it in Vercel
   console.log("========================================");
   console.log(" SERVER ACTION STARTED");
   console.log("Project ID received:", projectId);
@@ -14,7 +13,7 @@ export async function analyzeWebsite(formData: FormData): Promise<void> {
 
   if (!projectId) {
     console.error("❌ ERROR: No projectId found in form data!");
-    return; // Stop here, don't redirect yet
+    return;
   }
 
   const supabase = await createSupabaseServerClient();
@@ -33,7 +32,7 @@ export async function analyzeWebsite(formData: FormData): Promise<void> {
     }
     console.log("✅ Project found:", project.name);
 
-    console.log("2️⃣ Saving FAKE analysis to database...");
+    console.log("2️ Saving FAKE analysis to database...");
     const { data: analysis, error: analysisError } = await supabase
       .from("website_analyses")
       .insert({
@@ -52,7 +51,7 @@ export async function analyzeWebsite(formData: FormData): Promise<void> {
     }
     console.log("✅ Analysis saved! ID:", analysis.id);
 
-    console.log("3️⃣ Saving FAKE opportunity to database...");
+    console.log("3️ Saving FAKE opportunity to database...");
     const { error: oppError } = await supabase
       .from("content_opportunities")
       .insert({
@@ -78,10 +77,24 @@ export async function analyzeWebsite(formData: FormData): Promise<void> {
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
     console.error("💥 CRITICAL FAILURE:", message);
-    // Redirect with the error in the URL so it shows on screen
     redirect(`/dashboard/projects/${projectId}?error=${encodeURIComponent(message)}`);
   }
 
-  // Redirect back to the project page to refresh it
+  redirect(`/dashboard/projects/${projectId}`);
+}
+
+// THESE PLACEHOLDERS ARE REQUIRED SO THE BUILD DOESN'T CRASH
+export async function generateCluster(formData: FormData): Promise<void> {
+  const projectId = String(formData.get("projectId") ?? "");
+  redirect(`/dashboard/projects/${projectId}`);
+}
+
+export async function generateBrief(formData: FormData): Promise<void> {
+  const projectId = String(formData.get("projectId") ?? "");
+  redirect(`/dashboard/projects/${projectId}`);
+}
+
+export async function generateOutline(formData: FormData): Promise<void> {
+  const projectId = String(formData.get("projectId") ?? "");
   redirect(`/dashboard/projects/${projectId}`);
 }
