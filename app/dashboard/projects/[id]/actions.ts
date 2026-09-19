@@ -64,6 +64,9 @@ export async function analyzeWebsite(formData: FormData): Promise<void> {
 }
 
 // Keep the other functions empty for now so the build doesn't fail
-export async function generateCluster(formData: FormData) { redirect("/dashboard"); }
-export async function generateBrief(formData: FormData) { redirect("/dashboard"); }
-export async function generateOutline(formData: FormData) { redirect("/dashboard"); }
+export async function generateCluster() { redirect("/dashboard"); }
+export async function generateBrief() { redirect("/dashboard"); }
+export async function generateOutline(formData: FormData) {
+  void formData;
+  redirect("/dashboard");
+}
