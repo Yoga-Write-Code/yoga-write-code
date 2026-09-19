@@ -24,7 +24,7 @@ export async function analyzeWebsite(formData: FormData) {
 
 Website URL: ${url}
 
-Provide your analysis in this exact JSON format:
+Provide your analysis in this EXACT JSON format (no markdown, no code blocks, just pure JSON):
 {
   "company_summary": "Brief description of what this company does",
   "product_category": "Their product category",
@@ -43,26 +43,37 @@ Provide your analysis in this exact JSON format:
   ]
 }
 
-Generate 3-5 real, specific content opportunities based on their actual business.`;
+Generate exactly 3 to 5 real, specific content opportunities based on their actual business. Return ONLY the JSON object, nothing else.`;
 
   try {
+    console.log("[Analyze] Starting analysis for project:", projectId);
     const result = await invokeBedrock(prompt, 3000);
+    console.log("[Analyze] AI Response (first 500 chars):", result.substring(0, 500));
     
-    // Try to extract JSON from the response
     let parsed;
     try {
-      const jsonMatch = result.match(/\{[\s\S]*\}/);
+      // Remove markdown code blocks if the AI adds them
+      const cleanResult = result
+        .replace(/```json/g, "")
+        .replace(/```/g, "")
+        .replace(/\n/g, " ")
+        .trim();
+      
+      const jsonMatch = cleanResult.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
         parsed = JSON.parse(jsonMatch[0]);
       } else {
-        parsed = JSON.parse(result);
+        parsed = JSON.parse(cleanResult);
       }
+      
+      console.log("[Analyze] Parsed JSON:", JSON.stringify(parsed, null, 2));
     } catch (parseError) {
-      console.error("[JSON Parse Error]", parseError, "Raw result:", result);
-      throw new Error("AI returned invalid format. Try again.");
+      console.error("[Analyze] JSON Parse Error:", parseError);
+      console.error("[Analyze] Raw AI response:", result);
+      redirect(`/dashboard/projects/${projectId}?error=` + encodeURIComponent("AI returned invalid JSON. Please try again."));
     }
 
-    // Insert analysis
+    // 1. Insert analysis
     const { data: analysis, error: analysisError } = await supabase
       .from("website_analyses")
       .insert({
@@ -76,43 +87,48 @@ Generate 3-5 real, specific content opportunities based on their actual business
       .single();
 
     if (analysisError) {
-      console.error("[Analysis Insert Error]", analysisError);
-      throw new Error("Failed to save analysis.");
+      console.error("[Analyze] Analysis Insert Error:", analysisError);
+      redirect(`/dashboard/projects/${projectId}?error=` + encodeURIComponent("Failed to save analysis."));
     }
 
-    // Insert opportunities if they exist
-    if (parsed.content_opportunities && Array.isArray(parsed.content_opportunities)) {
-      const opportunities = parsed.content_opportunities.map((opp: {
-        title?: string;
-        description?: string;
-        reason?: string;
-        opportunity_score?: number;
-        search_intent?: string;
-        funnel_stage?: string;
-        difficulty?: string;
-      }) => ({
-        project_id: projectId,
-        analysis_id: analysis.id,
-        title: opp.title || "",
-        description: opp.description || "",
-        reason: opp.reason || "",
-        opportunity_score: opp.opportunity_score || 50,
-        search_intent: opp.search_intent || "informational",
-        funnel_stage: opp.funnel_stage || "top",
-        difficulty: opp.difficulty || "medium",
-      }));
+    console.log("[Analyze] Analysis saved with ID:", analysis.id);
 
-      const { error: oppError } = await supabase
-        .from("content_opportunities")
-        .insert(opportunities);
-
-      if (oppError) {
-        console.error("[Opportunities Insert Error]", oppError);
-      }
+    // 2. Insert opportunities
+    if (!parsed.content_opportunities || !Array.isArray(parsed.content_opportunities)) {
+      console.error("[Analyze] No content_opportunities in AI response:", parsed);
+      redirect(`/dashboard/projects/${projectId}?error=` + encodeURIComponent("AI did not return content opportunities. Please try again."));
     }
+
+    console.log("[Analyze] Found", parsed.content_opportunities.length, "opportunities");
+
+    const opportunities = parsed.content_opportunities.map((opp: any) => ({
+      project_id: projectId,
+      analysis_id: analysis.id,
+      title: opp.title || "Untitled Opportunity",
+      description: opp.description || "",
+      reason: opp.reason || "",
+      opportunity_score: Number(opp.opportunity_score) || 50,
+      search_intent: opp.search_intent || "informational",
+      funnel_stage: opp.funnel_stage || "top",
+      difficulty: opp.difficulty || "medium",
+    }));
+
+    console.log("[Analyze] Inserting opportunities:", opportunities);
+
+    const { error: oppError, data: oppData } = await supabase
+      .from("content_opportunities")
+      .insert(opportunities)
+      .select();
+
+    if (oppError) {
+      console.error("[Analyze] Opportunities Insert Error:", oppError);
+      redirect(`/dashboard/projects/${projectId}?error=` + encodeURIComponent("Failed to save opportunities: " + oppError.message));
+    }
+
+    console.log("[Analyze] Successfully saved", oppData?.length || 0, "opportunities");
 
   } catch (error) {
-    console.error("[Analyze Website Error]", error);
+    console.error("[Analyze] General Error:", error);
     const message = error instanceof Error ? error.message : "Analysis failed. Try again.";
     redirect(`/dashboard/projects/${projectId}?error=` + encodeURIComponent(message));
   }
