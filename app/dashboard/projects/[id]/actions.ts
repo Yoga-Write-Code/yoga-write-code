@@ -12,7 +12,6 @@ export async function analyzeWebsite(formData: FormData): Promise<void> {
   console.log("[Analyze] Starting analysis for project:", projectId);
 
   try {
-    // Get project
     const { data: project, error: projectError } = await supabase
       .from("projects")
       .select("*")
@@ -20,17 +19,15 @@ export async function analyzeWebsite(formData: FormData): Promise<void> {
       .single();
 
     if (projectError || !project) {
-      console.error("[Analyze] Project not found:", projectId);
-      redirect("/dashboard?error=" + encodeURIComponent("Project not found."));
+      throw new Error("Project not found");
     }
 
     const url = project.website_url;
     console.log("[Analyze] Analyzing URL:", url);
 
-    // Call AI with clear instructions
     const prompt = `You are an expert content strategist. Analyze this website: ${url}
 
-Return ONLY valid JSON in this exact format (no markdown, no explanations):
+Return ONLY valid JSON in this exact format:
 {
   "company_summary": "Brief description",
   "product_category": "Category",
@@ -52,45 +49,33 @@ Return ONLY valid JSON in this exact format (no markdown, no explanations):
 Generate exactly 3 specific content opportunities.`;
 
     const result = await invokeBedrock(prompt, 3000);
-    console.log("[Analyze] AI response received, length:", result.length);
+    console.log("[Analyze] AI response received");
 
-    // Parse JSON - handle markdown formatting
     let parsed: unknown;
     try {
       const cleanResult = result
         .replace(/```json\n?/g, "")
         .replace(/```\n?/g, "")
-        .replace(/^\s*[\r\n]/gm, "")
         .trim();
 
       const jsonMatch = cleanResult.match(/\{[\s\S]*\}/);
       if (!jsonMatch) {
-        throw new Error("No JSON object found in response");
+        throw new Error("No JSON object found");
       }
 
       parsed = JSON.parse(jsonMatch[0]);
-      console.log("[Analyze] JSON parsed successfully");
     } catch (parseError) {
       console.error("[Analyze] JSON parse error:", parseError);
-      console.error("[Analyze] Raw response:", result.substring(0, 1000));
-      redirect(
-        `/dashboard/projects/${projectId}?error=` +
-          encodeURIComponent("AI returned invalid JSON. Try again.")
-      );
+      throw new Error("AI returned invalid JSON");
     }
 
-    // Type guard for parsed data
     if (
       typeof parsed !== "object" ||
       parsed === null ||
       !("content_opportunities" in parsed) ||
       !Array.isArray((parsed as Record<string, unknown>).content_opportunities)
     ) {
-      console.error("[Analyze] Invalid parsed data structure:", parsed);
-      redirect(
-        `/dashboard/projects/${projectId}?error=` +
-          encodeURIComponent("AI didn't generate opportunities. Try again.")
-      );
+      throw new Error("AI didn't generate opportunities");
     }
 
     const typedParsed = parsed as Record<string, unknown>;
@@ -98,7 +83,7 @@ Generate exactly 3 specific content opportunities.`;
 
     console.log("[Analyze] Found", opportunities.length, "opportunities");
 
-    // 1. Save analysis
+    // Save analysis
     const { data: analysis, error: analysisError } = await supabase
       .from("website_analyses")
       .insert({
@@ -112,16 +97,11 @@ Generate exactly 3 specific content opportunities.`;
       .single();
 
     if (analysisError) {
-      console.error("[Analyze] Failed to save analysis:", analysisError);
-      redirect(
-        `/dashboard/projects/${projectId}?error=` +
-          encodeURIComponent("Failed to save analysis: " + analysisError.message)
-      );
+      console.error("[Analyze] Analysis save error:", analysisError);
+      throw new Error("Failed to save analysis");
     }
 
-    console.log("[Analyze] Analysis saved with ID:", analysis.id);
-
-    // 2. Save opportunities
+    // Save opportunities
     const opportunitiesData = opportunities.map((opp: Record<string, unknown>, index: number) => ({
       project_id: projectId,
       analysis_id: analysis.id,
@@ -134,36 +114,23 @@ Generate exactly 3 specific content opportunities.`;
       difficulty: String(opp.difficulty ?? "medium"),
     }));
 
-    console.log(
-      "[Analyze] Inserting opportunities:",
-      opportunitiesData.map((o) => o.title)
-    );
-
-    const { error: oppError, data: savedData } = await supabase
+    const { error: oppError } = await supabase
       .from("content_opportunities")
-      .insert(opportunitiesData)
-      .select();
+      .insert(opportunitiesData);
 
     if (oppError) {
-      console.error("[Analyze] Failed to save opportunities:", oppError);
-      redirect(
-        `/dashboard/projects/${projectId}?error=` +
-          encodeURIComponent("Failed to save opportunities: " + oppError.message)
-      );
+      console.error("[Analyze] Opportunities save error:", oppError);
+      throw new Error("Failed to save opportunities");
     }
 
-    console.log("[Analyze] Successfully saved", savedData?.length ?? 0, "opportunities");
-
-    // Revalidate the page to refresh data
+    console.log("[Analyze] Successfully saved");
     revalidatePath(`/dashboard/projects/${projectId}`);
-    
-    // Redirect with timestamp to force fresh load
-    redirect(`/dashboard/projects/${projectId}?refresh=${Date.now()}`);
+    redirect(`/dashboard/projects/${projectId}`);
     
   } catch (error) {
-    console.error("[Analyze] CRITICAL ERROR:", error);
-    const message = error instanceof Error ? error.message : "Unknown error occurred";
-    redirect(`/dashboard/projects/${projectId}?error=` + encodeURIComponent(message));
+    console.error("[Analyze] ERROR:", error);
+    const message = error instanceof Error ? error.message : "Unknown error";
+    redirect(`/dashboard/projects/${projectId}?error=${encodeURIComponent(message)}`);
   }
 }
 
@@ -172,7 +139,13 @@ export async function generateCluster(formData: FormData): Promise<void> {
   const opportunityId = String(formData.get("opportunityId") ?? "");
   const supabase = await createSupabaseServerClient();
 
+  console.log("[Cluster] Generating cluster for opportunity:", opportunityId);
+
   try {
+    if (!opportunityId) {
+      throw new Error("Opportunity ID is required");
+    }
+
     const { data: opportunity, error: oppError } = await supabase
       .from("content_opportunities")
       .select("title, description")
@@ -180,42 +153,56 @@ export async function generateCluster(formData: FormData): Promise<void> {
       .single();
 
     if (oppError || !opportunity) {
-      redirect("/dashboard?error=" + encodeURIComponent("Opportunity not found."));
+      console.error("[Cluster] Opportunity not found:", oppError);
+      throw new Error("Opportunity not found");
     }
+
+    console.log("[Cluster] Opportunity:", opportunity.title);
 
     const prompt = `Create a topic cluster for: ${opportunity.title}
 
 Return ONLY JSON:
 {
-  "pillar_topic": "Main topic",
+  "pillar_topic": "Main comprehensive topic",
   "supporting_topics": ["Topic 1", "Topic 2", "Topic 3"],
   "internal_linking_suggestions": ["Suggestion 1", "Suggestion 2"]
 }`;
 
     const result = await invokeBedrock(prompt, 2048);
-    const jsonMatch = result.match(/\{[\s\S]*\}/);
-    const parsed = JSON.parse(jsonMatch ? jsonMatch[0] : result) as Record<string, unknown>;
+    console.log("[Cluster] AI response received");
+
+    let parsed: unknown;
+    try {
+      const cleanResult = result.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
+      const jsonMatch = cleanResult.match(/\{[\s\S]*\}/);
+      parsed = JSON.parse(jsonMatch ? jsonMatch[0] : cleanResult);
+    } catch (parseError) {
+      console.error("[Cluster] JSON parse error:", parseError);
+      throw new Error("AI returned invalid JSON");
+    }
+
+    const typedParsed = parsed as Record<string, unknown>;
 
     await supabase.from("topic_clusters").insert({
       project_id: projectId,
       opportunity_id: opportunityId,
-      pillar_topic: String(parsed.pillar_topic ?? ""),
-      supporting_topics: Array.isArray(parsed.supporting_topics)
-        ? parsed.supporting_topics
+      pillar_topic: String(typedParsed.pillar_topic ?? ""),
+      supporting_topics: Array.isArray(typedParsed.supporting_topics)
+        ? typedParsed.supporting_topics
         : [],
-      internal_linking_suggestions: Array.isArray(parsed.internal_linking_suggestions)
-        ? parsed.internal_linking_suggestions
+      internal_linking_suggestions: Array.isArray(typedParsed.internal_linking_suggestions)
+        ? typedParsed.internal_linking_suggestions
         : [],
     });
 
+    console.log("[Cluster] Successfully saved");
     revalidatePath(`/dashboard/projects/${projectId}`);
-    redirect(`/dashboard/projects/${projectId}?refresh=${Date.now()}`);
+    redirect(`/dashboard/projects/${projectId}`);
+    
   } catch (error) {
-    console.error("[Generate Cluster Error]", error);
-    redirect(
-      `/dashboard/projects/${projectId}?error=` +
-        encodeURIComponent("Cluster generation failed.")
-    );
+    console.error("[Cluster] ERROR:", error);
+    const message = error instanceof Error ? error.message : "Cluster generation failed";
+    redirect(`/dashboard/projects/${projectId}?error=${encodeURIComponent(message)}`);
   }
 }
 
@@ -224,7 +211,13 @@ export async function generateBrief(formData: FormData): Promise<void> {
   const opportunityId = String(formData.get("opportunityId") ?? "");
   const supabase = await createSupabaseServerClient();
 
+  console.log("[Brief] Generating brief for opportunity:", opportunityId);
+
   try {
+    if (!opportunityId) {
+      throw new Error("Opportunity ID is required");
+    }
+
     const { data: opportunity, error: oppError } = await supabase
       .from("content_opportunities")
       .select("title, description")
@@ -232,7 +225,8 @@ export async function generateBrief(formData: FormData): Promise<void> {
       .single();
 
     if (oppError || !opportunity) {
-      redirect("/dashboard?error=" + encodeURIComponent("Opportunity not found."));
+      console.error("[Brief] Opportunity not found:", oppError);
+      throw new Error("Opportunity not found");
     }
 
     const prompt = `Create an SEO brief for: ${opportunity.title}
@@ -249,35 +243,46 @@ Return ONLY JSON:
 }`;
 
     const result = await invokeBedrock(prompt, 2048);
-    const jsonMatch = result.match(/\{[\s\S]*\}/);
-    const parsed = JSON.parse(jsonMatch ? jsonMatch[0] : result) as Record<string, unknown>;
+    console.log("[Brief] AI response received");
+
+    let parsed: unknown;
+    try {
+      const cleanResult = result.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
+      const jsonMatch = cleanResult.match(/\{[\s\S]*\}/);
+      parsed = JSON.parse(jsonMatch ? jsonMatch[0] : cleanResult);
+    } catch (parseError) {
+      console.error("[Brief] JSON parse error:", parseError);
+      throw new Error("AI returned invalid JSON");
+    }
+
+    const typedParsed = parsed as Record<string, unknown>;
 
     await supabase.from("seo_briefs").insert({
       project_id: projectId,
       opportunity_id: opportunityId,
-      primary_keyword: String(parsed.primary_keyword ?? ""),
-      search_intent: String(parsed.search_intent ?? ""),
-      target_audience: String(parsed.target_audience ?? ""),
-      suggested_headings: Array.isArray(parsed.suggested_headings)
-        ? parsed.suggested_headings
+      primary_keyword: String(typedParsed.primary_keyword ?? ""),
+      search_intent: String(typedParsed.search_intent ?? ""),
+      target_audience: String(typedParsed.target_audience ?? ""),
+      suggested_headings: Array.isArray(typedParsed.suggested_headings)
+        ? typedParsed.suggested_headings
         : [],
-      questions_to_answer: Array.isArray(parsed.questions_to_answer)
-        ? parsed.questions_to_answer
+      questions_to_answer: Array.isArray(typedParsed.questions_to_answer)
+        ? typedParsed.questions_to_answer
         : [],
-      entities_to_mention: Array.isArray(parsed.entities_to_mention)
-        ? parsed.entities_to_mention
+      entities_to_mention: Array.isArray(typedParsed.entities_to_mention)
+        ? typedParsed.entities_to_mention
         : [],
-      competitor_insights: String(parsed.competitor_insights ?? ""),
+      competitor_insights: String(typedParsed.competitor_insights ?? ""),
     });
 
+    console.log("[Brief] Successfully saved");
     revalidatePath(`/dashboard/projects/${projectId}`);
-    redirect(`/dashboard/projects/${projectId}?refresh=${Date.now()}`);
+    redirect(`/dashboard/projects/${projectId}`);
+    
   } catch (error) {
-    console.error("[Generate Brief Error]", error);
-    redirect(
-      `/dashboard/projects/${projectId}?error=` +
-        encodeURIComponent("Brief generation failed.")
-    );
+    console.error("[Brief] ERROR:", error);
+    const message = error instanceof Error ? error.message : "Brief generation failed";
+    redirect(`/dashboard/projects/${projectId}?error=${encodeURIComponent(message)}`);
   }
 }
 
@@ -286,7 +291,13 @@ export async function generateOutline(formData: FormData): Promise<void> {
   const opportunityId = String(formData.get("opportunityId") ?? "");
   const supabase = await createSupabaseServerClient();
 
+  console.log("[Outline] Generating outline for opportunity:", opportunityId);
+
   try {
+    if (!opportunityId) {
+      throw new Error("Opportunity ID is required");
+    }
+
     const { data: brief } = await supabase
       .from("seo_briefs")
       .select("primary_keyword, suggested_headings, questions_to_answer")
@@ -314,23 +325,34 @@ Return ONLY JSON:
 }`;
 
     const result = await invokeBedrock(prompt, 2048);
-    const jsonMatch = result.match(/\{[\s\S]*\}/);
-    const parsed = JSON.parse(jsonMatch ? jsonMatch[0] : result) as Record<string, unknown>;
+    console.log("[Outline] AI response received");
+
+    let parsed: unknown;
+    try {
+      const cleanResult = result.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
+      const jsonMatch = cleanResult.match(/\{[\s\S]*\}/);
+      parsed = JSON.parse(jsonMatch ? jsonMatch[0] : cleanResult);
+    } catch (parseError) {
+      console.error("[Outline] JSON parse error:", parseError);
+      throw new Error("AI returned invalid JSON");
+    }
+
+    const typedParsed = parsed as Record<string, unknown>;
 
     await supabase.from("article_outlines").insert({
       project_id: projectId,
       opportunity_id: opportunityId,
-      h1: String(parsed.h1 ?? ""),
-      sections: Array.isArray(parsed.sections) ? parsed.sections : [],
+      h1: String(typedParsed.h1 ?? ""),
+      sections: Array.isArray(typedParsed.sections) ? typedParsed.sections : [],
     });
 
+    console.log("[Outline] Successfully saved");
     revalidatePath(`/dashboard/projects/${projectId}`);
-    redirect(`/dashboard/projects/${projectId}?refresh=${Date.now()}`);
+    redirect(`/dashboard/projects/${projectId}`);
+    
   } catch (error) {
-    console.error("[Generate Outline Error]", error);
-    redirect(
-      `/dashboard/projects/${projectId}?error=` +
-        encodeURIComponent("Outline generation failed.")
-    );
+    console.error("[Outline] ERROR:", error);
+    const message = error instanceof Error ? error.message : "Outline generation failed";
+    redirect(`/dashboard/projects/${projectId}?error=${encodeURIComponent(message)}`);
   }
 }
