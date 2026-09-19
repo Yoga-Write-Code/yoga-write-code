@@ -54,8 +54,8 @@ Generate exactly 3 specific content opportunities.`;
         throw new Error("No JSON object found");
       }
       parsed = JSON.parse(jsonMatch[0]);
-    } catch {
-      console.error("JSON parse error:", e);
+    } catch (parseError) {
+      console.error("JSON parse error:", parseError);
       throw new Error("Invalid JSON from AI");
     }
 
@@ -143,7 +143,8 @@ Return ONLY JSON:
       const cleanResult = result.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
       const jsonMatch = cleanResult.match(/\{[\s\S]*\}/);
       parsed = JSON.parse(jsonMatch ? jsonMatch[0] : cleanResult);
-    } catch (e) {
+    } catch (parseError) {
+      console.error("JSON parse error:", parseError);
       throw new Error("Invalid JSON from AI");
     }
 
@@ -202,7 +203,8 @@ Return ONLY JSON:
       const cleanResult = result.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
       const jsonMatch = cleanResult.match(/\{[\s\S]*\}/);
       parsed = JSON.parse(jsonMatch ? jsonMatch[0] : cleanResult);
-    } catch (e) {
+    } catch (parseError) {
+      console.error("JSON parse error:", parseError);
       throw new Error("Invalid JSON");
     }
 
@@ -267,7 +269,8 @@ Return ONLY JSON:
       const cleanResult = result.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
       const jsonMatch = cleanResult.match(/\{[\s\S]*\}/);
       parsed = JSON.parse(jsonMatch ? jsonMatch[0] : cleanResult);
-    } catch (e) {
+    } catch (parseError) {
+      console.error("JSON parse error:", parseError);
       throw new Error("Invalid JSON");
     }
 
