@@ -4,16 +4,9 @@ import type { ReactNode } from "react";
 import { GenerateButton } from "@/components/dashboard/generate-button";
 import { FormError } from "@/components/form";
 import { PageHeader } from "@/components/page-header";
+import { Badge } from "@/components/ui/badge";
 import { decodeEntities } from "@/lib/format";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import type {
-  ArticleOutline,
-  ContentOpportunity,
-  Project,
-  SeoBrief,
-  TopicCluster,
-  WebsiteAnalysis,
-} from "@/lib/types";
 import { analyzeWebsite, generateBrief, generateCluster, generateOutline } from "./actions";
 
 export const metadata: Metadata = { title: "Project" };
@@ -90,9 +83,11 @@ export default async function ProjectPage({
   const { error } = await searchParams;
   const supabase = await createSupabaseServerClient();
 
+  // Get project
   const { data: project } = await supabase.from("projects").select("*").eq("id", id).single();
   if (!project) notFound();
 
+  // Fetch all data in parallel
   const [analysisRes, opportunitiesRes, clusterRes, briefRes, outlineRes] = await Promise.all([
     supabase.from("website_analyses").select("*").eq("project_id", id).limit(1).maybeSingle(),
     supabase
@@ -105,14 +100,13 @@ export default async function ProjectPage({
     supabase.from("article_outlines").select("*").eq("project_id", id).limit(1).maybeSingle(),
   ]);
 
-  const p = project as Project;
-  const analysis = analysisRes.data as WebsiteAnalysis | null;
-  const opportunities = (opportunitiesRes.data ?? []) as ContentOpportunity[];
-  const cluster = clusterRes.data as TopicCluster | null;
-  const brief = briefRes.data as SeoBrief | null;
-  const outline = outlineRes.data as ArticleOutline | null;
-  const firstOpportunityId = opportunities[0]?.id ?? "";
+  const analysis = analysisRes.data;
+  const opportunities = opportunitiesRes.data || [];
+  const cluster = clusterRes.data;
+  const brief = briefRes.data;
+  const outline = outlineRes.data;
 
+  // Check what's done
   const done = {
     analysis: Boolean(analysis),
     opportunities: opportunities.length > 0,
@@ -120,13 +114,17 @@ export default async function ProjectPage({
     brief: Boolean(brief),
     outline: Boolean(outline),
   };
+
+  // Find first incomplete step
   const firstOpen = (["analysis", "opportunities", "cluster", "brief", "outline"] as const).find(
     (key) => !done[key]
   );
 
+  const firstOpportunityId = opportunities[0]?.id ?? "";
+
   return (
     <>
-      <PageHeader title={p.name} description={p.website_url} />
+      <PageHeader title={project.name} description={project.website_url} />
       <div className="mt-4">
         <FormError message={error} />
       </div>
@@ -141,6 +139,7 @@ export default async function ProjectPage({
         ]}
       />
 
+      {/* STEP 1: Analysis */}
       <Section id="analysis" step={1} title="Website analysis">
         {analysis ? (
           <div className="max-w-2xl divide-y divide-line border-y border-line">
@@ -164,34 +163,47 @@ export default async function ProjectPage({
         )}
       </Section>
 
-      {analysis ? (
+      {/* STEP 2: Opportunities */}
+      {analysis && (
         <Section id="opportunities" step={2} title="Content opportunities">
-          <ul className="divide-y divide-line border-y border-line">
-            {opportunities.map((o) => (
-              <li key={o.id} className="flex flex-wrap items-baseline justify-between gap-4 py-4">
-                <div className="min-w-0 max-w-2xl">
-                  <p className="text-sm font-medium text-ink">{d(o.title)}</p>
-                  <p className="mt-1 text-sm text-ink-secondary">{d(o.description)}</p>
-                  <p className="mt-1 text-xs uppercase tracking-[0.12em] text-ink-muted">
-                    Score {o.opportunity_score} · {o.difficulty} · {o.search_intent} ·{" "}
-                    {o.funnel_stage} funnel
-                  </p>
-                </div>
-                {!cluster ? (
-                  <GenerateButton
-                    action={generateCluster}
-                    label="Build cluster from this"
-                    pendingLabel="Building cluster…"
-                    hiddenFields={{ projectId: id, opportunityId: o.id }}
-                  />
-                ) : null}
-              </li>
-            ))}
-          </ul>
+          {opportunities.length > 0 ? (
+            <ul className="divide-y divide-line border-y border-line">
+              {opportunities.map((o) => (
+                <li key={o.id} className="flex flex-wrap items-baseline justify-between gap-4 py-4">
+                  <div className="min-w-0 max-w-2xl">
+                    <p className="text-sm font-medium text-ink">{d(o.title)}</p>
+                    <p className="mt-1 text-sm text-ink-secondary">{d(o.description)}</p>
+                    <p className="mt-1 text-xs uppercase tracking-[0.12em] text-ink-muted">
+                      Score {o.opportunity_score} · {o.difficulty} · {o.search_intent} ·{" "}
+                      {o.funnel_stage} funnel
+                    </p>
+                    {o.reason && (
+                      <p className="mt-2 text-xs text-ink-secondary">{d(o.reason)}</p>
+                    )}
+                  </div>
+                  {!cluster && (
+                    <GenerateButton
+                      action={generateCluster}
+                      label="Build cluster from this"
+                      pendingLabel="Building cluster…"
+                      hiddenFields={{ projectId: id, opportunityId: o.id }}
+                    />
+                  )}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <div className="rounded-card border border-line bg-surface-subtle p-8 text-center">
+              <p className="text-sm text-ink-muted">
+                No opportunities generated yet. Run the website analysis first.
+              </p>
+            </div>
+          )}
         </Section>
-      ) : null}
+      )}
 
-      {cluster ? (
+      {/* STEP 3: Topic Cluster */}
+      {cluster && (
         <Section id="cluster" step={3} title="Topic cluster">
           <div className="max-w-2xl divide-y divide-line border-y border-line">
             <FactRow label="Pillar topic" value={cluster.pillar_topic} />
@@ -215,9 +227,10 @@ export default async function ProjectPage({
             </div>
           ) : null}
         </Section>
-      ) : null}
+      )}
 
-      {brief ? (
+      {/* STEP 4: SEO Brief */}
+      {brief && (
         <Section id="brief" step={4} title="SEO brief">
           <div className="max-w-2xl divide-y divide-line border-y border-line">
             <FactRow label="Primary keyword" value={brief.primary_keyword} />
@@ -245,9 +258,10 @@ export default async function ProjectPage({
             </div>
           ) : null}
         </Section>
-      ) : null}
+      )}
 
-      {outline ? (
+      {/* STEP 5: Outline */}
+      {outline && (
         <Section id="outline" step={5} title="Article outline">
           <div className="max-w-2xl">
             <p className="font-display text-lg font-semibold tracking-tight text-ink">
@@ -276,7 +290,7 @@ export default async function ProjectPage({
             </p>
           </div>
         </Section>
-      ) : null}
+      )}
     </>
   );
 }
