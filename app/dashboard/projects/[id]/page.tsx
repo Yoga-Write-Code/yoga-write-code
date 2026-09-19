@@ -13,42 +13,55 @@ export const metadata: Metadata = { title: "Project" };
 
 const d = decodeEntities;
 
-function Section({
-  id,
-  step,
-  title,
-  children,
-}: {
+interface SectionProps {
   id: string;
   step: number;
   title: string;
   children: ReactNode;
-}) {
+}
+
+function Section({ id, step, title, children }: SectionProps) {
   return (
     <section id={id} className="mt-12 scroll-mt-24 border-t border-line pt-6">
       <p className="text-xs font-medium uppercase tracking-[0.14em] text-ink-muted">
         Step {step}
       </p>
-      <h2 className="font-display mt-1 text-xl font-semibold tracking-tight text-ink">{title}</h2>
+      <h2 className="font-display mt-1 text-xl font-semibold tracking-tight text-ink">
+        {title}
+      </h2>
       <div className="mt-4">{children}</div>
     </section>
   );
 }
 
-function FactRow({ label, value }: { label: string; value: string }) {
+interface FactRowProps {
+  label: string;
+  value: string;
+}
+
+function FactRow({ label, value }: FactRowProps) {
   return (
     <div className="py-3">
-      <p className="text-xs font-medium uppercase tracking-[0.12em] text-ink-muted">{label}</p>
+      <p className="text-xs font-medium uppercase tracking-[0.12em] text-ink-muted">
+        {label}
+      </p>
       <p className="mt-1 text-sm leading-6 text-ink-secondary">{d(value)}</p>
     </div>
   );
 }
 
-function Stepper({
-  steps,
-}: {
-  steps: { id: string; label: string; done: boolean; current: boolean }[];
-}) {
+interface Step {
+  id: string;
+  label: string;
+  done: boolean;
+  current: boolean;
+}
+
+interface StepperProps {
+  steps: Step[];
+}
+
+function Stepper({ steps }: StepperProps) {
   return (
     <ol className="mt-6 flex flex-wrap items-center gap-2">
       {steps.map((s) => (
@@ -72,36 +85,64 @@ function Stepper({
   );
 }
 
+interface ProjectPageProps {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ error?: string }>;
+}
+
 export default async function ProjectPage({
   params,
   searchParams,
-}: {
-  params: Promise<{ id: string }>;
-  searchParams: Promise<{ error?: string }>;
-}) {
+}: ProjectPageProps) {
   const { id } = await params;
   const { error } = await searchParams;
   const supabase = await createSupabaseServerClient();
 
   // Get project
-  const { data: project } = await supabase.from("projects").select("*").eq("id", id).single();
+  const { data: project } = await supabase
+    .from("projects")
+    .select("*")
+    .eq("id", id)
+    .single();
+  
   if (!project) notFound();
 
   // Fetch all data in parallel
-  const [analysisRes, opportunitiesRes, clusterRes, briefRes, outlineRes] = await Promise.all([
-    supabase.from("website_analyses").select("*").eq("project_id", id).limit(1).maybeSingle(),
-    supabase
-      .from("content_opportunities")
-      .select("*")
-      .eq("project_id", id)
-      .order("opportunity_score", { ascending: false }),
-    supabase.from("topic_clusters").select("*").eq("project_id", id).limit(1).maybeSingle(),
-    supabase.from("seo_briefs").select("*").eq("project_id", id).limit(1).maybeSingle(),
-    supabase.from("article_outlines").select("*").eq("project_id", id).limit(1).maybeSingle(),
-  ]);
+  const [analysisRes, opportunitiesRes, clusterRes, briefRes, outlineRes] =
+    await Promise.all([
+      supabase
+        .from("website_analyses")
+        .select("*")
+        .eq("project_id", id)
+        .limit(1)
+        .maybeSingle(),
+      supabase
+        .from("content_opportunities")
+        .select("*")
+        .eq("project_id", id)
+        .order("opportunity_score", { ascending: false }),
+      supabase
+        .from("topic_clusters")
+        .select("*")
+        .eq("project_id", id)
+        .limit(1)
+        .maybeSingle(),
+      supabase
+        .from("seo_briefs")
+        .select("*")
+        .eq("project_id", id)
+        .limit(1)
+        .maybeSingle(),
+      supabase
+        .from("article_outlines")
+        .select("*")
+        .eq("project_id", id)
+        .limit(1)
+        .maybeSingle(),
+    ]);
 
   const analysis = analysisRes.data;
-  const opportunities = opportunitiesRes.data || [];
+  const opportunities = opportunitiesRes.data ?? [];
   const cluster = clusterRes.data;
   const brief = briefRes.data;
   const outline = outlineRes.data;
@@ -116,9 +157,9 @@ export default async function ProjectPage({
   };
 
   // Find first incomplete step
-  const firstOpen = (["analysis", "opportunities", "cluster", "brief", "outline"] as const).find(
-    (key) => !done[key]
-  );
+  const firstOpen = (
+    ["analysis", "opportunities", "cluster", "brief", "outline"] as const
+  ).find((key) => !done[key]);
 
   const firstOpportunityId = opportunities[0]?.id ?? "";
 
@@ -131,11 +172,36 @@ export default async function ProjectPage({
 
       <Stepper
         steps={[
-          { id: "analysis", label: "01 Analyze", done: done.analysis, current: firstOpen === "analysis" },
-          { id: "opportunities", label: "02 Opportunities", done: done.opportunities, current: firstOpen === "opportunities" },
-          { id: "cluster", label: "03 Cluster", done: done.cluster, current: firstOpen === "cluster" },
-          { id: "brief", label: "04 Brief", done: done.brief, current: firstOpen === "brief" },
-          { id: "outline", label: "05 Outline", done: done.outline, current: firstOpen === "outline" },
+          {
+            id: "analysis",
+            label: "01 Analyze",
+            done: done.analysis,
+            current: firstOpen === "analysis",
+          },
+          {
+            id: "opportunities",
+            label: "02 Opportunities",
+            done: done.opportunities,
+            current: firstOpen === "opportunities",
+          },
+          {
+            id: "cluster",
+            label: "03 Cluster",
+            done: done.cluster,
+            current: firstOpen === "cluster",
+          },
+          {
+            id: "brief",
+            label: "04 Brief",
+            done: done.brief,
+            current: firstOpen === "brief",
+          },
+          {
+            id: "outline",
+            label: "05 Outline",
+            done: done.outline,
+            current: firstOpen === "outline",
+          },
         ]}
       />
 
@@ -169,16 +235,25 @@ export default async function ProjectPage({
           {opportunities.length > 0 ? (
             <ul className="divide-y divide-line border-y border-line">
               {opportunities.map((o) => (
-                <li key={o.id} className="flex flex-wrap items-baseline justify-between gap-4 py-4">
+                <li
+                  key={o.id}
+                  className="flex flex-wrap items-baseline justify-between gap-4 py-4"
+                >
                   <div className="min-w-0 max-w-2xl">
-                    <p className="text-sm font-medium text-ink">{d(o.title)}</p>
-                    <p className="mt-1 text-sm text-ink-secondary">{d(o.description)}</p>
+                    <p className="text-sm font-medium text-ink">
+                      {d(o.title)}
+                    </p>
+                    <p className="mt-1 text-sm text-ink-secondary">
+                      {d(o.description)}
+                    </p>
                     <p className="mt-1 text-xs uppercase tracking-[0.12em] text-ink-muted">
-                      Score {o.opportunity_score} · {o.difficulty} · {o.search_intent} ·{" "}
-                      {o.funnel_stage} funnel
+                      Score {o.opportunity_score} · {o.difficulty} ·{" "}
+                      {o.search_intent} · {o.funnel_stage} funnel
                     </p>
                     {o.reason && (
-                      <p className="mt-2 text-xs text-ink-secondary">{d(o.reason)}</p>
+                      <p className="mt-2 text-xs text-ink-secondary">
+                        {d(o.reason)}
+                      </p>
                     )}
                   </div>
                   {!cluster && (
@@ -209,11 +284,13 @@ export default async function ProjectPage({
             <FactRow label="Pillar topic" value={cluster.pillar_topic} />
             <FactRow
               label="Supporting topics"
-              value={(cluster.supporting_topics as string[]).join("  ·  ")}
+              value={(cluster.supporting_topics as string[]).join(" · ")}
             />
             <FactRow
               label="Internal linking"
-              value={(cluster.internal_linking_suggestions as string[]).join("  ·  ")}
+              value={(cluster.internal_linking_suggestions as string[]).join(
+                " · "
+              )}
             />
           </div>
           {!brief && firstOpportunityId ? (
@@ -236,15 +313,15 @@ export default async function ProjectPage({
             <FactRow label="Primary keyword" value={brief.primary_keyword} />
             <FactRow
               label="Suggested headings"
-              value={(brief.suggested_headings as string[]).join("  ·  ")}
+              value={(brief.suggested_headings as string[]).join(" · ")}
             />
             <FactRow
               label="Questions to answer"
-              value={(brief.questions_to_answer as string[]).join("  ·  ")}
+              value={(brief.questions_to_answer as string[]).join(" · ")}
             />
             <FactRow
               label="Entities to mention"
-              value={(brief.entities_to_mention as string[]).join("  ·  ")}
+              value={(brief.entities_to_mention as string[]).join(" · ")}
             />
           </div>
           {!outline && firstOpportunityId ? (
@@ -268,25 +345,27 @@ export default async function ProjectPage({
               {d(outline.h1)}
             </p>
             <ol className="mt-4 space-y-5">
-              {(outline.sections as { heading: string; purpose: string; points: string[] }[]).map(
-                (s, i) => (
-                  <li key={s.heading}>
-                    <p className="text-sm font-medium text-ink">
-                      {i + 1}. {d(s.heading)}
-                    </p>
-                    <p className="mt-1 text-sm text-ink-secondary">{d(s.purpose)}</p>
-                    <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-ink-secondary">
-                      {s.points.map((point) => (
-                        <li key={point}>{d(point)}</li>
-                      ))}
-                    </ul>
-                  </li>
-                )
-              )}
+              {(outline.sections as Array<{
+                heading: string;
+                purpose: string;
+                points: string[];
+              }>).map((s, i) => (
+                <li key={s.heading}>
+                  <p className="text-sm font-medium text-ink">
+                    {i + 1}. {d(s.heading)}
+                  </p>
+                  <p className="mt-1 text-sm text-ink-secondary">{d(s.purpose)}</p>
+                  <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-ink-secondary">
+                    {s.points.map((point) => (
+                      <li key={point}>{d(point)}</li>
+                    ))}
+                  </ul>
+                </li>
+              ))}
             </ol>
             <p className="mt-6 text-sm text-ink-muted">
-              Next: open the Editor (sidebar → This project → Editor) to draft each section with
-              AI.
+              Next: open the Editor (sidebar → This project → Editor) to draft
+              each section with AI.
             </p>
           </div>
         </Section>
