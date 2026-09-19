@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 import { invokeBedrock } from "@/lib/ai/bedrock";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -152,6 +153,13 @@ Generate exactly 3 specific content opportunities.`;
     }
 
     console.log("[Analyze] Successfully saved", savedData?.length ?? 0, "opportunities");
+
+    // Revalidate the page to refresh data
+    revalidatePath(`/dashboard/projects/${projectId}`);
+    
+    // Redirect with timestamp to force fresh load
+    redirect(`/dashboard/projects/${projectId}?refresh=${Date.now()}`);
+    
   } catch (error) {
     console.error("[Analyze] CRITICAL ERROR:", error);
     const message = error instanceof Error ? error.message : "Unknown error occurred";
@@ -200,7 +208,8 @@ Return ONLY JSON:
         : [],
     });
 
-    redirect(`/dashboard/projects/${projectId}`);
+    revalidatePath(`/dashboard/projects/${projectId}`);
+    redirect(`/dashboard/projects/${projectId}?refresh=${Date.now()}`);
   } catch (error) {
     console.error("[Generate Cluster Error]", error);
     redirect(
@@ -261,7 +270,8 @@ Return ONLY JSON:
       competitor_insights: String(parsed.competitor_insights ?? ""),
     });
 
-    redirect(`/dashboard/projects/${projectId}`);
+    revalidatePath(`/dashboard/projects/${projectId}`);
+    redirect(`/dashboard/projects/${projectId}?refresh=${Date.now()}`);
   } catch (error) {
     console.error("[Generate Brief Error]", error);
     redirect(
@@ -314,7 +324,8 @@ Return ONLY JSON:
       sections: Array.isArray(parsed.sections) ? parsed.sections : [],
     });
 
-    redirect(`/dashboard/projects/${projectId}`);
+    revalidatePath(`/dashboard/projects/${projectId}`);
+    redirect(`/dashboard/projects/${projectId}?refresh=${Date.now()}`);
   } catch (error) {
     console.error("[Generate Outline Error]", error);
     redirect(
