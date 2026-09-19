@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
-import { GenerateButton } from "@/components/dashboard/generate-button";
 import { FormError } from "@/components/form";
 import { PageHeader } from "@/components/page-header";
 import { decodeEntities } from "@/lib/format";
@@ -61,40 +60,30 @@ export default async function ProjectPage({ params, searchParams }: ProjectPageP
   const firstOpportunityId = opportunities[0]?.id ?? "";
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-4xl mx-auto pb-20">
       <PageHeader title={project.name} description={project.website_url} />
       
       {error && (
         <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-          <p className="text-sm text-red-700">{decodeURIComponent(error)}</p>
+          <p className="text-sm text-red-700 font-medium">Error: {decodeURIComponent(error)}</p>
         </div>
       )}
 
       {/* Progress Steps */}
       <div className="mt-6 flex flex-wrap gap-2">
-        <span className={`px-3 py-1.5 rounded-full text-sm font-medium ${
-          analysis ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-600"
-        }`}>
+        <span className={`px-3 py-1.5 rounded-full text-sm font-medium ${analysis ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-600"}`}>
           {analysis ? "✓" : "○"} 01 Analyze
         </span>
-        <span className={`px-3 py-1.5 rounded-full text-sm font-medium ${
-          opportunities.length > 0 ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-600"
-        }`}>
+        <span className={`px-3 py-1.5 rounded-full text-sm font-medium ${opportunities.length > 0 ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-600"}`}>
           {opportunities.length > 0 ? "✓" : "○"} 02 Opportunities
         </span>
-        <span className={`px-3 py-1.5 rounded-full text-sm font-medium ${
-          cluster ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-600"
-        }`}>
+        <span className={`px-3 py-1.5 rounded-full text-sm font-medium ${cluster ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-600"}`}>
           {cluster ? "✓" : "○"} 03 Cluster
         </span>
-        <span className={`px-3 py-1.5 rounded-full text-sm font-medium ${
-          brief ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-600"
-        }`}>
+        <span className={`px-3 py-1.5 rounded-full text-sm font-medium ${brief ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-600"}`}>
           {brief ? "✓" : "○"} 04 Brief
         </span>
-        <span className={`px-3 py-1.5 rounded-full text-sm font-medium ${
-          outline ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-600"
-        }`}>
+        <span className={`px-3 py-1.5 rounded-full text-sm font-medium ${outline ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-600"}`}>
           {outline ? "✓" : "○"} 05 Outline
         </span>
       </div>
@@ -109,17 +98,12 @@ export default async function ProjectPage({ params, searchParams }: ProjectPageP
             <FactRow label="Positioning" value={analysis.positioning} />
           </div>
         ) : (
-          <div className="space-y-3">
-            <GenerateButton
-              action={analyzeWebsite}
-              label="Analyze website"
-              pendingLabel="Analyzing..."
-              hiddenFields={{ projectId: id }}
-            />
-            <p className="text-sm text-ink-muted">
-              AI will analyze the website and generate content opportunities.
-            </p>
-          </div>
+          <form action={analyzeWebsite}>
+            <input type="hidden" name="projectId" value={id} />
+            <button type="submit" className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition-colors">
+              Analyze Website
+            </button>
+          </form>
         )}
       </Section>
 
@@ -133,9 +117,7 @@ export default async function ProjectPage({ params, searchParams }: ProjectPageP
                   <div className="flex justify-between items-start gap-4">
                     <div className="flex-1">
                       <h3 className="font-semibold text-ink">{d(opp.title)}</h3>
-                      {opp.description && (
-                        <p className="mt-1 text-sm text-ink-secondary">{d(opp.description)}</p>
-                      )}
+                      {opp.description && <p className="mt-1 text-sm text-ink-secondary">{d(opp.description)}</p>}
                       <div className="mt-2 flex gap-2 text-xs text-ink-muted">
                         <span>Score: {opp.opportunity_score}</span>
                         <span>•</span>
@@ -143,19 +125,16 @@ export default async function ProjectPage({ params, searchParams }: ProjectPageP
                         <span>•</span>
                         <span>{opp.search_intent}</span>
                       </div>
-                      {opp.reason && (
-                        <p className="mt-2 text-sm text-ink-secondary">
-                          <strong>Why:</strong> {d(opp.reason)}
-                        </p>
-                      )}
+                      {opp.reason && <p className="mt-2 text-sm text-ink-secondary"><strong>Why:</strong> {d(opp.reason)}</p>}
                     </div>
                     {!cluster && (
-                      <GenerateButton
-                        action={generateCluster}
-                        label="Build cluster"
-                        pendingLabel="Building..."
-                        hiddenFields={{ projectId: id, opportunityId: opp.id }}
-                      />
+                      <form action={generateCluster}>
+                        <input type="hidden" name="projectId" value={id} />
+                        <input type="hidden" name="opportunityId" value={opp.id} />
+                        <button type="submit" className="px-3 py-1.5 bg-brand text-white text-sm font-medium rounded-md hover:bg-brand-hover transition-colors">
+                          Build Cluster
+                        </button>
+                      </form>
                     )}
                   </div>
                 </div>
@@ -174,20 +153,16 @@ export default async function ProjectPage({ params, searchParams }: ProjectPageP
         <Section id="cluster" step={3} title="Topic cluster">
           <div className="max-w-2xl">
             <FactRow label="Pillar topic" value={cluster.pillar_topic} />
-            <FactRow
-              label="Supporting topics"
-              value={(cluster.supporting_topics as string[]).join(" • ")}
-            />
+            <FactRow label="Supporting topics" value={(cluster.supporting_topics as string[]).join(" • ")} />
           </div>
           {!brief && firstOpportunityId && (
-            <div className="mt-4">
-              <GenerateButton
-                action={generateBrief}
-                label="Generate SEO brief"
-                pendingLabel="Writing..."
-                hiddenFields={{ projectId: id, opportunityId: firstOpportunityId }}
-              />
-            </div>
+            <form action={generateBrief} className="mt-4">
+              <input type="hidden" name="projectId" value={id} />
+              <input type="hidden" name="opportunityId" value={firstOpportunityId} />
+              <button type="submit" className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition-colors">
+                Generate SEO Brief
+              </button>
+            </form>
           )}
         </Section>
       )}
@@ -197,20 +172,16 @@ export default async function ProjectPage({ params, searchParams }: ProjectPageP
         <Section id="brief" step={4} title="SEO brief">
           <div className="max-w-2xl">
             <FactRow label="Primary keyword" value={brief.primary_keyword} />
-            <FactRow
-              label="Suggested headings"
-              value={(brief.suggested_headings as string[]).join(" • ")}
-            />
+            <FactRow label="Suggested headings" value={(brief.suggested_headings as string[]).join(" • ")} />
           </div>
           {!outline && firstOpportunityId && (
-            <div className="mt-4">
-              <GenerateButton
-                action={generateOutline}
-                label="Generate outline"
-                pendingLabel="Outlining..."
-                hiddenFields={{ projectId: id, opportunityId: firstOpportunityId }}
-              />
-            </div>
+            <form action={generateOutline} className="mt-4">
+              <input type="hidden" name="projectId" value={id} />
+              <input type="hidden" name="opportunityId" value={firstOpportunityId} />
+              <button type="submit" className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition-colors">
+                Generate Outline
+              </button>
+            </form>
           )}
         </Section>
       )}
