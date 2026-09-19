@@ -117,19 +117,36 @@ Generate exactly 3 specific content opportunities.`;
     console.log("[Analyze] Analysis saved with ID:", analysis.id);
 
     // 2. Save opportunities
-    const opportunities = parsed.content_opportunities.map((opp: any, index: number) => ({
-      project_id: projectId,
-      analysis_id: analysis.id,
-      title: opp.title || `Opportunity ${index + 1}`,
-      description: opp.description || "",
-      reason: opp.reason || "",
-      opportunity_score: Number(opp.opportunity_score) || 50,
-      search_intent: opp.search_intent || "informational",
-      funnel_stage: opp.funnel_stage || "top",
-      difficulty: opp.difficulty || "medium",
-    }));
+    const opportunities = parsed.content_opportunities.map(
+      (
+        opp: {
+          title?: string;
+          description?: string;
+          reason?: string;
+          opportunity_score?: number | string;
+          search_intent?: string;
+          funnel_stage?: string;
+          difficulty?: string;
+        },
+        index: number
+      ) => ({
+        project_id: projectId,
+        analysis_id: analysis.id,
+        title: opp.title || `Opportunity ${index + 1}`,
+        description: opp.description || "",
+        reason: opp.reason || "",
+        opportunity_score: Number(opp.opportunity_score) || 50,
+        search_intent: opp.search_intent || "informational",
+        funnel_stage: opp.funnel_stage || "top",
+        difficulty: opp.difficulty || "medium",
+      })
+    );
 
-    console.log("[Analyze] Inserting opportunities:", opportunities.map((o) => o.title));
+    // FIX: Added ': any' to 'o' to satisfy TypeScript strict mode
+    console.log(
+      "[Analyze] Inserting opportunities:",
+      opportunities.map((o: { title?: string }) => o.title)
+    );
 
     const { error: oppError, data: savedData } = await supabase
       .from("content_opportunities")
