@@ -27,13 +27,18 @@ export async function analyzeWebsite(formData: FormData): Promise<void> {
     const data = parsed as Record<string, unknown>;
     const opportunities = Array.isArray(data.content_opportunities) ? data.content_opportunities : [];
 
-    const { data: analysis } = await supabase.from("website_analyses").insert({
+    const { data: analysis, error: analysisError } = await supabase.from("website_analyses").insert({
       project_id: projectId,
       company_summary: String(data.company_summary ?? ""),
       product_category: String(data.product_category ?? ""),
       target_audience: String(data.target_audience ?? ""),
       positioning: String(data.positioning ?? ""),
     }).select("id").single();
+
+    if (analysisError || !analysis) {
+      console.error("Failed to save analysis:", analysisError);
+      throw new Error("Failed to save analysis");
+    }
 
     await supabase.from("content_opportunities").insert(
       opportunities.map((opp: Record<string, unknown>, i: number) => ({
@@ -70,7 +75,6 @@ export async function generateCluster(formData: FormData): Promise<void> {
       throw new Error("No opportunity ID provided");
     }
 
-    // Get the opportunity
     const { data: opp, error: oppError } = await supabase
       .from("content_opportunities")
       .select("title, description")
@@ -84,7 +88,6 @@ export async function generateCluster(formData: FormData): Promise<void> {
 
     console.log("✅ Found opportunity:", opp.title);
 
-    // Call AI to generate cluster
     const prompt = `Create a topic cluster for: "${opp.title}"
 
 Description: ${opp.description || "No description"}
@@ -96,11 +99,10 @@ Return ONLY JSON:
   "internal_linking_suggestions": ["Link suggestion 1", "Link suggestion 2"]
 }`;
 
-    console.log("🤖 Calling AI...");
+    console.log(" Calling AI...");
     const result = await invokeBedrock(prompt, 2048);
     console.log("📝 AI Response (first 100 chars):", result.substring(0, 100));
 
-    // Parse the JSON
     let parsed: unknown;
     try {
       const cleanResult = result.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
@@ -115,7 +117,6 @@ Return ONLY JSON:
 
     const data = parsed as Record<string, unknown>;
 
-    // Save to database
     console.log("💾 Saving cluster to database...");
     const { error: insertError } = await supabase.from("topic_clusters").insert({
       project_id: projectId,
