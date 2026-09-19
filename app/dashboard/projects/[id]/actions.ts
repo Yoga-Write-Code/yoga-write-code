@@ -1,15 +1,12 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
 import { invokeBedrock } from "@/lib/ai/bedrock";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export async function analyzeWebsite(formData: FormData): Promise<void> {
   const projectId = String(formData.get("projectId") ?? "");
   const supabase = await createSupabaseServerClient();
-
-  console.log("[Analyze] Starting analysis for project:", projectId);
 
   try {
     const { data: project, error: projectError } = await supabase
@@ -23,7 +20,6 @@ export async function analyzeWebsite(formData: FormData): Promise<void> {
     }
 
     const url = project.website_url;
-    console.log("[Analyze] Analyzing URL:", url);
 
     const prompt = `You are an expert content strategist. Analyze this website: ${url}
 
@@ -49,23 +45,17 @@ Return ONLY valid JSON in this exact format:
 Generate exactly 3 specific content opportunities.`;
 
     const result = await invokeBedrock(prompt, 3000);
-    console.log("[Analyze] AI response received");
 
     let parsed: unknown;
     try {
-      const cleanResult = result
-        .replace(/```json\n?/g, "")
-        .replace(/```\n?/g, "")
-        .trim();
-
+      const cleanResult = result.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
       const jsonMatch = cleanResult.match(/\{[\s\S]*\}/);
       if (!jsonMatch) {
         throw new Error("No JSON object found");
       }
-
       parsed = JSON.parse(jsonMatch[0]);
     } catch (parseError) {
-      console.error("[Analyze] JSON parse error:", parseError);
+      console.error("JSON parse error:", parseError);
       throw new Error("AI returned invalid JSON");
     }
 
@@ -81,8 +71,6 @@ Generate exactly 3 specific content opportunities.`;
     const typedParsed = parsed as Record<string, unknown>;
     const opportunities = typedParsed.content_opportunities as Array<Record<string, unknown>>;
 
-    console.log("[Analyze] Found", opportunities.length, "opportunities");
-
     // Save analysis
     const { data: analysis, error: analysisError } = await supabase
       .from("website_analyses")
@@ -97,7 +85,6 @@ Generate exactly 3 specific content opportunities.`;
       .single();
 
     if (analysisError) {
-      console.error("[Analyze] Analysis save error:", analysisError);
       throw new Error("Failed to save analysis");
     }
 
@@ -119,27 +106,23 @@ Generate exactly 3 specific content opportunities.`;
       .insert(opportunitiesData);
 
     if (oppError) {
-      console.error("[Analyze] Opportunities save error:", oppError);
       throw new Error("Failed to save opportunities");
     }
 
-    console.log("[Analyze] Successfully saved");
-    revalidatePath(`/dashboard/projects/${projectId}`);
-    redirect(`/dashboard/projects/${projectId}`);
-    
+    // Simple redirect - NO revalidatePath
   } catch (error) {
-    console.error("[Analyze] ERROR:", error);
     const message = error instanceof Error ? error.message : "Unknown error";
     redirect(`/dashboard/projects/${projectId}?error=${encodeURIComponent(message)}`);
   }
+
+  // Redirect to same page to trigger refresh
+  redirect(`/dashboard/projects/${projectId}`);
 }
 
 export async function generateCluster(formData: FormData): Promise<void> {
   const projectId = String(formData.get("projectId") ?? "");
   const opportunityId = String(formData.get("opportunityId") ?? "");
   const supabase = await createSupabaseServerClient();
-
-  console.log("[Cluster] Generating cluster for opportunity:", opportunityId);
 
   try {
     if (!opportunityId) {
@@ -153,11 +136,8 @@ export async function generateCluster(formData: FormData): Promise<void> {
       .single();
 
     if (oppError || !opportunity) {
-      console.error("[Cluster] Opportunity not found:", oppError);
       throw new Error("Opportunity not found");
     }
-
-    console.log("[Cluster] Opportunity:", opportunity.title);
 
     const prompt = `Create a topic cluster for: ${opportunity.title}
 
@@ -169,7 +149,6 @@ Return ONLY JSON:
 }`;
 
     const result = await invokeBedrock(prompt, 2048);
-    console.log("[Cluster] AI response received");
 
     let parsed: unknown;
     try {
@@ -177,7 +156,7 @@ Return ONLY JSON:
       const jsonMatch = cleanResult.match(/\{[\s\S]*\}/);
       parsed = JSON.parse(jsonMatch ? jsonMatch[0] : cleanResult);
     } catch (parseError) {
-      console.error("[Cluster] JSON parse error:", parseError);
+      console.error("JSON parse error:", parseError);
       throw new Error("AI returned invalid JSON");
     }
 
@@ -195,23 +174,19 @@ Return ONLY JSON:
         : [],
     });
 
-    console.log("[Cluster] Successfully saved");
-    revalidatePath(`/dashboard/projects/${projectId}`);
-    redirect(`/dashboard/projects/${projectId}`);
-    
+    // Simple redirect - NO revalidatePath
   } catch (error) {
-    console.error("[Cluster] ERROR:", error);
     const message = error instanceof Error ? error.message : "Cluster generation failed";
     redirect(`/dashboard/projects/${projectId}?error=${encodeURIComponent(message)}`);
   }
+
+  redirect(`/dashboard/projects/${projectId}`);
 }
 
 export async function generateBrief(formData: FormData): Promise<void> {
   const projectId = String(formData.get("projectId") ?? "");
   const opportunityId = String(formData.get("opportunityId") ?? "");
   const supabase = await createSupabaseServerClient();
-
-  console.log("[Brief] Generating brief for opportunity:", opportunityId);
 
   try {
     if (!opportunityId) {
@@ -225,7 +200,6 @@ export async function generateBrief(formData: FormData): Promise<void> {
       .single();
 
     if (oppError || !opportunity) {
-      console.error("[Brief] Opportunity not found:", oppError);
       throw new Error("Opportunity not found");
     }
 
@@ -243,7 +217,6 @@ Return ONLY JSON:
 }`;
 
     const result = await invokeBedrock(prompt, 2048);
-    console.log("[Brief] AI response received");
 
     let parsed: unknown;
     try {
@@ -251,7 +224,7 @@ Return ONLY JSON:
       const jsonMatch = cleanResult.match(/\{[\s\S]*\}/);
       parsed = JSON.parse(jsonMatch ? jsonMatch[0] : cleanResult);
     } catch (parseError) {
-      console.error("[Brief] JSON parse error:", parseError);
+      console.error("JSON parse error:", parseError);
       throw new Error("AI returned invalid JSON");
     }
 
@@ -275,23 +248,19 @@ Return ONLY JSON:
       competitor_insights: String(typedParsed.competitor_insights ?? ""),
     });
 
-    console.log("[Brief] Successfully saved");
-    revalidatePath(`/dashboard/projects/${projectId}`);
-    redirect(`/dashboard/projects/${projectId}`);
-    
+    // Simple redirect - NO revalidatePath
   } catch (error) {
-    console.error("[Brief] ERROR:", error);
     const message = error instanceof Error ? error.message : "Brief generation failed";
     redirect(`/dashboard/projects/${projectId}?error=${encodeURIComponent(message)}`);
   }
+
+  redirect(`/dashboard/projects/${projectId}`);
 }
 
 export async function generateOutline(formData: FormData): Promise<void> {
   const projectId = String(formData.get("projectId") ?? "");
   const opportunityId = String(formData.get("opportunityId") ?? "");
   const supabase = await createSupabaseServerClient();
-
-  console.log("[Outline] Generating outline for opportunity:", opportunityId);
 
   try {
     if (!opportunityId) {
@@ -325,7 +294,6 @@ Return ONLY JSON:
 }`;
 
     const result = await invokeBedrock(prompt, 2048);
-    console.log("[Outline] AI response received");
 
     let parsed: unknown;
     try {
@@ -333,7 +301,7 @@ Return ONLY JSON:
       const jsonMatch = cleanResult.match(/\{[\s\S]*\}/);
       parsed = JSON.parse(jsonMatch ? jsonMatch[0] : cleanResult);
     } catch (parseError) {
-      console.error("[Outline] JSON parse error:", parseError);
+      console.error("JSON parse error:", parseError);
       throw new Error("AI returned invalid JSON");
     }
 
@@ -346,13 +314,11 @@ Return ONLY JSON:
       sections: Array.isArray(typedParsed.sections) ? typedParsed.sections : [],
     });
 
-    console.log("[Outline] Successfully saved");
-    revalidatePath(`/dashboard/projects/${projectId}`);
-    redirect(`/dashboard/projects/${projectId}`);
-    
+    // Simple redirect - NO revalidatePath
   } catch (error) {
-    console.error("[Outline] ERROR:", error);
     const message = error instanceof Error ? error.message : "Outline generation failed";
     redirect(`/dashboard/projects/${projectId}?error=${encodeURIComponent(message)}`);
   }
+
+  redirect(`/dashboard/projects/${projectId}`);
 }
