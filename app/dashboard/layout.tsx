@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { MobileHeader } from "@/components/dashboard/mobile-header";
 import { Sidebar } from "@/components/dashboard/sidebar";
+import type { ProjectNavItem } from "@/components/dashboard/sidebar-nav";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
@@ -17,11 +18,21 @@ export default async function DashboardLayout({
   if (!data.user) redirect("/login");
 
   const email = data.user.email ?? undefined;
+  const { data: projectsData, error: projectsError } = await supabase
+    .from("projects")
+    .select("id, name")
+    .order("updated_at", { ascending: false });
+
+  if (projectsError) {
+    console.error("[dashboard layout] projects query failed", projectsError);
+  }
+
+  const projects = (projectsData ?? []) as ProjectNavItem[];
 
   return (
     <div className="min-h-screen">
-      <Sidebar email={email} />
-      <MobileHeader email={email} />
+      <Sidebar email={email} projects={projects} />
+      <MobileHeader email={email} projects={projects} />
       <main className="lg:pl-60">
         <div className="mx-auto w-full max-w-5xl px-5 pb-16 pt-8 sm:px-8 lg:px-12 lg:pb-20 lg:pt-14">
           {children}

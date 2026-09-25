@@ -3,9 +3,16 @@
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
 import { SidebarBody } from "./sidebar";
+import type { ProjectNavItem } from "./sidebar-nav";
 import { Wordmark } from "./wordmark";
 
-export function MobileHeader({ email }: { email?: string }) {
+export function MobileHeader({
+  email,
+  projects,
+}: {
+  email?: string;
+  projects?: ProjectNavItem[];
+}) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -42,7 +49,11 @@ export function MobileHeader({ email }: { email?: string }) {
                 <X size={20} />
               </button>
             </div>
-            <SidebarBody email={email} onNavigate={() => setOpen(false)} />
+            <SidebarBody
+              email={email}
+              projects={projects}
+              onNavigate={() => setOpen(false)}
+            />
           </div>
         </div>
       ) : null}

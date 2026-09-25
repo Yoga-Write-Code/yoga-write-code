@@ -11,6 +11,11 @@ import type { LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+export type ProjectNavItem = {
+  id: string;
+  name: string;
+};
+
 function NavItem({
   href,
   label,
@@ -61,28 +66,36 @@ const PROJECT_SECTIONS = [
   ["#outline", "05 · Outline"],
 ] as const;
 
-export function ProjectSectionNav() {
+export function ProjectSectionNav({ projects = [] }: { projects?: ProjectNavItem[] }) {
   const pathname = usePathname();
-  const match = pathname.match(/^\/dashboard\/projects\/([^/]+)$/);
+  const match = pathname.match(/^\/dashboard\/projects\/([^/]+)(?:\/editor)?\/?$/);
   if (!match) return null;
+
+  const projectId = match[1];
+  const project = projects.find((item) => item.id === projectId);
+  const projectName = project?.name?.trim() || "This project";
+  const projectPath = `/dashboard/projects/${projectId}`;
 
   return (
     <div className="mt-6 px-4">
-      <p className="px-3 text-xs font-medium uppercase tracking-[0.14em] text-ink-muted">
-        This project
+      <p
+        title={projectName}
+        className="truncate px-3 text-xs font-medium uppercase tracking-[0.14em] text-ink-muted"
+      >
+        {projectName}
       </p>
       <nav className="mt-2 space-y-1">
         {PROJECT_SECTIONS.map(([href, label]) => (
           <a
             key={href}
-            href={href}
+            href={pathname.includes("/editor") ? `${projectPath}${href}` : href}
             className="block rounded-control px-3 py-1.5 text-sm text-ink-secondary transition-colors hover:bg-surface-subtle hover:text-ink"
           >
             {label}
           </a>
         ))}
         <Link
-          href={`/dashboard/projects/${match[1]}/editor`}
+          href={`${projectPath}/editor`}
           className="block rounded-control px-3 py-1.5 text-sm text-ink-secondary transition-colors hover:bg-surface-subtle hover:text-ink"
         >
           Editor
