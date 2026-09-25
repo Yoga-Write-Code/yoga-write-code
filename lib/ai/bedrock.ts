@@ -143,6 +143,11 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }
 
+function truncateArray(value: unknown, maxItems: number): unknown {
+  if (!Array.isArray(value)) return value;
+  return value.slice(0, maxItems);
+}
+
 /** Accept the two common AI response shapes used by the prompts. */
 function normalizeStructuredValue(value: unknown): unknown {
   const normalized = normalizeModelKeys(value);
@@ -195,6 +200,33 @@ function normalizeStructuredValue(value: unknown): unknown {
 
   if (record.competitorInsights !== undefined && !Array.isArray(record.competitorInsights)) {
     record.competitorInsights = [String(record.competitorInsights)];
+  }
+
+  const arrayLimits: Record<string, number> = {
+    opportunities: 10,
+    supportingTopics: 12,
+    internalLinkingSuggestions: 10,
+    suggestedHeadings: 12,
+    questionsToAnswer: 10,
+    entitiesToMention: 15,
+    competitorInsights: 10,
+    sections: 12,
+  };
+
+  for (const [field, maxItems] of Object.entries(arrayLimits)) {
+    if (Array.isArray(record[field])) {
+      record[field] = truncateArray(record[field], maxItems);
+    }
+  }
+
+  if (Array.isArray(record.sections)) {
+    record.sections = record.sections.map((section) => {
+      if (!isRecord(section)) return section;
+      return {
+        ...section,
+        points: truncateArray(section.points, 8),
+      };
+    });
   }
 
   return record;
