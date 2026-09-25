@@ -1,15 +1,18 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
+import { WorkflowPreview } from "@/components/marketing/workflow-preview";
+import { WorkspacePreview } from "@/components/marketing/workspace-preview";
 
 export const metadata: Metadata = {
-  title: "Yoga Write Code — AI Content Operating System for SaaS",
+  title: "Yoga Write Code — Turn your website into your next five articles",
   description:
-    "Turn your SaaS website into a content plan. Get prioritized content opportunities, topic clusters, SEO briefs, and article outlines in one calm workspace.",
+    "Paste a URL and get real content opportunities, topic clusters, SEO briefs, and article outlines grounded in your business.",
   alternates: { canonical: "https://yogawritecode.com" },
   openGraph: {
-    title: "Yoga Write Code — AI Content Operating System for SaaS",
+    title: "Yoga Write Code — AI Content Operating System",
     description:
-      "Turn your SaaS website into a content plan. Opportunities, clusters, briefs, outlines — all in one workspace.",
+      "Turn your website into your next five articles with a connected five-step content workflow.",
     url: "https://yogawritecode.com",
     siteName: "Yoga Write Code",
     locale: "en_US",
@@ -25,9 +28,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary",
-    title: "Yoga Write Code — AI Content Operating System for SaaS",
+    title: "Yoga Write Code — AI Content Operating System",
     description:
-      "Turn your SaaS website into a content plan. Opportunities, clusters, briefs, outlines — all in one workspace.",
+      "Turn your website into your next five articles with a connected five-step content workflow.",
   },
   robots: {
     index: true,
@@ -45,56 +48,65 @@ export const metadata: Metadata = {
 const steps = [
   {
     n: "01",
-    title: "Analyze",
-    text: "Point it at your SaaS website. It reads the page and builds a grounded company profile.",
+    title: "Analyze Website",
+    text: "Paste your URL. Get a grounded company summary, category, and target audience.",
   },
   {
     n: "02",
-    title: "Opportunities",
-    text: "Prioritized content opportunities with score, intent, and funnel stage.",
+    title: "Content Opportunities",
+    text: "See specific topics, quick wins, and opportunities tied to your business.",
   },
   {
     n: "03",
-    title: "Cluster",
-    text: "A pillar topic with supporting articles and internal linking.",
+    title: "Topic Cluster",
+    text: "Build a pillar topic with supporting articles and internal-link suggestions.",
   },
   {
     n: "04",
-    title: "SEO brief",
-    text: "Keyword, headings, questions, entities — a real working brief.",
+    title: "SEO Brief",
+    text: "Get the keyword, intent, headings, questions, entities, and insights to write with.",
   },
   {
     n: "05",
     title: "Outline",
-    text: "An editorial outline, ready for the document editor.",
+    text: "Start with a clean H1 and section structure that is ready for a writer.",
   },
 ];
 
+const features = [
+  ["Keyword opportunities", "Prioritized topics scored for business relevance, intent, and feasibility."],
+  ["Visual topic clusters", "Pillar and supporting topics with internal linking built into the plan."],
+  ["SEO briefs", "Headings, entities, questions, and competitor insights generated together."],
+  ["Article outlines", "A clean H1/H2/H3 structure that is ready to draft without cleanup."],
+  ["Competitor gaps", "Spot the topics your competitors cover and your audience is searching for."],
+  ["Founder-friendly", "Plain language and a guided workflow, with no SEO jargon required."],
+] as const;
+
+const painPoints = [
+  "Hunting keywords across multiple tools",
+  "Guessing search intent",
+  "Manual competitor analysis",
+  "Briefs that drift from strategy",
+  "No clear topic clusters",
+];
+
 const faqs = [
-  {
-    q: "What is Yoga Write Code?",
-    a: "Yoga Write Code is an AI content operating system for SaaS companies. It analyzes your website and turns it into prioritized content opportunities, topic clusters, SEO briefs, and article outlines you can draft in a built-in editor.",
-  },
-  {
-    q: "How does the website analysis work?",
-    a: "You submit your website URL. The system fetches publicly accessible pages, extracts real signals (title, description, headings, key terms), and uses an AI model to build a grounded company profile and content opportunities. Nothing is invented from thin air.",
-  },
-  {
-    q: "Do I need to connect Google Search Console or other tools?",
-    a: "No. The workflow starts from your public website alone. No Search Console, no analytics access, and no extra integrations are required to get your first content plan.",
-  },
-  {
-    q: "Can I edit what the AI generates?",
-    a: "Yes. Every draft opens in a document-style editor where you can write by hand, draft individual sections with AI, or rewrite your own text with AI. You stay in control of the final article.",
-  },
-  {
-    q: "Is my data safe?",
-    a: "Your workspace is private by default. Data is stored in a Postgres database with row-level security, so only your account can read your projects and drafts. Authentication uses secure server-side sessions.",
-  },
-  {
-    q: "How much does it cost?",
-    a: "Yoga Write Code is free to use while in beta. Paid plans may be introduced later, and any pricing will be shown clearly before purchase.",
-  },
+  [
+    "What is Yoga Write Code?",
+    "Yoga Write Code is an AI content operating system that turns your website into a connected plan of opportunities, clusters, briefs, and outlines.",
+  ],
+  [
+    "How does the website analysis work?",
+    "Submit a public website URL. The system extracts page signals and uses them to ground the analysis in what your business actually does.",
+  ],
+  [
+    "Do I need to connect other tools?",
+    "No. Start with your public website. You can create a complete first content plan without a spreadsheet or additional SEO setup.",
+  ],
+  [
+    "Can I edit what the AI generates?",
+    "Yes. Every outline can become a draft in the editor, where you can write, rewrite, or use AI on individual sections.",
+  ],
 ];
 
 const jsonLd = {
@@ -115,134 +127,258 @@ const jsonLd = {
       publisher: { "@id": "https://yogawritecode.com/#organization" },
     },
     {
-      "@type": "SoftwareApplication",
-      name: "Yoga Write Code",
-      applicationCategory: "BusinessApplication",
-      operatingSystem: "Web",
-      url: "https://yogawritecode.com",
-      description:
-        "AI content operating system that turns any SaaS website into prioritized content opportunities, topic clusters, SEO briefs, and article outlines.",
-      offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
-      publisher: { "@id": "https://yogawritecode.com/#organization" },
-    },
-    {
       "@type": "HowTo",
       name: "How Yoga Write Code turns your website into a content plan",
-      step: steps.map((s, i) => ({
+      step: steps.map((step, index) => ({
         "@type": "HowToStep",
-        position: i + 1,
-        name: s.title,
-        text: s.text,
+        position: index + 1,
+        name: step.title,
+        text: step.text,
       })),
     },
     {
       "@type": "FAQPage",
-      mainEntity: faqs.map((f) => ({
+      mainEntity: faqs.map(([question, answer]) => ({
         "@type": "Question",
-        name: f.q,
-        acceptedAnswer: { "@type": "Answer", text: f.a },
+        name: question,
+        acceptedAnswer: { "@type": "Answer", text: answer },
       })),
     },
   ],
 };
 
-export default function HomePage() {
-  const appOrigin = process.env.NEXT_PUBLIC_SITE_URL || "";
+function MarketingMark() {
+  return <Image src="/icon.svg" alt="" width={28} height={28} unoptimized />;
+}
 
+function Eyebrow({ children }: { children: string }) {
   return (
-    <main className="mx-auto w-full max-w-5xl px-6 pb-24 pt-10">
-      <header className="flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2.5" aria-label="Yoga Write Code home">
-          <svg width="28" height="28" viewBox="0 0 108 108" fill="none" aria-hidden="true">
-            <rect width="108" height="108" rx="21.6" fill="#58AE39" />
-            <path
-              fillRule="evenodd"
-              clipRule="evenodd"
-              d="M46.1349 26.4156C48.2025 25.3265 50.7459 26.4734 51.2953 28.7445L52.7635 34.8401L84.5301 33.988C85.7602 33.9573 86.8484 34.7803 87.1539 35.9722L87.6467 37.895C87.9242 38.9779 87.5643 40.1245 86.7177 40.8546L75.7605 50.3039L90.1625 67.7559C90.7236 68.4374 90.9141 69.3535 90.6737 70.2029L90.6471 70.2954C90.2452 71.6924 88.8837 72.5867 87.442 72.4007L60.6549 68.9444L59.2785 76.9364L52.8684 69.1149L26.3769 80.2038C25.0365 80.7649 23.4872 80.2638 22.7293 79.024L22.6791 78.942C22.2195 78.187 22.1609 77.2542 22.5222 76.4475L31.7722 55.7964L18.6541 49.2529C17.6766 48.7652 17.0495 47.7763 17.0254 46.6841L16.9883 45.004C16.9612 43.775 17.7895 42.6914 18.9825 42.395L45.5057 35.8451L44.304 30.3569C43.9587 28.7814 44.7083 27.1679 46.1349 26.4156ZM25.2496 46.0917L33.9569 50.8283L35.494 47.2984C36.0859 45.9391 37.6673 45.3166 39.0269 45.9078C40.3872 46.4992 41.0103 48.0815 40.4187 49.4417L38.6979 53.3976L47.379 57.2899C48.7312 57.8962 49.3363 59.4837 48.7306 60.8363C48.1247 62.1892 46.5369 62.7949 45.1839 62.1892L36.5262 58.3133L30.1511 72.5406L51.6405 63.8233L46.6549 41.0973L25.2496 46.0917ZM54.0525 40.1753L59.663 63.4257L81.7686 66.0168L71.8453 53.9918L64.5267 60.0266C63.3825 60.97 61.6903 60.8074 60.7467 59.6635C59.8033 58.5223 59.9643 56.8323 61.1063 55.8898L68.4458 49.832L65.7336 46.47C64.8034 45.317 64.9827 43.6284 66.1343 42.6965C67.2906 41.7647 68.9832 41.9458 69.9162 43.1011L72.3347 46.096L79.0483 39.5242L54.0525 40.1753Z"
-              fill="white"
-            />
-          </svg>
-          <span className="font-display text-lg font-semibold tracking-tight text-ink">
-            Yoga Write Code
-          </span>
-        </Link>
-        <a
-          href={appOrigin ? `${appOrigin}/login` : "/login"}
-          className="text-sm font-medium text-ink underline underline-offset-4"
-        >
-          Log in
-        </a>
+    <span className="inline-flex items-center gap-1.5 rounded-full border border-[#ede9fe] bg-[#f5f3ff] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.06em] text-[#6d46f5]">
+      <span className="h-1.5 w-1.5 rounded-full bg-[#7c5cfc]" />
+      {children}
+    </span>
+  );
+}
+
+function SectionIntro({
+  eyebrow,
+  title,
+  description,
+}: {
+  eyebrow: string;
+  title: string;
+  description?: string;
+}) {
+  return (
+    <div className="mx-auto mb-10 max-w-xl text-center">
+      <Eyebrow>{eyebrow}</Eyebrow>
+      <h2 className="mt-4 text-3xl font-extrabold tracking-[-0.03em] text-[#14141b] sm:text-4xl">
+        {title}
+      </h2>
+      {description ? <p className="mt-3 text-[15px] leading-7 text-[#6b6b76]">{description}</p> : null}
+    </div>
+  );
+}
+
+export default function HomePage() {
+  return (
+    <div className="min-h-screen overflow-x-hidden bg-white text-[#14141b]">
+      <header className="sticky top-0 z-50 border-b border-[#eaeaef] bg-white/90 backdrop-blur-md">
+        <div className="mx-auto flex h-[68px] max-w-[1160px] items-center justify-between px-5 sm:px-8">
+          <Link href="/" className="flex items-center gap-2.5" aria-label="Yoga Write Code home">
+            <MarketingMark />
+            <span className="text-[15px] font-bold tracking-tight">Yoga Write Code</span>
+          </Link>
+          <nav className="hidden items-center gap-8 text-sm font-medium text-[#6b6b76] md:flex">
+            <a href="#how" className="transition-colors hover:text-[#14141b]">How it works</a>
+            <a href="#features" className="transition-colors hover:text-[#14141b]">Features</a>
+            <a href="#demo" className="transition-colors hover:text-[#14141b]">Live demo</a>
+          </nav>
+          <div className="flex items-center gap-2.5">
+            <Link
+              href="/login"
+              className="hidden rounded-lg border border-[#eaeaef] bg-white px-3.5 py-2 text-xs font-semibold text-[#14141b] transition hover:border-[#b4b4be] sm:inline-flex"
+            >
+              Log in
+            </Link>
+            <Link
+              href="/signup"
+              className="rounded-lg bg-[#6d46f5] px-3.5 py-2 text-xs font-semibold text-white shadow-[0_6px_16px_rgba(109,70,245,0.24)] transition hover:bg-[#5b34e0]"
+            >
+              Try it free
+            </Link>
+          </div>
+        </div>
       </header>
 
-      <section className="mt-24">
-        <p className="text-xs font-medium uppercase tracking-[0.16em] text-brand">
-          AI Content Operating System for SaaS
-        </p>
-        <h1 className="font-display mt-5 max-w-2xl text-5xl font-semibold leading-[1.05] tracking-tight text-ink">
-          Turn your website into your next content plan.
-        </h1>
-        <p className="mt-6 max-w-xl text-lg leading-8 text-ink-secondary">
-          Yoga Write Code analyzes your SaaS website and turns it into prioritized content
-          opportunities, topic clusters, SEO briefs, and article outlines.
-        </p>
-        <div className="mt-9 flex items-center gap-4">
-          <a
-            href={appOrigin ? `${appOrigin}/signup` : "/signup"}
-            className="inline-flex h-11 items-center rounded-field bg-brand px-5 text-sm font-medium text-white transition-colors hover:bg-brand-hover"
-          >
-            Try Yoga Write Code
-          </a>
-          <a href="#how" className="text-sm font-medium text-ink underline underline-offset-4">
-            See how it works
-          </a>
+      <main>
+        <section className="relative overflow-hidden px-5 pb-16 pt-20 text-center sm:px-8 sm:pt-24">
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute left-1/2 top-[-150px] h-[420px] w-[900px] -translate-x-1/2 rounded-[50%] bg-[radial-gradient(closest-side,rgba(124,92,252,0.14),transparent_70%)]"
+          />
+          <div className="relative mx-auto max-w-[1160px]">
+            <Eyebrow>Start from your site, not a keyword</Eyebrow>
+            <h1 className="mx-auto mt-6 max-w-3xl text-5xl font-extrabold leading-[1.05] tracking-[-0.04em] text-[#14141b] sm:text-6xl">
+              Turn your website into your{" "}
+              <span className="text-[#6d46f5]">next five articles.</span>
+            </h1>
+            <p className="mx-auto mt-5 max-w-xl text-[17px] leading-8 text-[#6b6b76]">
+              Paste a URL. Get real content opportunities pulled from what your business actually does — then a brief and outline for each one.
+            </p>
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+              <Link
+                href="/signup"
+                className="inline-flex items-center gap-2 rounded-[10px] bg-[#6d46f5] px-5 py-3 text-sm font-semibold text-white shadow-[0_6px_16px_rgba(109,70,245,0.25)] transition hover:-translate-y-0.5 hover:bg-[#5b34e0]"
+              >
+                Try it free <span aria-hidden="true">→</span>
+              </Link>
+              <a
+                href="#how"
+                className="rounded-[10px] border border-[#eaeaef] bg-white px-5 py-3 text-sm font-semibold text-[#14141b] transition hover:-translate-y-0.5 hover:border-[#b4b4be]"
+              >
+                See how it works
+              </a>
+            </div>
+            <WorkflowPreview />
+          </div>
+        </section>
+
+        <section id="how" className="bg-[#fafafa] px-5 py-20 sm:px-8">
+          <div className="mx-auto grid max-w-[1160px] items-center gap-10 lg:grid-cols-2 lg:gap-20">
+            <div>
+              <Eyebrow>The problem</Eyebrow>
+              <h2 className="mt-5 max-w-md text-3xl font-extrabold leading-tight tracking-[-0.03em] text-[#14141b] sm:text-4xl">
+                Content workflows are broken.
+              </h2>
+              <p className="mt-4 max-w-md text-[15px] leading-7 text-[#6b6b76]">
+                15 tools, 15 steps, days of work — just to ship one article. Teams lose momentum between research and writing, and briefs drift from the strategy they started with.
+              </p>
+            </div>
+            <div className="space-y-2.5">
+              {painPoints.map((point) => (
+                <div key={point} className="flex items-center gap-3 rounded-xl border border-[#eaeaef] bg-white px-4 py-3.5 text-sm font-medium text-[#3b3b45]">
+                  <span className="font-extrabold text-[#e5594c]">×</span>
+                  {point}
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="px-5 py-20 sm:px-8">
+          <div className="mx-auto max-w-[1160px]">
+            <SectionIntro
+              eyebrow="The workflow"
+              title="From URL to outline in 5 steps."
+              description="Built for content operations. Not another point-solution SEO tool."
+            />
+            <div className="grid gap-3.5 sm:grid-cols-2 lg:grid-cols-5">
+              {steps.map((step) => (
+                <article key={step.n} className="rounded-2xl border border-[#eaeaef] bg-white p-5 transition hover:-translate-y-1 hover:border-[#ede9fe] hover:shadow-[0_4px_16px_rgba(20,20,27,0.06)]">
+                  <div className="grid h-9 w-9 place-items-center rounded-lg bg-[#f5f3ff] text-sm font-extrabold text-[#6d46f5]">
+                    {step.n}
+                  </div>
+                  <p className="mt-4 text-[10px] font-bold uppercase tracking-[0.06em] text-[#8b8b96]">Step {step.n}</p>
+                  <h3 className="mt-1.5 text-[15px] font-bold text-[#14141b]">{step.title}</h3>
+                  <p className="mt-2 text-[13px] leading-5 text-[#6b6b76]">{step.text}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="features" className="bg-[#fafafa] px-5 py-20 sm:px-8">
+          <div className="mx-auto max-w-[1160px]">
+            <SectionIntro eyebrow="What&apos;s inside" title="Everything you need. Nothing you don&apos;t." />
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {features.map(([title, text]) => (
+                <article key={title} className="rounded-2xl border border-[#eaeaef] bg-white p-5">
+                  <span className="grid h-7 w-7 place-items-center rounded-full bg-[#e3f8ec] text-sm font-extrabold text-[#18a857]">✓</span>
+                  <h3 className="mt-4 text-[15px] font-bold text-[#14141b]">{title}</h3>
+                  <p className="mt-2 text-[13px] leading-5 text-[#6b6b76]">{text}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <div id="demo" className="border-y border-[#eaeaef] bg-[#f6f6f9] px-5 py-16 text-center sm:px-8">
+          <Eyebrow>Live product preview</Eyebrow>
+          <h2 className="mt-4 text-3xl font-extrabold tracking-[-0.03em] text-[#14141b]">Take a look inside the workspace.</h2>
+          <p className="mx-auto mt-3 max-w-2xl text-[15px] leading-7 text-[#6b6b76]">
+            See how your next content plan moves from a URL to a focused, writer-ready outline.
+          </p>
         </div>
-      </section>
 
-      <section id="how" className="mt-24">
-        <h2 className="text-xs font-medium uppercase tracking-[0.16em] text-ink-muted">
-          How it works
-        </h2>
-        <ol className="mt-6 grid gap-px overflow-hidden rounded-card border border-line bg-line sm:grid-cols-5">
-          {steps.map((step) => (
-            <li key={step.n} className="bg-surface px-5 py-6">
-              <p className="text-xs font-medium text-brand">{step.n}</p>
-              <h3 className="font-display mt-2 text-lg font-semibold tracking-tight text-ink">
-                {step.title}
-              </h3>
-              <p className="mt-2 text-[13px] leading-5 text-ink-secondary">{step.text}</p>
-            </li>
-          ))}
-        </ol>
-      </section>
+        <section className="bg-white px-5 py-16 sm:px-8">
+          <div className="mx-auto max-w-[1160px]">
+            <WorkspacePreview />
+          </div>
+        </section>
 
-      <section id="faq" className="mt-24">
-        <h2 className="font-display text-2xl font-semibold tracking-tight text-ink">
-          Frequently asked questions
-        </h2>
-        <div className="mt-6 divide-y divide-line border-y border-line">
-          {faqs.map((f) => (
-            <details key={f.q} className="group py-4">
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-sm font-medium text-ink [&::-webkit-details-marker]:hidden">
-                {f.q}
-                <span className="text-lg leading-none text-ink-muted transition-transform group-open:rotate-45">
-                  +
-                </span>
-              </summary>
-              <p className="mt-3 max-w-2xl text-sm leading-6 text-ink-secondary">{f.a}</p>
-            </details>
-          ))}
+        <section className="px-5 pb-20 sm:px-8">
+          <div className="mx-auto max-w-[1160px] rounded-3xl bg-[#14141b] px-6 py-14 text-center shadow-[0_12px_32px_rgba(20,20,27,0.12)] sm:px-10">
+            <h2 className="text-3xl font-extrabold tracking-[-0.03em] text-white">See what it finds on your site.</h2>
+            <p className="mx-auto mt-3 max-w-2xl text-[15px] leading-7 text-[#b4b4be]">
+              Try the five-step workflow with your own website. Free while in beta, with a clear plan from the first analysis.
+            </p>
+            <div className="mt-7 flex flex-wrap justify-center gap-3">
+              <Link href="/signup" className="rounded-[10px] bg-white px-5 py-3 text-sm font-semibold text-[#14141b] transition hover:-translate-y-0.5">
+                Try it free <span aria-hidden="true">→</span>
+              </Link>
+              <a href="mailto:hello@yogawritecode.com" className="rounded-[10px] border border-[#3a3a44] px-5 py-3 text-sm font-semibold text-white transition hover:border-[#5a5a66]">
+                Talk to us
+              </a>
+            </div>
+          </div>
+        </section>
+
+        <section id="faq" className="border-t border-[#eaeaef] px-5 py-20 sm:px-8">
+          <div className="mx-auto max-w-3xl">
+            <SectionIntro eyebrow="Questions" title="Good to know." />
+            <div className="divide-y divide-[#eaeaef] border-y border-[#eaeaef]">
+              {faqs.map(([question, answer]) => (
+                <details key={question} className="group py-5">
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-sm font-semibold text-[#14141b] [&::-webkit-details-marker]:hidden">
+                    {question}
+                    <span className="text-xl font-normal leading-none text-[#8b8b96] transition-transform group-open:rotate-45">+</span>
+                  </summary>
+                  <p className="mt-3 max-w-2xl text-sm leading-6 text-[#6b6b76]">{answer}</p>
+                </details>
+              ))}
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer className="border-t border-[#eaeaef] px-5 py-12 sm:px-8">
+        <div className="mx-auto flex max-w-[1160px] flex-col gap-8 sm:flex-row sm:items-start sm:justify-between">
+          <Link href="/" className="flex items-center gap-2.5">
+            <MarketingMark />
+            <span className="text-sm font-bold">Yoga Write Code</span>
+          </Link>
+          <div className="flex flex-wrap gap-x-12 gap-y-6 text-sm">
+            <div>
+              <p className="mb-3 text-xs font-bold uppercase tracking-[0.06em] text-[#8b8b96]">Product</p>
+              <a href="#how" className="block py-1 text-[#6b6b76] hover:text-[#14141b]">How it works</a>
+              <a href="#demo" className="block py-1 text-[#6b6b76] hover:text-[#14141b]">Live preview</a>
+            </div>
+            <div>
+              <p className="mb-3 text-xs font-bold uppercase tracking-[0.06em] text-[#8b8b96]">Company</p>
+              <a href="mailto:hello@yogawritecode.com" className="block py-1 text-[#6b6b76] hover:text-[#14141b]">Contact</a>
+              <Link href="/" className="block py-1 text-[#6b6b76] hover:text-[#14141b]">About Yoga Write Code</Link>
+            </div>
+            <div>
+              <p className="mb-3 text-xs font-bold uppercase tracking-[0.06em] text-[#8b8b96]">Legal</p>
+              <Link href="/terms" className="block py-1 text-[#6b6b76] hover:text-[#14141b]">Terms</Link>
+              <Link href="/privacy" className="block py-1 text-[#6b6b76] hover:text-[#14141b]">Privacy</Link>
+            </div>
+          </div>
         </div>
-      </section>
-
-      <footer className="mt-24 flex items-center justify-between border-t border-line pt-6 text-sm text-ink-muted">
-        <p>© 2026 Yoga Write Code</p>
-        <div className="flex gap-6">
-          <Link href="/terms" className="underline underline-offset-4">
-            Terms
-          </Link>
-          <Link href="/privacy" className="underline underline-offset-4">
-            Privacy
-          </Link>
+        <div className="mx-auto mt-10 flex max-w-[1160px] flex-col gap-2 border-t border-[#eaeaef] pt-5 text-xs text-[#8b8b96] sm:flex-row sm:justify-between">
+          <span>© 2026 Yoga Write Code. All rights reserved.</span>
+          <span>Built for modern content teams.</span>
         </div>
       </footer>
 
@@ -250,6 +386,6 @@ export default function HomePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-    </main>
+    </div>
   );
 }
