@@ -11,7 +11,7 @@ export function Wordmark({
     <Link
       href={href}
       onClick={onNavigate}
-      className="flex items-center rounded-control focus:outline-none focus:ring-2 focus:ring-brand-soft"
+      className="inline-flex h-8 w-8 shrink-0 items-center justify-center focus:outline-none"
       title="Go to dashboard overview"
       aria-label="Yoga Write Code dashboard overview"
     >
