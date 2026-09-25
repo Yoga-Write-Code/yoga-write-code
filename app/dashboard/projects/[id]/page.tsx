@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
+import { GenerateButton } from "@/components/dashboard/generate-button";
 import { PageHeader } from "@/components/page-header";
 import { decodeEntities } from "@/lib/format";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -123,12 +124,12 @@ export default async function ProjectPage({ params, searchParams }: ProjectPageP
             <FactRow label="Positioning" value={analysis.positioning} />
           </div>
         ) : (
-          <form action={analyzeWebsite}>
-            <input type="hidden" name="projectId" value={id} />
-            <button type="submit" className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition-colors">
-              Analyze Website
-            </button>
-          </form>
+          <GenerateButton
+            action={analyzeWebsite}
+            label="Analyze Website"
+            pendingLabel="Analyzing…"
+            hiddenFields={{ projectId: id }}
+          />
         )}
       </Section>
 
@@ -153,13 +154,12 @@ export default async function ProjectPage({ params, searchParams }: ProjectPageP
                       {opp.reason && <p className="mt-2 text-sm text-ink-secondary"><strong>Why:</strong> {d(opp.reason)}</p>}
                     </div>
                     {!cluster && (
-                      <form action={generateCluster}>
-                        <input type="hidden" name="projectId" value={id} />
-                        <input type="hidden" name="opportunityId" value={opp.id} />
-                        <button type="submit" className="px-3 py-1.5 bg-brand text-white text-sm font-medium rounded-md hover:bg-brand-hover transition-colors">
-                          Build Cluster
-                        </button>
-                      </form>
+                      <GenerateButton
+                        action={generateCluster}
+                        label="Build Cluster"
+                        pendingLabel="Building…"
+                        hiddenFields={{ projectId: id, opportunityId: opp.id }}
+                      />
                     )}
                   </div>
                 </div>
@@ -173,15 +173,14 @@ export default async function ProjectPage({ params, searchParams }: ProjectPageP
                   : "Analyze the website to generate content opportunities."}
               </p>
               {analysis && (
-                <form action={analyzeWebsite} className="mt-4">
-                  <input type="hidden" name="projectId" value={id} />
-                  <button
-                    type="submit"
-                    className="rounded-md bg-black px-4 py-2 text-sm text-white transition-colors hover:bg-gray-800"
-                  >
-                    Re-run analysis
-                  </button>
-                </form>
+                <div className="mt-4">
+                  <GenerateButton
+                    action={analyzeWebsite}
+                    label="Re-run analysis"
+                    pendingLabel="Analyzing…"
+                    hiddenFields={{ projectId: id }}
+                  />
+                </div>
               )}
             </div>
           )}
@@ -196,13 +195,14 @@ export default async function ProjectPage({ params, searchParams }: ProjectPageP
             <FactRow label="Supporting topics" value={(cluster.supporting_topics as string[]).join(" • ")} />
           </div>
           {!brief && activeOpportunityId && (
-            <form action={generateBrief} className="mt-4">
-              <input type="hidden" name="projectId" value={id} />
-              <input type="hidden" name="opportunityId" value={activeOpportunityId} />
-              <button type="submit" className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition-colors">
-                Generate SEO Brief
-              </button>
-            </form>
+            <div className="mt-4">
+              <GenerateButton
+                action={generateBrief}
+                label="Generate SEO Brief"
+                pendingLabel="Generating brief…"
+                hiddenFields={{ projectId: id, opportunityId: activeOpportunityId }}
+              />
+            </div>
           )}
         </Section>
       )}
@@ -215,13 +215,14 @@ export default async function ProjectPage({ params, searchParams }: ProjectPageP
             <FactRow label="Suggested headings" value={(brief.suggested_headings as string[]).join(" • ")} />
           </div>
           {!outline && activeOpportunityId && (
-            <form action={generateOutline} className="mt-4">
-              <input type="hidden" name="projectId" value={id} />
-              <input type="hidden" name="opportunityId" value={activeOpportunityId} />
-              <button type="submit" className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition-colors">
-                Generate Outline
-              </button>
-            </form>
+            <div className="mt-4">
+              <GenerateButton
+                action={generateOutline}
+                label="Generate Outline"
+                pendingLabel="Generating outline…"
+                hiddenFields={{ projectId: id, opportunityId: activeOpportunityId }}
+              />
+            </div>
           )}
         </Section>
       )}

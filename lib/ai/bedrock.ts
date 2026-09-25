@@ -25,6 +25,7 @@ import {
 
 // Active cross-region inference profile for the configured ap-southeast-2 region.
 const DEFAULT_MODEL_ID = "au.anthropic.claude-sonnet-4-5-20250929-v1:0";
+const REQUEST_TIMEOUT_MS = 45_000;
 
 const clientConfig: BedrockRuntimeClientConfig = {
   region: process.env.AWS_REGION?.trim() || "us-east-1",
@@ -69,12 +70,24 @@ async function invokeModel(
     body: JSON.stringify(body),
   });
 
-  const response = await client.send(command);
-  const responseBody = JSON.parse(new TextDecoder().decode(response.body)) as {
-    content?: Array<{ text?: string }>;
-  };
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
-  return responseBody.content?.[0]?.text?.trim() ?? "";
+  try {
+    const response = await client.send(command, { abortSignal: controller.signal });
+    const responseBody = JSON.parse(new TextDecoder().decode(response.body)) as {
+      content?: Array<{ text?: string }>;
+    };
+
+    return responseBody.content?.[0]?.text?.trim() ?? "";
+  } catch (error) {
+    if (error instanceof Error && error.name === "AbortError") {
+      throw new Error("The AI request timed out. Please try again.");
+    }
+    throw error;
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 /**
@@ -161,6 +174,23 @@ function normalizeStructuredValue(value: unknown): unknown {
       }
       return normalizedOpportunity;
     });
+  }
+
+  if (typeof record.priority === "string") {
+    const priority = record.priority.toLowerCase();
+    record.priority = priority.includes("high")
+      ? "high"
+      : priority.includes("low")
+        ? "low"
+        : "medium";
+  }
+
+  if (record.supportingTopics !== undefined && !Array.isArray(record.supportingTopics)) {
+    record.supportingTopics = [String(record.supportingTopics)];
+  }
+
+  if (record.internalLinkingSuggestions !== undefined && !Array.isArray(record.internalLinkingSuggestions)) {
+    record.internalLinkingSuggestions = [String(record.internalLinkingSuggestions)];
   }
 
   if (record.competitorInsights !== undefined && !Array.isArray(record.competitorInsights)) {
