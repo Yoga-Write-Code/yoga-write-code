@@ -6,6 +6,7 @@ import { EmptyState } from "@/components/empty-state";
 import { PageHeader } from "@/components/page-header";
 import { Badge } from "@/components/ui/badge";
 import { generateBrief } from "@/app/dashboard/projects/[id]/actions";
+import { getUserDisplayName } from "@/lib/auth/user";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = { title: "Overview" };
@@ -63,8 +64,19 @@ function Kpi({ label, value, delta, sub }: { label: string; value: number; delta
 export default async function OverviewPage() {
   const supabase = await createSupabaseServerClient();
   const { data: userData } = await supabase.auth.getUser();
-  const email = userData.user?.email ?? "";
-  const firstName = cap(email.split("@")[0].split(/[+.]/)[0] || "there");
+  const { data: profile } = userData.user
+    ? await supabase
+        .from("profiles")
+        .select("full_name")
+        .eq("id", userData.user.id)
+        .maybeSingle()
+    : { data: null };
+  const displayName = userData.user
+    ? getUserDisplayName(userData.user, profile?.full_name)
+    : "there";
+  const firstName = cap(
+    displayName === "Your account" ? "there" : displayName.split(/\s+/)[0] || "there",
+  );
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
 

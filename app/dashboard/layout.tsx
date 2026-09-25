@@ -18,7 +18,12 @@ export default async function DashboardLayout({
 
   if (!data.user) redirect("/login");
 
-  const name = getUserDisplayName(data.user);
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("full_name")
+    .eq("id", data.user.id)
+    .maybeSingle();
+  const name = getUserDisplayName(data.user, profile?.full_name);
   const email = data.user.email ?? undefined;
   const { data: projectsData, error: projectsError } = await supabase
     .from("projects")

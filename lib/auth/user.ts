@@ -9,7 +9,11 @@ function getMetadataName(value: unknown): string | undefined {
 
 export function getUserDisplayName(
   user: Pick<User, "email" | "user_metadata">,
+  profileName?: string | null,
 ): string {
+  const storedProfileName = getMetadataName(profileName);
+  if (storedProfileName) return storedProfileName;
+
   const fullName = getMetadataName(user.user_metadata.full_name);
   if (fullName) return fullName;
 

@@ -8,7 +8,16 @@ export const metadata: Metadata = { title: "Settings" };
 export default async function SettingsPage() {
   const supabase = await createSupabaseServerClient();
   const { data } = await supabase.auth.getUser();
-  const name = data.user ? getUserDisplayName(data.user) : "Your account";
+  const { data: profile } = data.user
+    ? await supabase
+        .from("profiles")
+        .select("full_name")
+        .eq("id", data.user.id)
+        .maybeSingle()
+    : { data: null };
+  const name = data.user
+    ? getUserDisplayName(data.user, profile?.full_name)
+    : "Your account";
   const email = data.user?.email ?? "";
 
   return (
