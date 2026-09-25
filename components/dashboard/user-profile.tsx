@@ -1,6 +1,11 @@
-export function UserProfile({ email }: { email?: string }) {
-  const label = email ? email.split("@")[0] : "Your account";
-  const initials = label.slice(0, 2).toUpperCase();
+export function UserProfile({ name, email }: { name?: string; email?: string }) {
+  const label = name?.trim() || email?.split("@")[0] || "Your account";
+  const initials = label
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part.charAt(0))
+    .join("")
+    .toUpperCase();
 
   return (
     <div className="flex w-full items-center gap-3 rounded-md px-2 py-2">

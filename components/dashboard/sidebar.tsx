@@ -4,10 +4,12 @@ import { UserProfile } from "./user-profile";
 import { Wordmark } from "./wordmark";
 
 export function SidebarBody({
+  name,
   email,
   projects,
   onNavigate,
 }: {
+  name?: string;
   email?: string;
   projects?: ProjectNavItem[];
   onNavigate?: () => void;
@@ -20,7 +22,7 @@ export function SidebarBody({
         <SettingsNav onNavigate={onNavigate} />
       </div>
       <div className="shrink-0 border-t border-line px-4 py-4">
-        <UserProfile email={email} />
+        <UserProfile name={name} email={email} />
         <SignOut />
       </div>
     </div>
@@ -28,9 +30,11 @@ export function SidebarBody({
 }
 
 export function Sidebar({
+  name,
   email,
   projects,
 }: {
+  name?: string;
   email?: string;
   projects?: ProjectNavItem[];
 }) {
@@ -39,7 +43,7 @@ export function Sidebar({
       <div className="px-6 pb-8 pt-7">
         <Wordmark />
       </div>
-      <SidebarBody email={email} projects={projects} />
+      <SidebarBody name={name} email={email} projects={projects} />
     </aside>
   );
 }

@@ -7,9 +7,11 @@ import type { ProjectNavItem } from "./sidebar-nav";
 import { Wordmark } from "./wordmark";
 
 export function MobileHeader({
+  name,
   email,
   projects,
 }: {
+  name?: string;
   email?: string;
   projects?: ProjectNavItem[];
 }) {
@@ -50,6 +52,7 @@ export function MobileHeader({
               </button>
             </div>
             <SidebarBody
+              name={name}
               email={email}
               projects={projects}
               onNavigate={() => setOpen(false)}

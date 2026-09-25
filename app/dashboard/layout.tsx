@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { MobileHeader } from "@/components/dashboard/mobile-header";
 import { Sidebar } from "@/components/dashboard/sidebar";
 import type { ProjectNavItem } from "@/components/dashboard/sidebar-nav";
+import { getUserDisplayName } from "@/lib/auth/user";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
@@ -17,6 +18,7 @@ export default async function DashboardLayout({
 
   if (!data.user) redirect("/login");
 
+  const name = getUserDisplayName(data.user);
   const email = data.user.email ?? undefined;
   const { data: projectsData, error: projectsError } = await supabase
     .from("projects")
@@ -31,8 +33,8 @@ export default async function DashboardLayout({
 
   return (
     <div className="min-h-screen">
-      <Sidebar email={email} projects={projects} />
-      <MobileHeader email={email} projects={projects} />
+      <Sidebar name={name} email={email} projects={projects} />
+      <MobileHeader name={name} email={email} projects={projects} />
       <main className="lg:pl-60">
         <div className="mx-auto w-full max-w-5xl px-5 pb-16 pt-8 sm:px-8 lg:px-12 lg:pb-20 lg:pt-14">
           {children}
