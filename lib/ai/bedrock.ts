@@ -23,7 +23,8 @@ import {
   type WebsiteAnalysisResult,
 } from "./schemas";
 
-const DEFAULT_MODEL_ID = "au.anthropic.claude-opus-4-6-v1";
+// Active cross-region inference profile for the configured ap-southeast-2 region.
+const DEFAULT_MODEL_ID = "au.anthropic.claude-sonnet-4-5-20250929-v1:0";
 
 const clientConfig: BedrockRuntimeClientConfig = {
   region: process.env.AWS_REGION?.trim() || "us-east-1",
