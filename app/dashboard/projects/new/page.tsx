@@ -21,7 +21,7 @@ export default async function NewProjectPage({
       <form action={createProject} className="mt-8 max-w-md space-y-4">
         <FormError message={error} />
         <Field label="Project name" htmlFor="name">
-          <input id="name" name="name" required placeholder="Acme SaaS" className={inputClass} />
+          <input id="name" name="name" required placeholder="Yoga Write Code" className={inputClass} />
         </Field>
         <Field label="Website" htmlFor="website_url">
           <input
@@ -29,7 +29,7 @@ export default async function NewProjectPage({
             name="website_url"
             type="url"
             required
-            placeholder="https://acme.com"
+            placeholder="https://yogawritecode.com"
             className={inputClass}
           />
         </Field>
