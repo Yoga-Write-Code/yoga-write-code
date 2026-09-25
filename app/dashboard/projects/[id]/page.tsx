@@ -23,7 +23,7 @@ function Section({ id, step, title, children }: { id: string; step: number; titl
   return (
     <section id={id} className="mt-12 scroll-mt-24 border-t border-line pt-6">
       <p className="text-xs font-medium uppercase tracking-[0.14em] text-ink-muted">Step {step}</p>
-      <h2 className="font-display mt-1 text-xl font-semibold tracking-tight text-ink">{title}</h2>
+      <h2 className="font-sans mt-1 text-xl font-semibold tracking-tight text-ink">{title}</h2>
       <div className="mt-4">{children}</div>
     </section>
   );

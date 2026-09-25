@@ -2,7 +2,7 @@
 
 @theme {
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-fraunces), ui-serif, Georgia, serif;
+  --font-heading: var(--font-satoshi), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 
   --color-canvas: #fafaf9;
   --color-surface: #ffffff;

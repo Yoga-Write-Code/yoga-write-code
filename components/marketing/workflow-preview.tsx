@@ -59,37 +59,37 @@ export function WorkflowPreview() {
   const step = previewSteps[activeStep];
 
   return (
-    <div className="mx-auto mt-14 w-full max-w-[920px] overflow-hidden rounded-2xl border border-[#eaeaef] bg-white text-left shadow-[0_12px_32px_rgba(20,20,27,0.10)]">
-      <div className="flex items-center gap-2 border-b border-[#eaeaef] bg-[#f6f6f9] px-4 py-3">
-        <span className="h-2.5 w-2.5 rounded-full bg-[#d9d9e1]" />
-        <span className="h-2.5 w-2.5 rounded-full bg-[#d9d9e1]" />
-        <span className="h-2.5 w-2.5 rounded-full bg-[#d9d9e1]" />
-        <div className="ml-2 flex-1 rounded-md border border-[#eaeaef] bg-white px-3 py-1.5 text-xs text-[#8b8b96]">
+    <div className="mx-auto mt-14 w-full max-w-[920px] overflow-hidden rounded-2xl border border-line bg-surface text-left font-sans shadow-pop">
+      <div className="flex items-center gap-2 border-b border-line bg-surface-subtle px-4 py-3">
+        <span className="h-2.5 w-2.5 rounded-full bg-line-strong" />
+        <span className="h-2.5 w-2.5 rounded-full bg-line-strong" />
+        <span className="h-2.5 w-2.5 rounded-full bg-line-strong" />
+        <div className="ml-2 flex-1 rounded-md border border-line bg-surface px-3 py-1.5 text-xs text-ink-muted">
           app.yogawritecode.com
         </div>
       </div>
 
-      <div className="grid grid-cols-2 border-b border-[#eaeaef] sm:grid-cols-5">
+      <div className="grid grid-cols-2 border-b border-line sm:grid-cols-5">
         {previewSteps.map((item, index) => (
           <button
             key={item.label}
             type="button"
             onClick={() => setActiveStep(index)}
             aria-pressed={activeStep === index}
-            className={`border-r border-[#eaeaef] px-3 py-3 text-left transition-colors last:border-r-0 ${
-              activeStep === index ? "bg-[#f5f3ff]" : "hover:bg-[#fafafa]"
+            className={`border-r border-line px-3 py-3 text-left transition-colors last:border-r-0 ${
+              activeStep === index ? "bg-brand-soft" : "hover:bg-surface-subtle"
             }`}
           >
             <span
               className={`block text-[10px] font-bold uppercase tracking-[0.08em] ${
-                activeStep === index ? "text-[#5b34e0]" : "text-[#8b8b96]"
+                activeStep === index ? "text-brand-hover" : "text-ink-muted"
               }`}
             >
               Step {index + 1}
             </span>
             <span
               className={`mt-1 block text-xs font-semibold ${
-                activeStep === index ? "text-[#5b34e0]" : "text-[#14141b]"
+                activeStep === index ? "text-brand-hover" : "text-ink"
               }`}
             >
               {item.label}
@@ -100,11 +100,11 @@ export function WorkflowPreview() {
 
       <div className="grid min-h-[150px] gap-4 p-6 sm:grid-cols-3 sm:p-7">
         {step.metrics.map(([label, value]) => (
-          <div key={label} className="rounded-xl border border-[#f0f0f4] bg-[#f6f6f9] p-4">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.06em] text-[#8b8b96]">
+          <div key={label} className="rounded-xl border border-line bg-surface-subtle p-4">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.06em] text-ink-muted">
               {label}
             </p>
-            <p className="mt-2 text-xl font-extrabold tracking-tight text-[#14141b]">{value}</p>
+            <p className="mt-2 text-xl font-extrabold tracking-tight text-ink">{value}</p>
           </div>
         ))}
       </div>

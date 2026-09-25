@@ -156,13 +156,13 @@ export function DocEditor({
           onChange={(e) => setTitle(e.target.value)}
           name="title"
           placeholder="Untitled draft"
-          className="font-display w-full border-0 bg-transparent text-3xl font-semibold tracking-tight text-ink focus:outline-none"
+          className="font-sans w-full border-0 bg-transparent text-3xl font-semibold tracking-tight text-ink focus:outline-none"
         />
 
         {mode === "write" ? (
           sections.map((s, i) => (
             <section key={s.heading + i} className="mt-8">
-              <h2 className="font-display text-xl font-semibold tracking-tight text-ink">
+              <h2 className="font-sans text-xl font-semibold tracking-tight text-ink">
                 {s.heading}
               </h2>
               {s.purpose ? <p className="mt-1 text-xs text-ink-muted">{s.purpose}</p> : null}
@@ -199,7 +199,7 @@ export function DocEditor({
           <article className="mt-6 space-y-8">
             {current().map((s, i) => (
               <section key={s.heading + i}>
-                <h2 className="font-display text-xl font-semibold tracking-tight text-ink">
+                <h2 className="font-sans text-xl font-semibold tracking-tight text-ink">
                   {s.heading}
                 </h2>
                 <div className="mt-3">

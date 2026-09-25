@@ -29,8 +29,9 @@
 | `--success-bg` | `#DCFCE7` (green-100) | Success backgrounds |
 
 ## 3. Typography
-- **Font family:** System stack (Inter, -apple-system, sans-serif)
-- **Heading font:** Serif display font for H1 (e.g., `font-display` class)
+- **Body and UI font:** Inter for the dashboard, forms, editor, and marketing body copy; self-hosted with `next/font`
+- **Marketing headings:** Satoshi for public-facing marketing headings, including the homepage, legal pages, navigation brand, and CTA
+- **Heading treatment:** Use Satoshi with semibold or bold weight and tight tracking on marketing pages
 - **Base font size:** 16px
 - **Line height:** 1.6 for body, 1.2 for headings
 - **Tracking:** Tight for headings (-0.02em), wide for labels (0.12em uppercase)
@@ -61,8 +62,11 @@
 
 ## 5. UI Rules
 - Reuse design tokens from Tailwind config
-- Use shared components from `components/ui/`
+- Use shared components from `components/ui/` and `components/marketing/`
+- Public marketing pages use the shared `SiteHeader`, `SiteFooter`, and `MarketingCta` components
+- Dashboard, forms, and editor pages use Inter only; use font weight, size, and tracking for hierarchy
+- Marketing headings use the shared Satoshi heading token; dashboard content must not use it
 - Avoid arbitrary colors (no `#abc123` in code)
 - Keep layouts responsive
-- Every page must have a `PageHeader` component at top
+- Use `PageHeader` for dashboard page titles
 - Errors always show in red box, never as alerts

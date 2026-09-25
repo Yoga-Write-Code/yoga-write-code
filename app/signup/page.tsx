@@ -20,7 +20,7 @@ export default async function SignupPage({
           Yoga Write Code
         </p>
 
-        <h1 className="font-display mt-3 text-2xl font-semibold tracking-tight text-ink">
+        <h1 className="font-sans mt-3 text-2xl font-semibold tracking-tight text-ink">
           Create your account
         </h1>
 

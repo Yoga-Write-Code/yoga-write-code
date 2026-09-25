@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
+import { MarketingCta } from "@/components/marketing/marketing-cta";
+import { SiteFooter } from "@/components/marketing/site-footer";
+import { SiteHeader } from "@/components/marketing/site-header";
 import { WorkflowPreview } from "@/components/marketing/workflow-preview";
 import { WorkspacePreview } from "@/components/marketing/workspace-preview";
 
@@ -147,14 +149,10 @@ const jsonLd = {
   ],
 };
 
-function MarketingMark() {
-  return <Image src="/icon.svg" alt="" width={28} height={28} unoptimized />;
-}
-
 function Eyebrow({ children }: { children: string }) {
   return (
-    <span className="inline-flex items-center gap-1.5 rounded-full border border-[#ede9fe] bg-[#f5f3ff] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.06em] text-[#6d46f5]">
-      <span className="h-1.5 w-1.5 rounded-full bg-[#7c5cfc]" />
+    <span className="inline-flex items-center gap-1.5 rounded-full border border-brand-soft bg-brand-soft px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.06em] text-brand">
+      <span className="h-1.5 w-1.5 rounded-full bg-brand" />
       {children}
     </span>
   );
@@ -172,70 +170,44 @@ function SectionIntro({
   return (
     <div className="mx-auto mb-10 max-w-xl text-center">
       <Eyebrow>{eyebrow}</Eyebrow>
-      <h2 className="mt-4 text-3xl font-extrabold tracking-[-0.03em] text-[#14141b] sm:text-4xl">
+      <h2 className="font-heading mt-4 text-3xl font-bold tracking-[-0.03em] text-ink sm:text-4xl">
         {title}
       </h2>
-      {description ? <p className="mt-3 text-[15px] leading-7 text-[#6b6b76]">{description}</p> : null}
+      {description ? <p className="mt-3 text-[15px] leading-7 text-ink-secondary">{description}</p> : null}
     </div>
   );
 }
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen overflow-x-hidden bg-white text-[#14141b]">
-      <header className="sticky top-0 z-50 border-b border-[#eaeaef] bg-white/90 backdrop-blur-md">
-        <div className="mx-auto flex h-[68px] max-w-[1160px] items-center justify-between px-5 sm:px-8">
-          <Link href="/" className="flex items-center gap-2.5" aria-label="Yoga Write Code home">
-            <MarketingMark />
-            <span className="text-[15px] font-bold tracking-tight">Yoga Write Code</span>
-          </Link>
-          <nav className="hidden items-center gap-8 text-sm font-medium text-[#6b6b76] md:flex">
-            <a href="#how" className="transition-colors hover:text-[#14141b]">How it works</a>
-            <a href="#features" className="transition-colors hover:text-[#14141b]">Features</a>
-            <a href="#demo" className="transition-colors hover:text-[#14141b]">Live demo</a>
-          </nav>
-          <div className="flex items-center gap-2.5">
-            <Link
-              href="/login"
-              className="hidden rounded-lg border border-[#eaeaef] bg-white px-3.5 py-2 text-xs font-semibold text-[#14141b] transition hover:border-[#b4b4be] sm:inline-flex"
-            >
-              Log in
-            </Link>
-            <Link
-              href="/signup"
-              className="rounded-lg bg-[#6d46f5] px-3.5 py-2 text-xs font-semibold text-white shadow-[0_6px_16px_rgba(109,70,245,0.24)] transition hover:bg-[#5b34e0]"
-            >
-              Try it free
-            </Link>
-          </div>
-        </div>
-      </header>
+    <div className="min-h-screen overflow-x-hidden bg-surface font-sans text-ink">
+      <SiteHeader />
 
       <main>
         <section className="relative overflow-hidden px-5 pb-16 pt-20 text-center sm:px-8 sm:pt-24">
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute left-1/2 top-[-150px] h-[420px] w-[900px] -translate-x-1/2 rounded-[50%] bg-[radial-gradient(closest-side,rgba(124,92,252,0.14),transparent_70%)]"
+            className="pointer-events-none absolute left-1/2 top-[-150px] h-[420px] w-[900px] -translate-x-1/2 rounded-[50%] bg-brand-soft/40 blur-3xl"
           />
           <div className="relative mx-auto max-w-[1160px]">
             <Eyebrow>Start from your site, not a keyword</Eyebrow>
-            <h1 className="mx-auto mt-6 max-w-3xl text-5xl font-extrabold leading-[1.05] tracking-[-0.04em] text-[#14141b] sm:text-6xl">
+            <h1 className="font-heading mx-auto mt-6 max-w-3xl text-5xl font-bold leading-[1.05] tracking-[-0.04em] text-ink sm:text-6xl">
               Turn your website into your{" "}
-              <span className="text-[#6d46f5]">next five articles.</span>
+              <span className="text-brand">next five articles.</span>
             </h1>
-            <p className="mx-auto mt-5 max-w-xl text-[17px] leading-8 text-[#6b6b76]">
+            <p className="mx-auto mt-5 max-w-xl text-[17px] leading-8 text-ink-secondary">
               Paste a URL. Get real content opportunities pulled from what your business actually does — then a brief and outline for each one.
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
               <Link
                 href="/signup"
-                className="inline-flex items-center gap-2 rounded-[10px] bg-[#6d46f5] px-5 py-3 text-sm font-semibold text-white shadow-[0_6px_16px_rgba(109,70,245,0.25)] transition hover:-translate-y-0.5 hover:bg-[#5b34e0]"
+                className="inline-flex items-center gap-2 rounded-[10px] bg-brand px-5 py-3 text-sm font-semibold text-white shadow-pop transition hover:-translate-y-0.5 hover:bg-brand-hover"
               >
                 Try it free <span aria-hidden="true">→</span>
               </Link>
               <a
                 href="#how"
-                className="rounded-[10px] border border-[#eaeaef] bg-white px-5 py-3 text-sm font-semibold text-[#14141b] transition hover:-translate-y-0.5 hover:border-[#b4b4be]"
+                className="rounded-[10px] border border-line bg-surface px-5 py-3 text-sm font-semibold text-ink transition hover:-translate-y-0.5 hover:border-line-strong"
               >
                 See how it works
               </a>
@@ -244,21 +216,21 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section id="how" className="bg-[#fafafa] px-5 py-20 sm:px-8">
+        <section id="how" className="bg-surface-subtle px-5 py-20 sm:px-8">
           <div className="mx-auto grid max-w-[1160px] items-center gap-10 lg:grid-cols-2 lg:gap-20">
             <div>
               <Eyebrow>The problem</Eyebrow>
-              <h2 className="mt-5 max-w-md text-3xl font-extrabold leading-tight tracking-[-0.03em] text-[#14141b] sm:text-4xl">
+              <h2 className="font-heading mt-5 max-w-md text-3xl font-bold leading-tight tracking-[-0.03em] text-ink sm:text-4xl">
                 Content workflows are broken.
               </h2>
-              <p className="mt-4 max-w-md text-[15px] leading-7 text-[#6b6b76]">
+              <p className="mt-4 max-w-md text-[15px] leading-7 text-ink-secondary">
                 15 tools, 15 steps, days of work — just to ship one article. Teams lose momentum between research and writing, and briefs drift from the strategy they started with.
               </p>
             </div>
             <div className="space-y-2.5">
               {painPoints.map((point) => (
-                <div key={point} className="flex items-center gap-3 rounded-xl border border-[#eaeaef] bg-white px-4 py-3.5 text-sm font-medium text-[#3b3b45]">
-                  <span className="font-extrabold text-[#e5594c]">×</span>
+                <div key={point} className="flex items-center gap-3 rounded-xl border border-line bg-surface px-4 py-3.5 text-sm font-medium text-ink-secondary">
+                  <span className="font-extrabold text-error">×</span>
                   {point}
                 </div>
               ))}
@@ -275,76 +247,61 @@ export default function HomePage() {
             />
             <div className="grid gap-3.5 sm:grid-cols-2 lg:grid-cols-5">
               {steps.map((step) => (
-                <article key={step.n} className="rounded-2xl border border-[#eaeaef] bg-white p-5 transition hover:-translate-y-1 hover:border-[#ede9fe] hover:shadow-[0_4px_16px_rgba(20,20,27,0.06)]">
-                  <div className="grid h-9 w-9 place-items-center rounded-lg bg-[#f5f3ff] text-sm font-extrabold text-[#6d46f5]">
+                <article key={step.n} className="rounded-2xl border border-line bg-surface p-5 transition hover:-translate-y-1 hover:border-brand-soft hover:shadow-pop">
+                  <div className="grid h-9 w-9 place-items-center rounded-lg bg-brand-soft text-sm font-extrabold text-brand">
                     {step.n}
                   </div>
-                  <p className="mt-4 text-[10px] font-bold uppercase tracking-[0.06em] text-[#8b8b96]">Step {step.n}</p>
-                  <h3 className="mt-1.5 text-[15px] font-bold text-[#14141b]">{step.title}</h3>
-                  <p className="mt-2 text-[13px] leading-5 text-[#6b6b76]">{step.text}</p>
+                  <p className="mt-4 text-[10px] font-bold uppercase tracking-[0.06em] text-ink-muted">Step {step.n}</p>
+                  <h3 className="font-heading mt-1.5 text-[15px] font-bold text-ink">{step.title}</h3>
+                  <p className="mt-2 text-[13px] leading-5 text-ink-secondary">{step.text}</p>
                 </article>
               ))}
             </div>
           </div>
         </section>
 
-        <section id="features" className="bg-[#fafafa] px-5 py-20 sm:px-8">
+        <section id="features" className="bg-surface-subtle px-5 py-20 sm:px-8">
           <div className="mx-auto max-w-[1160px]">
             <SectionIntro eyebrow="What&apos;s inside" title="Everything you need. Nothing you don&apos;t." />
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {features.map(([title, text]) => (
-                <article key={title} className="rounded-2xl border border-[#eaeaef] bg-white p-5">
-                  <span className="grid h-7 w-7 place-items-center rounded-full bg-[#e3f8ec] text-sm font-extrabold text-[#18a857]">✓</span>
-                  <h3 className="mt-4 text-[15px] font-bold text-[#14141b]">{title}</h3>
-                  <p className="mt-2 text-[13px] leading-5 text-[#6b6b76]">{text}</p>
+                <article key={title} className="rounded-2xl border border-line bg-surface p-5">
+                  <span className="grid h-7 w-7 place-items-center rounded-full bg-success-soft text-sm font-extrabold text-success">✓</span>
+                  <h3 className="font-heading mt-4 text-[15px] font-bold text-ink">{title}</h3>
+                  <p className="mt-2 text-[13px] leading-5 text-ink-secondary">{text}</p>
                 </article>
               ))}
             </div>
           </div>
         </section>
 
-        <div id="demo" className="border-y border-[#eaeaef] bg-[#f6f6f9] px-5 py-16 text-center sm:px-8">
+        <div id="demo" className="border-y border-line bg-surface-subtle px-5 py-16 text-center sm:px-8">
           <Eyebrow>Live product preview</Eyebrow>
-          <h2 className="mt-4 text-3xl font-extrabold tracking-[-0.03em] text-[#14141b]">Take a look inside the workspace.</h2>
-          <p className="mx-auto mt-3 max-w-2xl text-[15px] leading-7 text-[#6b6b76]">
+          <h2 className="font-heading mt-4 text-3xl font-bold tracking-[-0.03em] text-ink">Take a look inside the workspace.</h2>
+          <p className="mx-auto mt-3 max-w-2xl text-[15px] leading-7 text-ink-secondary">
             See how your next content plan moves from a URL to a focused, writer-ready outline.
           </p>
         </div>
 
-        <section className="bg-white px-5 py-16 sm:px-8">
+        <section className="bg-surface px-5 py-16 sm:px-8">
           <div className="mx-auto max-w-[1160px]">
             <WorkspacePreview />
           </div>
         </section>
 
-        <section className="px-5 pb-20 sm:px-8">
-          <div className="mx-auto max-w-[1160px] rounded-3xl bg-[#14141b] px-6 py-14 text-center shadow-[0_12px_32px_rgba(20,20,27,0.12)] sm:px-10">
-            <h2 className="text-3xl font-extrabold tracking-[-0.03em] text-white">See what it finds on your site.</h2>
-            <p className="mx-auto mt-3 max-w-2xl text-[15px] leading-7 text-[#b4b4be]">
-              Try the five-step workflow with your own website. Free while in beta, with a clear plan from the first analysis.
-            </p>
-            <div className="mt-7 flex flex-wrap justify-center gap-3">
-              <Link href="/signup" className="rounded-[10px] bg-white px-5 py-3 text-sm font-semibold text-[#14141b] transition hover:-translate-y-0.5">
-                Try it free <span aria-hidden="true">→</span>
-              </Link>
-              <a href="mailto:hello@yogawritecode.com" className="rounded-[10px] border border-[#3a3a44] px-5 py-3 text-sm font-semibold text-white transition hover:border-[#5a5a66]">
-                Talk to us
-              </a>
-            </div>
-          </div>
-        </section>
+        <MarketingCta />
 
-        <section id="faq" className="border-t border-[#eaeaef] px-5 py-20 sm:px-8">
+        <section id="faq" className="border-t border-line px-5 py-20 sm:px-8">
           <div className="mx-auto max-w-3xl">
             <SectionIntro eyebrow="Questions" title="Good to know." />
-            <div className="divide-y divide-[#eaeaef] border-y border-[#eaeaef]">
+            <div className="divide-y divide-line border-y border-line">
               {faqs.map(([question, answer]) => (
                 <details key={question} className="group py-5">
-                  <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-sm font-semibold text-[#14141b] [&::-webkit-details-marker]:hidden">
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-sm font-semibold text-ink [&::-webkit-details-marker]:hidden">
                     {question}
-                    <span className="text-xl font-normal leading-none text-[#8b8b96] transition-transform group-open:rotate-45">+</span>
+                    <span className="text-xl font-normal leading-none text-ink-muted transition-transform group-open:rotate-45">+</span>
                   </summary>
-                  <p className="mt-3 max-w-2xl text-sm leading-6 text-[#6b6b76]">{answer}</p>
+                  <p className="mt-3 max-w-2xl text-sm leading-6 text-ink-secondary">{answer}</p>
                 </details>
               ))}
             </div>
@@ -352,35 +309,7 @@ export default function HomePage() {
         </section>
       </main>
 
-      <footer className="border-t border-[#eaeaef] px-5 py-12 sm:px-8">
-        <div className="mx-auto flex max-w-[1160px] flex-col gap-8 sm:flex-row sm:items-start sm:justify-between">
-          <Link href="/" className="flex items-center gap-2.5">
-            <MarketingMark />
-            <span className="text-sm font-bold">Yoga Write Code</span>
-          </Link>
-          <div className="flex flex-wrap gap-x-12 gap-y-6 text-sm">
-            <div>
-              <p className="mb-3 text-xs font-bold uppercase tracking-[0.06em] text-[#8b8b96]">Product</p>
-              <a href="#how" className="block py-1 text-[#6b6b76] hover:text-[#14141b]">How it works</a>
-              <a href="#demo" className="block py-1 text-[#6b6b76] hover:text-[#14141b]">Live preview</a>
-            </div>
-            <div>
-              <p className="mb-3 text-xs font-bold uppercase tracking-[0.06em] text-[#8b8b96]">Company</p>
-              <a href="mailto:hello@yogawritecode.com" className="block py-1 text-[#6b6b76] hover:text-[#14141b]">Contact</a>
-              <Link href="/" className="block py-1 text-[#6b6b76] hover:text-[#14141b]">About Yoga Write Code</Link>
-            </div>
-            <div>
-              <p className="mb-3 text-xs font-bold uppercase tracking-[0.06em] text-[#8b8b96]">Legal</p>
-              <Link href="/terms" className="block py-1 text-[#6b6b76] hover:text-[#14141b]">Terms</Link>
-              <Link href="/privacy" className="block py-1 text-[#6b6b76] hover:text-[#14141b]">Privacy</Link>
-            </div>
-          </div>
-        </div>
-        <div className="mx-auto mt-10 flex max-w-[1160px] flex-col gap-2 border-t border-[#eaeaef] pt-5 text-xs text-[#8b8b96] sm:flex-row sm:justify-between">
-          <span>© 2026 Yoga Write Code. All rights reserved.</span>
-          <span>Built for modern content teams.</span>
-        </div>
-      </footer>
+      <SiteFooter />
 
       <script
         type="application/ld+json"

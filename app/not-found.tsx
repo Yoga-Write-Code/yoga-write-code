@@ -23,7 +23,7 @@ export default function NotFound() {
           />
         </svg>
 
-        <p className="font-display mt-6 text-5xl font-semibold tracking-tight text-ink">404</p>
+        <p className="font-sans mt-6 text-5xl font-semibold tracking-tight text-ink">404</p>
         <h1 className="mt-2 text-lg font-medium text-ink-secondary">Page not found</h1>
         <p className="mt-2 text-sm text-ink-muted">
           The page you&apos;re looking for doesn&apos;t exist or has been moved.

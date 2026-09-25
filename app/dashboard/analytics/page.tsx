@@ -33,7 +33,7 @@ export default async function AnalyticsPage() {
             <dt className="text-xs font-medium uppercase tracking-[0.12em] text-stone-400">
               {stat.label}
             </dt>
-            <dd className="font-display mt-2 text-3xl tracking-tight text-stone-900">
+            <dd className="font-sans mt-2 text-3xl tracking-tight text-stone-900">
               {stat.value}
             </dd>
           </div>

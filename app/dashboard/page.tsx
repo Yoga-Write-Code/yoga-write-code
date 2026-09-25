@@ -53,7 +53,7 @@ function Kpi({ label, value, delta, sub }: { label: string; value: number; delta
     <div className="rounded-card border border-line bg-surface px-5 py-4">
       <p className="text-xs font-medium uppercase tracking-[0.12em] text-ink-muted">{label}</p>
       <div className="mt-2 flex items-baseline gap-2">
-        <p className="font-display text-3xl font-semibold tracking-tight text-ink">{value}</p>
+        <p className="font-sans text-3xl font-semibold tracking-tight text-ink">{value}</p>
         <span className="text-xs font-medium text-success">{delta}</span>
       </div>
       <p className="mt-1 text-xs text-ink-muted">{sub}</p>
@@ -152,7 +152,7 @@ export default async function OverviewPage() {
     <div className="min-w-0">
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div className="min-w-0">
-          <h1 className="font-display text-3xl font-semibold tracking-tight text-ink">
+          <h1 className="font-sans text-3xl font-semibold tracking-tight text-ink">
             {greeting}, {firstName}
           </h1>
           <p className="mt-2 truncate text-sm text-ink-secondary">

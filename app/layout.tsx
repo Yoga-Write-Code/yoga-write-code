@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
-import { Fraunces, Inter } from "next/font/google";
+import { Inter } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
-const fraunces = Fraunces({
-  subsets: ["latin"],
-  style: ["normal", "italic"],
-  variable: "--font-fraunces",
+const satoshi = localFont({
+  src: "./fonts/Satoshi-Variable.woff2",
+  variable: "--font-satoshi",
   display: "swap",
+  weight: "300 900",
 });
 
 export const metadata: Metadata = {
@@ -25,10 +26,10 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${fraunces.variable}`}
+      className={`${inter.className} ${inter.variable} ${satoshi.variable}`}
       suppressHydrationWarning
     >
-      <body className="bg-canvas text-ink antialiased">{children}</body>
+      <body className="bg-canvas font-sans text-ink antialiased">{children}</body>
     </html>
   );
 }
