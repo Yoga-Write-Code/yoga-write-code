@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { generateWithBedrock } from "./bedrock";
 import { extractWebsiteSignals } from "./extract";
+import { isMockAIMode } from "./provider";
 
 const SectionDraftSchema = z.object({ content: z.string().min(1) });
 
@@ -31,9 +32,7 @@ Return JSON: { "content": markdown string for this one section (short paragraphs
 }
 
 export async function generateSection(input: SectionInput): Promise<string> {
-  const mode = process.env.AI_MODE ?? "mock";
-
-  if (mode !== "bedrock") {
+  if (isMockAIMode()) {
     await new Promise((resolve) => setTimeout(resolve, 500));
     if (input.mode === "improve" && input.current) {
       return `${input.current.trim()}\n\n- In practice, teams see the biggest wins from ${input.points[0] ?? "a clear process"} first.\n- Measure before and after to prove impact.`;

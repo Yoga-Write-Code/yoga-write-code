@@ -35,8 +35,22 @@ export interface AIProvider {
   generateOutline(input: OpportunityContext): Promise<ArticleOutlineResult>;
 }
 
+function configuredMode() {
+  const configured = (
+    process.env.AI_MODE ??
+    process.env.AI_MOCK_MODE ??
+    (process.env.BEDROCK_MODEL_ID ? "bedrock" : "mock")
+  )
+    .trim()
+    .toLowerCase();
+
+  return configured === "mock" || configured === "true" ? "mock" : "bedrock";
+}
+
+export function isMockAIMode() {
+  return configuredMode() === "mock";
+}
+
 export function getAIProvider(): AIProvider {
-  const mode = process.env.AI_MODE ?? "mock";
-  if (mode === "bedrock") return new BedrockAIProvider();
-  return new MockAIProvider();
+  return isMockAIMode() ? new MockAIProvider() : new BedrockAIProvider();
 }

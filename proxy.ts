@@ -4,11 +4,19 @@ import { createServerClient } from '@supabase/ssr';
 
 // MUST BE NAMED 'proxy' WHEN THE FILE IS proxy.ts
 export async function proxy(request: NextRequest) {
-  let response = NextResponse.next({ request });
+  const response = NextResponse.next({ request });
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseKey =
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ??
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  // Marketing-domain routing should still work if Supabase is not configured
+  // locally. Authenticated dashboard pages will report the missing env var.
+  if (!supabaseUrl || !supabaseKey) return response;
 
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    supabaseUrl,
+    supabaseKey,
     {
       cookies: {
         getAll() {

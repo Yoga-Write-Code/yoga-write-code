@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
-import { FormError } from "@/components/form";
 import { PageHeader } from "@/components/page-header";
 import { decodeEntities } from "@/lib/format";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -10,6 +9,14 @@ import { analyzeWebsite, generateBrief, generateCluster, generateOutline } from 
 export const metadata: Metadata = { title: "Project" };
 
 const d = decodeEntities;
+
+function safeDecode(value: string) {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+}
 
 function Section({ id, step, title, children }: { id: string; step: number; title: string; children: ReactNode }) {
   return (
@@ -45,11 +52,11 @@ export default async function ProjectPage({ params, searchParams }: ProjectPageP
 
   // Fetch all data
   const [analysisRes, opportunitiesRes, clusterRes, briefRes, outlineRes] = await Promise.all([
-    supabase.from("website_analyses").select("*").eq("project_id", id).limit(1).maybeSingle(),
+    supabase.from("website_analyses").select("*").eq("project_id", id).order("created_at", { ascending: false }).limit(1).maybeSingle(),
     supabase.from("content_opportunities").select("*").eq("project_id", id).order("opportunity_score", { ascending: false }),
-    supabase.from("topic_clusters").select("*").eq("project_id", id).limit(1).maybeSingle(),
-    supabase.from("seo_briefs").select("*").eq("project_id", id).limit(1).maybeSingle(),
-    supabase.from("article_outlines").select("*").eq("project_id", id).limit(1).maybeSingle(),
+    supabase.from("topic_clusters").select("*").eq("project_id", id).order("created_at", { ascending: false }).limit(1).maybeSingle(),
+    supabase.from("seo_briefs").select("*").eq("project_id", id).order("created_at", { ascending: false }).limit(1).maybeSingle(),
+    supabase.from("article_outlines").select("*").eq("project_id", id).order("created_at", { ascending: false }).limit(1).maybeSingle(),
   ]);
 
   const analysis = analysisRes.data;
@@ -58,6 +65,18 @@ export default async function ProjectPage({ params, searchParams }: ProjectPageP
   const brief = briefRes.data;
   const outline = outlineRes.data;
   const firstOpportunityId = opportunities[0]?.id ?? "";
+  const activeOpportunityId = cluster?.opportunity_id ?? firstOpportunityId;
+  const dataError = [
+    analysisRes.error,
+    opportunitiesRes.error,
+    clusterRes.error,
+    briefRes.error,
+    outlineRes.error,
+  ].find(Boolean);
+
+  if (dataError) {
+    console.error("[project page] workflow query failed", dataError);
+  }
 
   return (
     <div className="max-w-4xl mx-auto pb-20">
@@ -65,7 +84,13 @@ export default async function ProjectPage({ params, searchParams }: ProjectPageP
       
       {error && (
         <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-          <p className="text-sm text-red-700 font-medium">Error: {decodeURIComponent(error)}</p>
+          <p className="text-sm text-red-700 font-medium">Error: {safeDecode(error)}</p>
+        </div>
+      )}
+
+      {dataError && (
+        <div className="mt-4 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
+          Some workflow data could not be loaded. Check the database migration and try again.
         </div>
       )}
 
@@ -141,8 +166,23 @@ export default async function ProjectPage({ params, searchParams }: ProjectPageP
               ))}
             </div>
           ) : (
-            <div className="p-8 text-center border border-line rounded-lg bg-surface-subtle">
-              <p className="text-ink-muted">No opportunities yet. Analyze the website first.</p>
+            <div className="rounded-lg border border-line bg-surface-subtle p-8 text-center">
+              <p className="text-ink-muted">
+                {analysis
+                  ? "No opportunities were generated. Re-run the analysis to try again."
+                  : "Analyze the website to generate content opportunities."}
+              </p>
+              {analysis && (
+                <form action={analyzeWebsite} className="mt-4">
+                  <input type="hidden" name="projectId" value={id} />
+                  <button
+                    type="submit"
+                    className="rounded-md bg-black px-4 py-2 text-sm text-white transition-colors hover:bg-gray-800"
+                  >
+                    Re-run analysis
+                  </button>
+                </form>
+              )}
             </div>
           )}
         </Section>
@@ -155,10 +195,10 @@ export default async function ProjectPage({ params, searchParams }: ProjectPageP
             <FactRow label="Pillar topic" value={cluster.pillar_topic} />
             <FactRow label="Supporting topics" value={(cluster.supporting_topics as string[]).join(" • ")} />
           </div>
-          {!brief && firstOpportunityId && (
+          {!brief && activeOpportunityId && (
             <form action={generateBrief} className="mt-4">
               <input type="hidden" name="projectId" value={id} />
-              <input type="hidden" name="opportunityId" value={firstOpportunityId} />
+              <input type="hidden" name="opportunityId" value={activeOpportunityId} />
               <button type="submit" className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition-colors">
                 Generate SEO Brief
               </button>
@@ -174,10 +214,10 @@ export default async function ProjectPage({ params, searchParams }: ProjectPageP
             <FactRow label="Primary keyword" value={brief.primary_keyword} />
             <FactRow label="Suggested headings" value={(brief.suggested_headings as string[]).join(" • ")} />
           </div>
-          {!outline && firstOpportunityId && (
+          {!outline && activeOpportunityId && (
             <form action={generateOutline} className="mt-4">
               <input type="hidden" name="projectId" value={id} />
-              <input type="hidden" name="opportunityId" value={firstOpportunityId} />
+              <input type="hidden" name="opportunityId" value={activeOpportunityId} />
               <button type="submit" className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 transition-colors">
                 Generate Outline
               </button>

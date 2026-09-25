@@ -29,11 +29,12 @@ export type WebsiteAnalysis = {
 export type ContentOpportunity = {
   id: string;
   project_id: string;
+  analysis_id?: string | null;
   title: string;
   description: string;
   opportunity_score: number;
   difficulty: string;
-  business_relevance: string;
+  business_relevance?: string | null;
   search_intent: string;
   funnel_stage: string;
   reason: string;
@@ -43,6 +44,7 @@ export type ContentOpportunity = {
 export type TopicCluster = {
   id: string;
   project_id: string;
+  opportunity_id?: string | null;
   pillar_topic: string;
   supporting_topics: string[];
   search_intent: string;
@@ -54,6 +56,7 @@ export type TopicCluster = {
 export type SeoBrief = {
   id: string;
   project_id: string;
+  opportunity_id?: string | null;
   primary_keyword: string;
   search_intent: string;
   target_audience: string;
@@ -72,6 +75,7 @@ export type ArticleOutlineSection = {
 export type ArticleOutline = {
   id: string;
   project_id: string;
+  opportunity_id?: string | null;
   title: string;
   h1: string;
   sections: ArticleOutlineSection[];

@@ -6,24 +6,34 @@ const JSON_RULE =
 export function websiteAnalysisPrompt(url: string, websiteText: string | null) {
   return `You are an SEO strategist. Website: ${url}.
 ${websiteText ? `Extracted page text (truncated): ${websiteText}` : "No extracted text available; infer from the URL and domain only."}
-Return JSON: { companySummary, productCategory, targetAudience, positioning, opportunities: [{ title, description, opportunityScore (0-100), difficulty, businessRelevance, searchIntent, funnelStage, reason }] }.
+Return JSON with exactly this shape: { companySummary, productCategory, targetAudience, positioning, opportunities: [{ title, description, opportunityScore (0-100), difficulty ("low" | "medium" | "hard"), businessRelevance ("low" | "medium" | "high"), searchIntent ("informational" | "commercial" | "transactional" | "navigational"), funnelStage ("top" | "middle" | "bottom"), reason }] }.
+Generate 3-5 specific opportunities grounded in the website signals.
 ${JSON_RULE}`;
 }
 
-export function topicClusterPrompt(ctx: { opportunityTitle: string; companySummary: string }) {
+export function topicClusterPrompt(
+  ctx: { opportunityTitle: string; companySummary: string },
+  websiteSignals?: string,
+) {
   return `Opportunity: ${ctx.opportunityTitle}. Company: ${ctx.companySummary}.
-Return JSON: { pillarTopic, supportingTopics[], searchIntent, priority, internalLinkingSuggestions[] }.
+${websiteSignals ? `Website signals: ${websiteSignals}\n` : ""}Return JSON: { pillarTopic, supportingTopics[], searchIntent, priority, internalLinkingSuggestions[] }.
 ${JSON_RULE}`;
 }
 
-export function seoBriefPrompt(ctx: { opportunityTitle: string; targetAudience: string }) {
+export function seoBriefPrompt(
+  ctx: { opportunityTitle: string; targetAudience: string },
+  websiteSignals?: string,
+) {
   return `Article opportunity: ${ctx.opportunityTitle}. Audience: ${ctx.targetAudience}.
-Return JSON: { primaryKeyword, searchIntent, targetAudience, suggestedHeadings[], questionsToAnswer[], entitiesToMention[], competitorInsights[] }.
+${websiteSignals ? `Website signals: ${websiteSignals}\n` : ""}Return JSON: { primaryKeyword, searchIntent, targetAudience, suggestedHeadings[], questionsToAnswer[], entitiesToMention[], competitorInsights[] }.
 ${JSON_RULE}`;
 }
 
-export function articleOutlinePrompt(ctx: { opportunityTitle: string }) {
+export function articleOutlinePrompt(
+  ctx: { opportunityTitle: string },
+  websiteSignals?: string,
+) {
   return `Write an article outline for: ${ctx.opportunityTitle}.
-Return JSON: { title, h1, sections: [{ heading, purpose, points[] }] }.
+${websiteSignals ? `Website signals: ${websiteSignals}\n` : ""}Return JSON: { title, h1, sections: [{ heading, purpose, points[] }] }.
 ${JSON_RULE}`;
-}   
+}

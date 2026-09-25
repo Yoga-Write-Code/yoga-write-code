@@ -1,225 +1,348 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { invokeBedrock } from "@/lib/ai/bedrock";
+import { extractWebsiteSignals } from "@/lib/ai/extract";
+import { getAIProvider, isMockAIMode } from "@/lib/ai/provider";
+import type {
+  ArticleOutlineResult,
+  SeoBriefResult,
+  TopicClusterResult,
+  WebsiteAnalysisResult,
+} from "@/lib/ai/schemas";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+
+type ServerClient = Awaited<ReturnType<typeof createSupabaseServerClient>>;
+
+type ProjectRow = {
+  id: string;
+  name: string;
+  website_url: string;
+};
+
+type OpportunityRow = {
+  id: string;
+  title: string;
+  description: string;
+};
+
+function fail(projectId: string, message: string): never {
+  redirect(`/dashboard/projects/${projectId}?error=${encodeURIComponent(message)}`);
+}
+
+function messageFrom(error: unknown, fallback: string) {
+  return error instanceof Error && error.message ? error.message : fallback;
+}
+
+async function loadProject(projectId: string) {
+  const supabase = await createSupabaseServerClient();
+  const { data: userData, error: userError } = await supabase.auth.getUser();
+  if (userError || !userData.user) redirect("/login");
+
+  const { data: project, error: projectError } = await supabase
+    .from("projects")
+    .select("id, name, website_url")
+    .eq("id", projectId)
+    .single();
+
+  if (projectError || !project) fail(projectId, "Project not found.");
+  return { supabase, project: project as ProjectRow };
+}
+
+async function loadOpportunity(
+  supabase: ServerClient,
+  projectId: string,
+  opportunityId: string,
+) {
+  if (!opportunityId) fail(projectId, "No opportunity was selected.");
+
+  const { data: opportunity, error } = await supabase
+    .from("content_opportunities")
+    .select("id, title, description")
+    .eq("id", opportunityId)
+    .eq("project_id", projectId)
+    .maybeSingle();
+
+  if (error || !opportunity) fail(projectId, "The selected opportunity was not found.");
+  return opportunity as OpportunityRow;
+}
+
+async function buildContext(
+  supabase: ServerClient,
+  project: ProjectRow,
+  opportunity: OpportunityRow,
+) {
+  const { data: analysis } = await supabase
+    .from("website_analyses")
+    .select("company_summary, target_audience")
+    .eq("project_id", project.id)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  return {
+    websiteUrl: project.website_url,
+    opportunityTitle: String(opportunity.title),
+    opportunityDescription: String(opportunity.description ?? ""),
+    companySummary: String(analysis?.company_summary ?? ""),
+    targetAudience: String(analysis?.target_audience ?? ""),
+  };
+}
+
+function revalidateWorkflow(projectId: string) {
+  revalidatePath(`/dashboard/projects/${projectId}`);
+  revalidatePath("/dashboard");
+  revalidatePath("/dashboard/seo");
+}
 
 export async function analyzeWebsite(formData: FormData): Promise<void> {
   const projectId = String(formData.get("projectId") ?? "");
-  const supabase = await createSupabaseServerClient();
+  const { supabase, project } = await loadProject(projectId);
 
-  try {
-    const { data: project, error: projectError } = await supabase
-      .from("projects")
-      .select("*")
-      .eq("id", projectId)
-      .single();
+  // Do not create duplicate analyses when a complete analysis already exists.
+  // A previous run may have saved the analysis but failed before saving the
+  // opportunities, so only the presence of opportunities makes this a no-op.
+  const { data: existingOpportunities, error: existingOpportunityError } = await supabase
+    .from("content_opportunities")
+    .select("id")
+    .eq("project_id", projectId)
+    .limit(1);
 
-    if (projectError || !project) throw new Error("Project not found");
-
-    const prompt = `Analyze: ${project.website_url}. Return JSON with company_summary, product_category, target_audience, positioning, and content_opportunities array with 3 items.`;
-    const result = await invokeBedrock(prompt, 3000);
-    
-    let parsed: unknown;
-    try {
-      const cleanResult = result.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
-      const jsonMatch = cleanResult.match(/\{[\s\S]*\}/);
-      parsed = JSON.parse(jsonMatch ? jsonMatch[0] : cleanResult);
-    } catch (e) {
-      throw new Error("Invalid JSON from AI");
-    }
-
-    const data = parsed as Record<string, unknown>;
-    const opportunities = Array.isArray(data.content_opportunities) ? data.content_opportunities : [];
-
-    // 1. Save Analysis (With TypeScript Null Check)
-    const { data: analysis, error: analysisError } = await supabase
-      .from("website_analyses")
-      .insert({
-        project_id: projectId,
-        company_summary: String(data.company_summary ?? ""),
-        product_category: String(data.product_category ?? ""),
-        target_audience: String(data.target_audience ?? ""),
-        positioning: String(data.positioning ?? ""),
-      })
-      .select("id")
-      .single();
-
-    if (analysisError || !analysis) {
-      throw new Error("Failed to save analysis to database");
-    }
-
-    // 2. Save Opportunities
-    if (opportunities.length > 0) {
-      await supabase.from("content_opportunities").insert(
-        opportunities.map((opp: Record<string, unknown>, i: number) => ({
-          project_id: projectId,
-          analysis_id: analysis.id,
-          title: String(opp.title ?? `Opportunity ${i + 1}`),
-          description: String(opp.description ?? ""),
-          reason: String(opp.reason ?? ""),
-          opportunity_score: Number(opp.opportunity_score) || 50,
-          search_intent: String(opp.search_intent ?? "informational"),
-          funnel_stage: String(opp.funnel_stage ?? "top"),
-          difficulty: String(opp.difficulty ?? "medium"),
-        }))
-      );
-    }
-
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Unknown error";
-    redirect(`/dashboard/projects/${projectId}?error=${encodeURIComponent(message)}`);
+  if (existingOpportunityError) {
+    fail(projectId, `Could not check existing opportunities: ${existingOpportunityError.message}`);
+  }
+  if ((existingOpportunities ?? []).length > 0) {
+    revalidateWorkflow(projectId);
+    redirect(`/dashboard/projects/${projectId}`);
   }
 
+  let result: WebsiteAnalysisResult;
+  try {
+    // Use the same bounded extractor as the mock provider so the prompt is
+    // grounded in the page title, description, headings, and key terms.
+    const signals = await extractWebsiteSignals(project.website_url);
+    const websiteText = signals.textLength
+      ? `${signals.title}. ${signals.metaDescription}. Headings: ${signals.headings.join("; ")}. Key terms: ${signals.topTerms.join(", ")}`
+      : null;
+
+    result = await getAIProvider().analyzeWebsite({
+      websiteUrl: project.website_url,
+      websiteText,
+    });
+  } catch (error) {
+    console.error("[analyzeWebsite] AI generation failed", error);
+    fail(projectId, messageFrom(error, "We couldn't analyze this website right now. Try again."));
+  }
+
+  const { data: analysis, error: analysisError } = await supabase
+    .from("website_analyses")
+    .insert({
+      project_id: projectId,
+      company_summary: result.companySummary,
+      product_category: result.productCategory,
+      target_audience: result.targetAudience,
+      positioning: result.positioning,
+      raw_data: {
+        website_url: project.website_url,
+        provider: isMockAIMode() ? "mock" : "bedrock",
+      },
+    })
+    .select("id")
+    .single();
+
+  if (analysisError || !analysis) {
+    console.error("[analyzeWebsite] analysis insert failed", analysisError);
+    fail(projectId, `Could not save the analysis: ${analysisError?.message ?? "unknown database error"}`);
+  }
+
+  const opportunityRows = result.opportunities.map((opportunity) => ({
+    project_id: projectId,
+    analysis_id: analysis.id,
+    title: opportunity.title,
+    description: opportunity.description,
+    reason: opportunity.reason,
+    opportunity_score: opportunity.opportunityScore,
+    difficulty: opportunity.difficulty,
+    search_intent: opportunity.searchIntent,
+    funnel_stage: opportunity.funnelStage,
+  }));
+
+  const { error: opportunityError } = await supabase
+    .from("content_opportunities")
+    .insert(opportunityRows);
+
+  if (opportunityError) {
+    // Do not leave an apparently successful analysis behind when its required
+    // workflow output could not be saved.
+    await supabase.from("website_analyses").delete().eq("id", analysis.id);
+    console.error("[analyzeWebsite] opportunity insert failed", opportunityError);
+    fail(projectId, `Could not save content opportunities: ${opportunityError.message}`);
+  }
+
+  revalidateWorkflow(projectId);
   redirect(`/dashboard/projects/${projectId}`);
 }
 
 export async function generateCluster(formData: FormData): Promise<void> {
   const projectId = String(formData.get("projectId") ?? "");
   const opportunityId = String(formData.get("opportunityId") ?? "");
-  const supabase = await createSupabaseServerClient();
+  const { supabase, project } = await loadProject(projectId);
+  const opportunity = await loadOpportunity(supabase, projectId, opportunityId);
 
-  try {
-    if (!opportunityId) throw new Error("No opportunity ID provided");
+  const { data: existing, error: existingError } = await supabase
+    .from("topic_clusters")
+    .select("id")
+    .eq("project_id", projectId)
+    .limit(1);
 
-    // Fetch opportunity to get fallback values for NOT NULL columns
-    const { data: opp, error: oppError } = await supabase
-      .from("content_opportunities")
-      .select("title, description, search_intent, funnel_stage, difficulty, opportunity_score")
-      .eq("id", opportunityId)
-      .single();
-
-    if (oppError || !opp) throw new Error("Opportunity not found");
-
-    const prompt = `Create topic cluster for: "${opp.title}". Return JSON with pillar_topic, supporting_topics (array), internal_linking_suggestions (array).`;
-    const result = await invokeBedrock(prompt, 2048);
-    
-    let parsed: unknown;
-    try {
-      const cleanResult = result.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
-      const jsonMatch = cleanResult.match(/\{[\s\S]*\}/);
-      parsed = JSON.parse(jsonMatch ? jsonMatch[0] : cleanResult);
-    } catch (e) {
-      throw new Error("Invalid JSON from AI");
-    }
-
-    const data = parsed as Record<string, unknown>;
-
-    // Save Cluster (Includes fallbacks for NOT NULL database constraints)
-    const { error: insertError } = await supabase.from("topic_clusters").insert({
-      project_id: projectId,
-      opportunity_id: opportunityId,
-      pillar_topic: String(data.pillar_topic ?? ""),
-      supporting_topics: Array.isArray(data.supporting_topics) ? data.supporting_topics : [],
-      internal_linking_suggestions: Array.isArray(data.internal_linking_suggestions) ? data.internal_linking_suggestions : [],
-      // Fallbacks to satisfy NOT NULL constraints
-      search_intent: opp.search_intent || "informational",
-      funnel_stage: opp.funnel_stage || "top",
-      difficulty: opp.difficulty || "medium",
-      opportunity_score: opp.opportunity_score || 50,
-    });
-
-    if (insertError) throw new Error("Failed to save cluster: " + insertError.message);
-
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Cluster generation failed";
-    redirect(`/dashboard/projects/${projectId}?error=${encodeURIComponent(message)}`);
+  if (existingError) fail(projectId, `Could not check existing clusters: ${existingError.message}`);
+  if ((existing ?? []).length > 0) {
+    revalidateWorkflow(projectId);
+    redirect(`/dashboard/projects/${projectId}`);
   }
 
+  let result: TopicClusterResult;
+  try {
+    result = await getAIProvider().generateCluster(
+      await buildContext(supabase, project, opportunity),
+    );
+  } catch (error) {
+    console.error("[generateCluster] AI generation failed", error);
+    fail(projectId, messageFrom(error, "We couldn't generate the topic cluster right now. Try again."));
+  }
+
+  // These are the columns that exist on topic_clusters. In particular, do not
+  // send opportunity_score, difficulty, or funnel_stage here: those belong to
+  // content_opportunities and cause PostgREST to reject the insert.
+  const { error: insertError } = await supabase.from("topic_clusters").insert({
+    project_id: projectId,
+    opportunity_id: opportunityId,
+    pillar_topic: result.pillarTopic,
+    supporting_topics: result.supportingTopics,
+    internal_linking_suggestions: result.internalLinkingSuggestions,
+    search_intent: result.searchIntent,
+    priority: result.priority,
+  });
+
+  if (insertError) {
+    console.error("[generateCluster] database insert failed", insertError);
+    fail(projectId, `Could not save the topic cluster: ${insertError.message}`);
+  }
+
+  revalidateWorkflow(projectId);
   redirect(`/dashboard/projects/${projectId}`);
 }
 
 export async function generateBrief(formData: FormData): Promise<void> {
   const projectId = String(formData.get("projectId") ?? "");
   const opportunityId = String(formData.get("opportunityId") ?? "");
-  const supabase = await createSupabaseServerClient();
+  const { supabase, project } = await loadProject(projectId);
+  const opportunity = await loadOpportunity(supabase, projectId, opportunityId);
 
-  try {
-    if (!opportunityId) throw new Error("No opportunity ID");
-    
-    const { data: opp } = await supabase
-      .from("content_opportunities")
-      .select("title")
-      .eq("id", opportunityId)
-      .single();
-      
-    if (!opp) throw new Error("Opportunity not found");
+  const { data: existing, error: existingError } = await supabase
+    .from("seo_briefs")
+    .select("id")
+    .eq("project_id", projectId)
+    .limit(1);
 
-    const prompt = `Create SEO brief for: ${opp.title}. Return JSON with primary_keyword, search_intent, target_audience, suggested_headings (array), questions_to_answer (array), entities_to_mention (array), competitor_insights.`;
-    const result = await invokeBedrock(prompt, 2048);
-    
-    let parsed: unknown;
-    try {
-      const cleanResult = result.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
-      const jsonMatch = cleanResult.match(/\{[\s\S]*\}/);
-      parsed = JSON.parse(jsonMatch ? jsonMatch[0] : cleanResult);
-    } catch (e) {
-      throw new Error("Invalid JSON");
-    }
-
-    const data = parsed as Record<string, unknown>;
-
-    await supabase.from("seo_briefs").insert({
-      project_id: projectId,
-      opportunity_id: opportunityId,
-      primary_keyword: String(data.primary_keyword ?? ""),
-      search_intent: String(data.search_intent ?? "informational"),
-      target_audience: String(data.target_audience ?? ""),
-      suggested_headings: Array.isArray(data.suggested_headings) ? data.suggested_headings : [],
-      questions_to_answer: Array.isArray(data.questions_to_answer) ? data.questions_to_answer : [],
-      entities_to_mention: Array.isArray(data.entities_to_mention) ? data.entities_to_mention : [],
-      competitor_insights: String(data.competitor_insights ?? ""),
-    });
-
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Brief failed";
-    redirect(`/dashboard/projects/${projectId}?error=${encodeURIComponent(message)}`);
+  if (existingError) fail(projectId, `Could not check existing briefs: ${existingError.message}`);
+  if ((existing ?? []).length > 0) {
+    revalidateWorkflow(projectId);
+    redirect(`/dashboard/projects/${projectId}`);
   }
 
+  let result: SeoBriefResult;
+  try {
+    result = await getAIProvider().generateBrief(
+      await buildContext(supabase, project, opportunity),
+    );
+  } catch (error) {
+    console.error("[generateBrief] AI generation failed", error);
+    fail(projectId, messageFrom(error, "We couldn't generate the SEO brief right now. Try again."));
+  }
+
+  const { error: insertError } = await supabase.from("seo_briefs").insert({
+    project_id: projectId,
+    opportunity_id: opportunityId,
+    primary_keyword: result.primaryKeyword,
+    search_intent: result.searchIntent,
+    target_audience: result.targetAudience,
+    suggested_headings: result.suggestedHeadings,
+    questions_to_answer: result.questionsToAnswer,
+    entities_to_mention: result.entitiesToMention,
+    competitor_insights: result.competitorInsights,
+  });
+
+  if (insertError) {
+    console.error("[generateBrief] database insert failed", insertError);
+    fail(projectId, `Could not save the SEO brief: ${insertError.message}`);
+  }
+
+  revalidateWorkflow(projectId);
   redirect(`/dashboard/projects/${projectId}`);
 }
 
 export async function generateOutline(formData: FormData): Promise<void> {
   const projectId = String(formData.get("projectId") ?? "");
   const opportunityId = String(formData.get("opportunityId") ?? "");
-  const supabase = await createSupabaseServerClient();
+  const { supabase, project } = await loadProject(projectId);
+  const opportunity = await loadOpportunity(supabase, projectId, opportunityId);
 
-  try {
-    if (!opportunityId) throw new Error("No opportunity ID");
-    
-    const { data: brief } = await supabase
-      .from("seo_briefs")
-      .select("primary_keyword")
-      .eq("project_id", projectId)
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .maybeSingle();
+  const { data: existing, error: existingError } = await supabase
+    .from("article_outlines")
+    .select("id")
+    .eq("project_id", projectId)
+    .limit(1);
 
-    const prompt = `Create outline for: ${brief?.primary_keyword || "topic"}. Return JSON with h1 and sections array (each with heading, purpose, points array).`;
-    const result = await invokeBedrock(prompt, 2048);
-    
-    let parsed: unknown;
-    try {
-      const cleanResult = result.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
-      const jsonMatch = cleanResult.match(/\{[\s\S]*\}/);
-      parsed = JSON.parse(jsonMatch ? jsonMatch[0] : cleanResult);
-    } catch (e) {
-      throw new Error("Invalid JSON");
-    }
-
-    const data = parsed as Record<string, unknown>;
-
-    await supabase.from("article_outlines").insert({
-      project_id: projectId,
-      opportunity_id: opportunityId,
-      h1: String(data.h1 ?? ""),
-      sections: Array.isArray(data.sections) ? data.sections : [],
-    });
-
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Outline failed";
-    redirect(`/dashboard/projects/${projectId}?error=${encodeURIComponent(message)}`);
+  if (existingError) fail(projectId, `Could not check existing outlines: ${existingError.message}`);
+  if ((existing ?? []).length > 0) {
+    revalidateWorkflow(projectId);
+    redirect(`/dashboard/projects/${projectId}`);
   }
 
+  const { data: brief, error: briefError } = await supabase
+    .from("seo_briefs")
+    .select("primary_keyword, suggested_headings, questions_to_answer")
+    .eq("project_id", projectId)
+    .eq("opportunity_id", opportunityId)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (briefError) fail(projectId, `Could not load the SEO brief: ${briefError.message}`);
+  if (!brief) fail(projectId, "Generate the SEO brief before creating an outline.");
+
+  const context = await buildContext(supabase, project, opportunity);
+  const briefContext = `\nSEO brief keyword: ${brief.primary_keyword}. Suggested headings: ${(brief.suggested_headings as string[] | null)?.join(", ") ?? "none"}. Questions: ${(brief.questions_to_answer as string[] | null)?.join(", ") ?? "none"}.`;
+
+  let result: ArticleOutlineResult;
+  try {
+    result = await getAIProvider().generateOutline({
+      ...context,
+      opportunityDescription: `${context.opportunityDescription}${briefContext}`,
+    });
+  } catch (error) {
+    console.error("[generateOutline] AI generation failed", error);
+    fail(projectId, messageFrom(error, "We couldn't generate the article outline right now. Try again."));
+  }
+
+  // article_outlines.title is NOT NULL in the database schema. The previous
+  // action omitted it, so the outline step could never be saved.
+  const { error: insertError } = await supabase.from("article_outlines").insert({
+    project_id: projectId,
+    opportunity_id: opportunityId,
+    title: result.title,
+    h1: result.h1,
+    sections: result.sections,
+  });
+
+  if (insertError) {
+    console.error("[generateOutline] database insert failed", insertError);
+    fail(projectId, `Could not save the article outline: ${insertError.message}`);
+  }
+
+  revalidateWorkflow(projectId);
+  revalidatePath(`/dashboard/projects/${projectId}/editor`);
+  revalidatePath("/dashboard/content");
   redirect(`/dashboard/projects/${projectId}`);
 }

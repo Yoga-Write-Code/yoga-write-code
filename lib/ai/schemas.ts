@@ -11,7 +11,7 @@ export const WebsiteAnalysisSchema = z.object({
         title: z.string().min(1),
         description: z.string().min(1),
         opportunityScore: z.number().int().min(0).max(100),
-        difficulty: z.enum(["easy", "medium", "hard"]),
+        difficulty: z.enum(["easy", "low", "medium", "hard"]),
         businessRelevance: z.enum(["low", "medium", "high"]),
         searchIntent: z.enum(["informational", "commercial", "transactional", "navigational"]),
         funnelStage: z.enum(["top", "middle", "bottom"]),
