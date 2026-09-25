@@ -1,6 +1,20 @@
-export function Wordmark() {
+import Link from "next/link";
+
+export function Wordmark({
+  href = "/dashboard",
+  onNavigate,
+}: {
+  href?: string;
+  onNavigate?: () => void;
+}) {
   return (
-    <span className="flex items-center" title="Yoga Write Code">
+    <Link
+      href={href}
+      onClick={onNavigate}
+      className="flex items-center rounded-control focus:outline-none focus:ring-2 focus:ring-brand-soft"
+      title="Go to dashboard overview"
+      aria-label="Yoga Write Code dashboard overview"
+    >
       <svg
         width="32"
         height="32"
@@ -18,6 +32,6 @@ export function Wordmark() {
           fill="white"
         />
       </svg>
-    </span>
+    </Link>
   );
 }

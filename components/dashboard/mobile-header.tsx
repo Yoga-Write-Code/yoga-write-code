@@ -20,7 +20,7 @@ export function MobileHeader({
   return (
     <>
       <header className="sticky top-0 z-40 flex items-center justify-between border-b border-line bg-surface px-5 py-3 lg:hidden">
-        <Wordmark />
+        <Wordmark onNavigate={() => setOpen(false)} />
         <button
           type="button"
           onClick={() => setOpen(true)}
@@ -41,7 +41,7 @@ export function MobileHeader({
           />
           <div className="absolute inset-y-0 left-0 flex w-72 flex-col bg-surface shadow-pop">
             <div className="flex items-center justify-between px-6 pb-6 pt-5">
-              <Wordmark />
+              <Wordmark onNavigate={() => setOpen(false)} />
               <button
                 type="button"
                 onClick={() => setOpen(false)}
