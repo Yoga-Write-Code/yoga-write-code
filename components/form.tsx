@@ -22,14 +22,33 @@ export function Field({
   );
 }
 
-export function PrimaryButton({ children }: { children: ReactNode }) {
+export function PrimaryButton({
+  children,
+  fullWidth = false,
+}: {
+  children: ReactNode;
+  fullWidth?: boolean;
+}) {
   return (
     <button
       type="submit"
-      className="inline-flex h-10 items-center justify-center rounded-field bg-brand px-4 text-sm font-medium text-white transition-colors hover:bg-brand-hover disabled:cursor-wait disabled:opacity-60"
+      className={`inline-flex h-10 items-center justify-center rounded-field bg-brand px-4 text-sm font-medium text-white transition-colors hover:bg-brand-hover disabled:cursor-wait disabled:opacity-60${
+        fullWidth ? " w-full" : ""
+      }`}
     >
       {children}
     </button>
+  );
+}
+
+/** Hairline rule with a label, used to separate email sign-in from Google. */
+export function OrDivider() {
+  return (
+    <div className="my-5 flex items-center gap-3">
+      <div className="h-px flex-1 bg-line" />
+      <span className="text-xs text-ink-muted">or</span>
+      <div className="h-px flex-1 bg-line" />
+    </div>
   );
 }
 
