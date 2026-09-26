@@ -7,11 +7,11 @@ import {
   clarityExcludedPaths,
   clarityMaskedSelectors,
   clarityProjectId,
-  gaMeasurementId,
   getConsentServerSnapshot,
   getConsentSnapshot,
   getHydratedSnapshot,
   getServerHydratedSnapshot,
+  gtmContainerId,
   saveAnalyticsConsent,
   subscribeToConsent,
   subscribeToHydration,
@@ -27,31 +27,28 @@ function useHydrated(): boolean {
   );
 }
 
-function GoogleAnalyticsTags({ measurementId }: { measurementId: string }) {
+/**
+ * Google's Tag Manager loader, unchanged apart from the container ID.
+ *
+ * GTM's <noscript> fallback iframe is intentionally omitted. It only renders
+ * when JavaScript is off, and with JavaScript off nobody can consent, so serving
+ * it would fire the container's tags and drop its cookies for every such
+ * visitor regardless of what they chose.
+ *
+ * GA4 is fired by the container rather than by gtag.js here, so pageviews are
+ * counted once.
+ */
+function GoogleTagManager({ containerId }: { containerId: string }) {
   return (
-    <>
-      <Script
-        src={`https://www.googletagmanager.com/gtag/js?id=${measurementId}`}
-        strategy="afterInteractive"
-      />
-      <Script id="ga-init" strategy="afterInteractive">
-        {`
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('consent', 'default', {
-            ad_storage: 'denied',
-            ad_user_data: 'denied',
-            ad_personalization: 'denied',
-            analytics_storage: 'granted',
-            functionality_storage: 'granted',
-            personalization_storage: 'granted',
-            security_storage: 'granted'
-          });
-          gtag('js', new Date());
-          gtag('config', '${measurementId}');
-        `}
-      </Script>
-    </>
+    <Script id="gtm-loader" strategy="afterInteractive">
+      {`
+        (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        })(window,document,'script','dataLayer','${containerId}');
+      `}
+    </Script>
   );
 }
 
@@ -79,11 +76,11 @@ function ClarityTags({ projectId }: { projectId: string }) {
 }
 
 /**
- * Loads Google Analytics and Microsoft Clarity, but only after the visitor
+ * Loads Google Tag Manager and Microsoft Clarity, but only after the visitor
  * accepts. Until then no third-party script is requested and no analytics or
  * session-recording cookie exists.
  */
-export function GoogleAnalytics() {
+export function TagManager() {
   const decision: ConsentDecision | null = useSyncExternalStore(
     subscribeToConsent,
     getConsentSnapshot,
@@ -99,9 +96,7 @@ export function GoogleAnalytics() {
 
   return (
     <>
-      {granted && gaMeasurementId ? (
-        <GoogleAnalyticsTags measurementId={gaMeasurementId} />
-      ) : null}
+      {granted && gtmContainerId ? <GoogleTagManager containerId={gtmContainerId} /> : null}
       {granted && clarityProjectId ? <ClarityTags projectId={clarityProjectId} /> : null}
       {decision === null ? (
         <AnalyticsConsentBanner

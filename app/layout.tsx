@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import localFont from "next/font/local";
-import { GoogleAnalytics } from "@/components/analytics/google-analytics";
+import { TagManager } from "@/components/analytics/tag-manager";
 import { siteBaseUrl, siteConfig } from "@/lib/site";
 import "./globals.css";
 
@@ -30,8 +30,8 @@ export const metadata: Metadata = {
     card: "summary_large_image",
   },
   verification: {
-    // Google Search Console ownership token. Unrelated to the GA4 measurement
-    // ID, which is loaded by <GoogleAnalytics /> once the visitor accepts.
+    // Google Search Console ownership token. Unrelated to the GTM container ID,
+    // which is loaded by <TagManager /> once the visitor accepts.
     google: "tL8-FZhkoHwlI57LESE58csCvMLzdQRxxCi6Cs6d7bc",
   },
 };
@@ -47,7 +47,7 @@ export default function RootLayout({
     >
       <body className="bg-canvas font-sans text-ink antialiased">
         {children}
-        <GoogleAnalytics />
+        <TagManager />
       </body>
     </html>
   );

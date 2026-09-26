@@ -1,5 +1,5 @@
 /**
- * Consent-gated analytics: Google Analytics 4 and Microsoft Clarity.
+ * Consent-gated tags: Google Tag Manager and Microsoft Clarity.
  *
  * Neither script is requested, and no third-party cookie is set, until the
  * visitor accepts. The choice is kept in localStorage and can be reopened at any
@@ -9,14 +9,21 @@
  * `useSyncExternalStore` without setting state inside an effect.
  */
 
-/** GA4 measurement ID. Set to an empty value to disable Google Analytics. */
-const configuredGaId: string = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID ?? "G-HE58ZZSJPW";
+/** GTM container ID. Set to an empty value to disable Tag Manager. */
+const configuredContainerId: string =
+  process.env.NEXT_PUBLIC_GTM_CONTAINER_ID ?? "GTM-K8MFHGSC";
 
-/** Microsoft Clarity project ID. Set to an empty value to disable Clarity. */
+/**
+ * Microsoft Clarity project ID. Set to an empty value to disable Clarity.
+ *
+ * GA4 is deliberately NOT loaded from here: the GTM container already fires the
+ * GA4 tag, and loading gtag.js as well would count every pageview twice. Consent
+ * Mode defaults for that GA4 tag are configured inside the container.
+ */
 const configuredClarityId: string =
   process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID ?? "yo9d18nwgq";
 
-export const gaMeasurementId: string | null = configuredGaId.trim() || null;
+export const gtmContainerId: string | null = configuredContainerId.trim() || null;
 export const clarityProjectId: string | null = configuredClarityId.trim() || null;
 
 /**

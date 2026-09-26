@@ -33,12 +33,12 @@ export default function PrivacyPage() {
           our hosting provider for security and debugging.
         </p>
         <p>
-          Analytics: if you accept analytics in the cookie banner, we use Google Analytics to
-          measure how visitors use the public pages of the site, such as which pages are viewed and
-          which sources they arrive from. Google Analytics sets cookies such as _ga to distinguish
-          a visit from a returning one. Nothing is loaded and no cookie is set if you decline or
-          ignore the banner. You can change your choice at any time using the
-          &ldquo;Cookie settings&rdquo; link in the site footer.
+          Analytics: if you accept analytics in the cookie banner, we load Google Tag Manager,
+          which loads Google Analytics 4 to measure how visitors use the public pages of the site,
+          such as which pages are viewed and which sources they arrive from. Google Analytics sets
+          cookies such as _ga to distinguish a visit from a returning one. Nothing is loaded and no
+          cookie is set if you decline or ignore the banner. You can change your choice at any time
+          using the &ldquo;Cookie settings&rdquo; link in the site footer.
         </p>
         <p>
           Session recordings: if you accept analytics, we also use Microsoft Clarity to record
@@ -75,8 +75,8 @@ export default function PrivacyPage() {
           <li>Vercel — application hosting and edge delivery;</li>
           <li>Supabase — PostgreSQL database, authentication, and row-level security;</li>
           <li>Amazon Web Services (Bedrock) — AI model inference;</li>
-          <li>Google Analytics — audience and usage measurement, only when you have accepted
-            analytics cookies;</li>
+          <li>Google Tag Manager and Google Analytics — page view measurement, only when you have
+            accepted analytics cookies;</li>
           <li>Microsoft Clarity — session recordings of the public pages, only when you have
             accepted analytics cookies;</li>
           <li>Stripe — payments, if and when paid plans launch [TO BE CONFIRMED].</li>
@@ -87,12 +87,12 @@ export default function PrivacyPage() {
       <LegalSection n="6" title="Cookies">
         <p>
           We use essential session cookies required for authentication (Supabase SSR auth cookies).
-          If you accept analytics, Google Analytics sets its own cookies (such as _ga) to measure
-          usage of the public pages, and Microsoft Clarity sets its own cookies (such as _clck and
-          _clsk) to record sessions on the public pages. These are only set after you accept, and
-          you can withdraw them with the &ldquo;Cookie settings&rdquo; link in the site footer. We do
-          not use advertising or cross-site tracking cookies, and we do not run advertising or
-          remarketing pixels.
+          If you accept analytics, Google Tag Manager loads Google Analytics, which sets cookies
+          such as _ga to measure usage of the public pages, and Microsoft Clarity sets its own
+          cookies (such as _clck and _clsk) to record sessions on the public pages. These are only
+          set after you accept, and you can withdraw them with the &ldquo;Cookie settings&rdquo; link
+          in the site footer. We do not use advertising or cross-site tracking cookies, and we do not
+          run advertising or remarketing pixels.
         </p>
       </LegalSection>
 

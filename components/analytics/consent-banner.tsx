@@ -24,9 +24,9 @@ export function AnalyticsConsentBanner({
             Help us improve Yoga Write Code
           </p>
           <p id="analytics-consent-body" className="mt-1 text-sm text-ink-secondary">
-            With your permission we use Google Analytics for page counts and Microsoft Clarity for
-            anonymous recordings of how the site is used, on public pages only. Both stay off and set
-            no cookies until you accept. Read our{" "}
+            With your permission we use Google Tag Manager and Google Analytics to count page views,
+            and Microsoft Clarity for anonymous recordings of how the site is used, on public pages
+            only. All of it stays off and sets no cookies until you accept. Read our{" "}
             <Link
               href="/privacy"
               className="font-medium text-brand underline underline-offset-2 hover:text-brand-hover"
