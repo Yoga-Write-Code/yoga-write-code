@@ -19,6 +19,8 @@
 | 2026-09-19 | Create bulletproof JSON parser (`extractJsonFromText`) | AI returns markdown + chatty text, `JSON.parse` fails | All AI parsing now robust |
 | 2026-09-19 | Add `opportunity_id` column to topic_clusters, seo_briefs, article_outlines | Column was missing, causing "column not found" errors | Schema now matches code |
 | 2026-09-25 | Adopt 6-file system for AI coding | Needed consistent context for AI assistants | Better AI collaboration |
+| 2026-09-26 | One generated `app/opengraph-image.tsx` (1200x630) as the site-wide OG/Twitter image, with site name/canonical origin centralized in `lib/site.ts` (reads `NEXT_PUBLIC_SITE_URL`) | Homepage used a 108x108 icon as its only OG image, so shared links had no real preview; site URL was hardcoded in 6 places | Every route inherits a `summary_large_image` card; one place to change the origin |
+| 2026-09-26 | Renamed `app/robot.ts` to `app/robots.ts` | File convention is `robots.ts` — the old name matched no route, so `/robots.txt` served the 404 page | Crawlers now get a valid robots.txt with the sitemap link |
 
 ## 3. Failed Approaches
 

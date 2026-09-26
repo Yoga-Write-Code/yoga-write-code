@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import localFont from "next/font/local";
+import { siteBaseUrl, siteConfig } from "@/lib/site";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
@@ -12,9 +13,21 @@ const satoshi = localFont({
 });
 
 export const metadata: Metadata = {
-  title: { default: "Yoga Write Code", template: "%s · Yoga Write Code" },
-  description: "AI content operating system for SaaS companies.",
+  // Resolves every relative metadata URL (og:image, twitter:image, icons) to an absolute URL.
+  metadataBase: siteBaseUrl,
+  title: { default: siteConfig.name, template: `%s · ${siteConfig.name}` },
+  description: siteConfig.tagline,
   icons: { icon: "/icon.svg" },
+  // Inherited by every route. The image itself comes from app/opengraph-image.tsx.
+  openGraph: {
+    type: "website",
+    siteName: siteConfig.name,
+    locale: "en_US",
+    url: siteConfig.url,
+  },
+  twitter: {
+    card: "summary_large_image",
+  },
   verification: {
     google: "tL8-FZhkoHwlI57LESE58csCvMLzdQRxxCi6Cs6d7bc",
   },

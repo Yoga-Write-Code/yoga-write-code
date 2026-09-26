@@ -5,31 +5,14 @@ import { SiteFooter } from "@/components/marketing/site-footer";
 import { SiteHeader } from "@/components/marketing/site-header";
 import { WorkflowPreview } from "@/components/marketing/workflow-preview";
 import { WorkspacePreview } from "@/components/marketing/workspace-preview";
+import { siteBaseUrl } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Yoga Write Code — Turn your website into your next five articles",
   description:
     "Paste a URL and get real content opportunities, topic clusters, SEO briefs, and article outlines grounded in your business.",
-  alternates: { canonical: "https://yogawritecode.com" },
+  alternates: { canonical: "/" },
   openGraph: {
-    title: "Yoga Write Code — AI Content Operating System",
-    description:
-      "Turn your website into your next five articles with a connected five-step content workflow.",
-    url: "https://yogawritecode.com",
-    siteName: "Yoga Write Code",
-    locale: "en_US",
-    type: "website",
-    images: [
-      {
-        url: "https://yogawritecode.com/icon.svg",
-        width: 108,
-        height: 108,
-        alt: "Yoga Write Code logo",
-      },
-    ],
-  },
-  twitter: {
-    card: "summary",
     title: "Yoga Write Code — AI Content Operating System",
     description:
       "Turn your website into your next five articles with a connected five-step content workflow.",
@@ -111,22 +94,25 @@ const faqs = [
   ],
 ];
 
+const siteOrigin = siteBaseUrl.origin;
+const logoUrl = new URL("/icon.svg", siteBaseUrl).toString();
+
 const jsonLd = {
   "@context": "https://schema.org",
   "@graph": [
     {
       "@type": "Organization",
-      "@id": "https://yogawritecode.com/#organization",
+      "@id": `${siteOrigin}/#organization`,
       name: "Yoga Write Code",
-      url: "https://yogawritecode.com",
-      logo: "https://yogawritecode.com/icon.svg",
+      url: siteOrigin,
+      logo: logoUrl,
     },
     {
       "@type": "WebSite",
-      "@id": "https://yogawritecode.com/#website",
-      url: "https://yogawritecode.com",
+      "@id": `${siteOrigin}/#website`,
+      url: siteOrigin,
       name: "Yoga Write Code",
-      publisher: { "@id": "https://yogawritecode.com/#organization" },
+      publisher: { "@id": `${siteOrigin}/#organization` },
     },
     {
       "@type": "HowTo",
