@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CookieSettingsButton } from "@/components/analytics/cookie-settings-button";
 import { MarketingBrand } from "@/components/marketing/brand";
 
 const footerGroups = [
@@ -61,7 +62,10 @@ export function SiteFooter() {
       </div>
       <div className="mx-auto mt-10 flex max-w-[1160px] flex-col gap-2 border-t border-line pt-5 text-xs text-ink-muted sm:flex-row sm:justify-between">
         <span>© 2026 Yoga Write Code. All rights reserved.</span>
-        <span>Built for modern content teams.</span>
+        <div className="flex items-center gap-4">
+          <CookieSettingsButton />
+          <span>Built for modern content teams.</span>
+        </div>
       </div>
     </footer>
   );

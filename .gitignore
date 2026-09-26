@@ -47,3 +47,6 @@ Thumbs.db
 
 # testing
 /coverage
+
+# nested copy of this project (separate git repo, not part of this app)
+/yoga-write-code/

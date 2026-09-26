@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function PrivacyPage() {
   return (
-    <LegalDoc title="Privacy Policy" updated="September 11, 2026">
+    <LegalDoc title="Privacy Policy" updated="September 26, 2026">
       <LegalSection n="1" title="Who we are">
         <p>
           Yoga Write Code ("we", "us") operates the Yoga Write Code web application
@@ -30,8 +30,22 @@ export default function PrivacyPage() {
         </p>
         <p>
           Technical information: standard server logs (IP address, user agent, timestamps) kept by
-          our hosting provider for security and debugging. We do not currently run marketing
-          analytics or tracking pixels.
+          our hosting provider for security and debugging.
+        </p>
+        <p>
+          Analytics: if you accept analytics in the cookie banner, we use Google Analytics to
+          measure how visitors use the public pages of the site, such as which pages are viewed and
+          which sources they arrive from. Google Analytics sets cookies such as _ga to distinguish
+          a visit from a returning one. Nothing is loaded and no cookie is set if you decline or
+          ignore the banner. You can change your choice at any time using the
+          &ldquo;Cookie settings&rdquo; link in the site footer.
+        </p>
+        <p>
+          Session recordings: if you accept analytics, we also use Microsoft Clarity to record
+          anonymous replays of how the public pages are used, so we can find pages that are confusing
+          or broken. Recordings mask the content of text fields. They are limited to the public
+          marketing pages, the sign-in and sign-up pages: your dashboard, where you create content
+          and submit website URLs, is excluded from recording and is not visible to Microsoft.
         </p>
       </LegalSection>
 
@@ -61,6 +75,10 @@ export default function PrivacyPage() {
           <li>Vercel — application hosting and edge delivery;</li>
           <li>Supabase — PostgreSQL database, authentication, and row-level security;</li>
           <li>Amazon Web Services (Bedrock) — AI model inference;</li>
+          <li>Google Analytics — audience and usage measurement, only when you have accepted
+            analytics cookies;</li>
+          <li>Microsoft Clarity — session recordings of the public pages, only when you have
+            accepted analytics cookies;</li>
           <li>Stripe — payments, if and when paid plans launch [TO BE CONFIRMED].</li>
         </ul>
         <p>Each provider processes data under its own privacy terms.</p>
@@ -68,8 +86,13 @@ export default function PrivacyPage() {
 
       <LegalSection n="6" title="Cookies">
         <p>
-          We use only essential session cookies required for authentication (Supabase SSR auth
-          cookies). We do not use advertising or cross-site tracking cookies.
+          We use essential session cookies required for authentication (Supabase SSR auth cookies).
+          If you accept analytics, Google Analytics sets its own cookies (such as _ga) to measure
+          usage of the public pages, and Microsoft Clarity sets its own cookies (such as _clck and
+          _clsk) to record sessions on the public pages. These are only set after you accept, and
+          you can withdraw them with the &ldquo;Cookie settings&rdquo; link in the site footer. We do
+          not use advertising or cross-site tracking cookies, and we do not run advertising or
+          remarketing pixels.
         </p>
       </LegalSection>
 
@@ -111,8 +134,10 @@ export default function PrivacyPage() {
         <p>
           Depending on your location (e.g., GDPR, CCPA), you may have rights to access, correct,
           export, or delete your personal data. To exercise them, email
-          support@yogawritecode.com. We will respond within a reasonable timeframe. Including this
-          section does not by itself constitute a claim of compliance with any specific regime.
+          support@yogawritecode.com. We will respond within a reasonable timeframe. You may also
+          withdraw analytics consent at any time through the &ldquo;Cookie settings&rdquo; link in
+          the site footer. Including this section does not by itself constitute a claim of
+          compliance with any specific regime.
         </p>
       </LegalSection>
 
