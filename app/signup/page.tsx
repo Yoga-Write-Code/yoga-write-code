@@ -54,10 +54,14 @@ export default async function SignupPage({
         By creating an account you agree to our{" "}
         <Link href="/terms" className="underline underline-offset-4">
           Terms
-        </Link>{" "}
-        and{" "}
+        </Link>
+        ,{" "}
         <Link href="/privacy" className="underline underline-offset-4">
           Privacy Policy
+        </Link>
+        , and{" "}
+        <Link href="/refund-policy" className="underline underline-offset-4">
+          Refund Policy
         </Link>
         .
       </p>

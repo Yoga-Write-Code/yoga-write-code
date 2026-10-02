@@ -22,6 +22,7 @@ const footerGroups = [
     links: [
       { label: "Terms", href: "/terms" },
       { label: "Privacy", href: "/privacy" },
+      { label: "Refund Policy", href: "/refund-policy" },
     ],
   },
 ] as const;

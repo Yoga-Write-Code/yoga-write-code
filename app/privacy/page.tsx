@@ -79,7 +79,7 @@ export default function PrivacyPage() {
             accepted analytics cookies;</li>
           <li>Microsoft Clarity — session recordings of the public pages, only when you have
             accepted analytics cookies;</li>
-          <li>Stripe — payments, if and when paid plans launch [TO BE CONFIRMED].</li>
+          <li>Paddle — payment processing and merchant of record for Pro subscriptions.</li>
         </ul>
         <p>Each provider processes data under its own privacy terms.</p>
       </LegalSection>

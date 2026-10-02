@@ -44,9 +44,12 @@ export default function TermsPage() {
 
       <LegalSection n="5" title="Billing and payments">
         <p>
-          The service is currently offered without charge. If we introduce paid plans in the
-          future, pricing, billing, renewals, and refunds will be described at the point of
-          purchase and governed by these Terms. Refund policy: [POLICY TO BE CONFIRMED].
+          The core service is free. The optional Pro plan is billed on a recurring basis through
+          Paddle, our merchant of record, at the price shown at checkout. New Pro subscriptions
+          include a 7-day free trial; unless you cancel before it ends, your payment method is
+          charged and the subscription renews automatically each billing period until cancelled. To
+          cancel, use your account settings or email us. Refunds and cancellations are governed by
+          our Refund Policy at /refund-policy, which is incorporated into these Terms by reference.
         </p>
       </LegalSection>
 
