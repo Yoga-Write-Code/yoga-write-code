@@ -4,11 +4,12 @@ import { LegalDoc, LegalSection } from "@/components/legal-doc";
 export const metadata: Metadata = {
   title: "Terms of Service",
   description: "Terms of Service for Yoga Write Code.",
+  alternates: { canonical: "/terms" },
 };
 
 export default function TermsPage() {
   return (
-    <LegalDoc title="Terms of Service" updated="September 11, 2026">
+    <LegalDoc title="Terms of Service" updated="September 11, 2026" path="/terms">
       <LegalSection n="1" title="Acceptance of these terms">
         <p>
           These Terms of Service ("Terms") govern your use of Yoga Write Code

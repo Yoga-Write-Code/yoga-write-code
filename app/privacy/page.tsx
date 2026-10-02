@@ -4,11 +4,12 @@ import { LegalDoc, LegalSection } from "@/components/legal-doc";
 export const metadata: Metadata = {
   title: "Privacy Policy",
   description: "Privacy Policy for Yoga Write Code.",
+  alternates: { canonical: "/privacy" },
 };
 
 export default function PrivacyPage() {
   return (
-    <LegalDoc title="Privacy Policy" updated="September 26, 2026">
+    <LegalDoc title="Privacy Policy" updated="September 26, 2026" path="/privacy">
       <LegalSection n="1" title="Who we are">
         <p>
           Yoga Write Code ("we", "us") operates the Yoga Write Code web application

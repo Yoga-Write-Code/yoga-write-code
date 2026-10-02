@@ -4,11 +4,12 @@ import { LegalDoc, LegalSection } from "@/components/legal-doc";
 export const metadata: Metadata = {
   title: "Refund Policy",
   description: "Refund and cancellation policy for Yoga Write Code subscriptions.",
+  alternates: { canonical: "/refund-policy" },
 };
 
 export default function RefundPolicyPage() {
   return (
-    <LegalDoc title="Refund Policy" updated="October 2, 2026">
+    <LegalDoc title="Refund Policy" updated="October 2, 2026" path="/refund-policy">
       <LegalSection n="1" title="Overview">
         <p>
           This Refund Policy explains how refunds and cancellations work for paid Yoga Write Code

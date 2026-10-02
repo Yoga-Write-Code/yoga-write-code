@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { JsonLd } from "@/components/json-ld";
 import { MarketingCta } from "@/components/marketing/marketing-cta";
 import { SiteFooter } from "@/components/marketing/site-footer";
 import { SiteHeader } from "@/components/marketing/site-header";
@@ -113,6 +114,33 @@ const jsonLd = {
       url: siteOrigin,
       name: "Yoga Write Code",
       publisher: { "@id": `${siteOrigin}/#organization` },
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": `${siteOrigin}/#software`,
+      name: "Yoga Write Code",
+      applicationCategory: "BusinessApplication",
+      operatingSystem: "Web",
+      url: siteOrigin,
+      description:
+        "AI content operating system that turns your website into content opportunities, topic clusters, SEO briefs, and article outlines.",
+      publisher: { "@id": `${siteOrigin}/#organization` },
+      offers: [
+        {
+          "@type": "Offer",
+          name: "Starter",
+          price: "0",
+          priceCurrency: "USD",
+          description: "Free forever. 50 AI credits, 1 active project, full 5-step workflow.",
+        },
+        {
+          "@type": "Offer",
+          name: "Pro Writer",
+          price: "19",
+          priceCurrency: "USD",
+          description: "Unlimited AI credits and projects, exports, and priority processing. Includes a 7-day free trial.",
+        },
+      ],
     },
     {
       "@type": "HowTo",
@@ -297,10 +325,7 @@ export default function HomePage() {
 
       <SiteFooter />
 
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      <JsonLd data={jsonLd} />
     </div>
   );
 }

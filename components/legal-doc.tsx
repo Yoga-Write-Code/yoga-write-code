@@ -1,16 +1,54 @@
 import type { ReactNode } from "react";
+import { JsonLd } from "@/components/json-ld";
 import { SiteFooter } from "@/components/marketing/site-footer";
 import { SiteHeader } from "@/components/marketing/site-header";
+import { siteBaseUrl, siteConfig } from "@/lib/site";
 
 export function LegalDoc({
   title,
   updated,
+  path,
   children,
 }: {
   title: string;
   updated: string;
+  path: string;
   children: ReactNode;
 }) {
+  const origin = siteBaseUrl.origin;
+  const pageUrl = new URL(path, siteBaseUrl).toString();
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebPage",
+        "@id": `${pageUrl}#webpage`,
+        name: title,
+        description: `${title} for ${siteConfig.name}.`,
+        url: pageUrl,
+        isPartOf: { "@id": `${origin}/#website` },
+        publisher: { "@id": `${origin}/#organization` },
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Home",
+            item: origin,
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: title,
+            item: pageUrl,
+          },
+        ],
+      },
+    ],
+  };
+
   return (
     <div className="min-h-screen bg-surface font-sans text-ink">
       <SiteHeader />
@@ -23,6 +61,7 @@ export function LegalDoc({
         <div className="mt-10 space-y-10">{children}</div>
       </main>
       <SiteFooter />
+      <JsonLd data={jsonLd} />
     </div>
   );
 }
