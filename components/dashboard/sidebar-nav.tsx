@@ -6,6 +6,7 @@ import {
   LayoutGrid,
   Search,
   Settings,
+  Sparkles,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import Link from "next/link";
@@ -108,6 +109,7 @@ export function ProjectSectionNav({ projects = [] }: { projects?: ProjectNavItem
 export function SettingsNav({ onNavigate }: { onNavigate?: () => void }) {
   return (
     <nav className="mt-6 space-y-1 px-4">
+      <NavItem href="/dashboard/pricing" label="Upgrade" icon={Sparkles} onNavigate={onNavigate} />
       <NavItem href="/dashboard/settings" label="Settings" icon={Settings} onNavigate={onNavigate} />
     </nav>
   );

@@ -32,8 +32,12 @@ export async function proxy(request: NextRequest) {
     }
   );
 
-  // Refresh the session to keep the user logged in
-  await supabase.auth.getUser();
+  // Refresh the session and verify the JWT. getClaims() validates the access
+  // token's signature and expiry locally (with asymmetric keys) instead of
+  // calling the Auth server on every request, so it stays fast. When the token
+  // is stale, createServerClient rotates the cookies via setAll() above.
+  const { data: claimsData } = await supabase.auth.getClaims();
+  const claims = claimsData?.claims;
 
   const { pathname, hostname } = request.nextUrl;
 
@@ -63,6 +67,21 @@ export async function proxy(request: NextRequest) {
       url.hostname = APP_HOST;
       return NextResponse.redirect(url);
     }
+  }
+
+  // Optimistic auth guard: the JWT is already verified above, so this only
+  // reads the token — no database call. Unauthenticated users are sent to
+  // /login. This is a UX pre-filter; the dashboard layout still verifies the
+  // user server-side before rendering any data.
+  if (pathname.startsWith("/dashboard") && !claims?.sub) {
+    const loginUrl = request.nextUrl.clone();
+    loginUrl.pathname = "/login";
+    loginUrl.search = "";
+
+    const redirectResponse = NextResponse.redirect(loginUrl);
+    // Preserve any refreshed session cookies from the Supabase client.
+    response.cookies.getAll().forEach((cookie) => redirectResponse.cookies.set(cookie));
+    return redirectResponse;
   }
 
   return response;
