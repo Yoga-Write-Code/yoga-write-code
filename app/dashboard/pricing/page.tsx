@@ -52,6 +52,22 @@ export default async function PricingPage() {
           ← Back to Dashboard
         </Link>
       </div>
+
+      <p className="mt-4 text-xs text-ink-muted">
+        By subscribing you agree to our{" "}
+        <Link href="/terms" className="underline underline-offset-4 hover:text-ink">
+          Terms of Service
+        </Link>
+        ,{" "}
+        <Link href="/privacy" className="underline underline-offset-4 hover:text-ink">
+          Privacy Policy
+        </Link>
+        , and{" "}
+        <Link href="/refund-policy" className="underline underline-offset-4 hover:text-ink">
+          Refund Policy
+        </Link>
+        .
+      </p>
     </div>
   );
 }
