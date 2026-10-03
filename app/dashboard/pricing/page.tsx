@@ -24,6 +24,18 @@ export default async function PricingPage() {
   const profileRow = profile as { subscription_status?: string | null } | null;
   const isPro = profileRow?.subscription_status === "active";
 
+  // Current workspace usage, shown so upgrading feels informed rather than pushy.
+  const [projectsRes, analysesRes, draftsRes] = await Promise.all([
+    supabase.from("projects").select("id", { count: "exact", head: true }),
+    supabase.from("website_analyses").select("id", { count: "exact", head: true }),
+    supabase.from("article_drafts").select("id", { count: "exact", head: true }),
+  ]);
+  const usage = [
+    { label: "Projects", value: projectsRes.count ?? 0 },
+    { label: "Analyses", value: analysesRes.count ?? 0 },
+    { label: "Drafts", value: draftsRes.count ?? 0 },
+  ];
+
   // Price IDs are server-only values passed to the client toggle as props.
   const monthlyPriceId = process.env.NEXT_PUBLIC_PADDLE_PRICE_ID_MONTHLY ?? "";
   const yearlyPriceId = process.env.NEXT_PUBLIC_PADDLE_PRICE_ID_YEARLY ?? "";
@@ -34,6 +46,18 @@ export default async function PricingPage() {
         title="Upgrade to Pro"
         description="Simple, transparent pricing for serious content teams. Cancel anytime."
       />
+
+      <div className="mt-8">
+        <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-ink-muted">Your usage</h2>
+        <dl className="mt-4 grid grid-cols-3 gap-px rounded-card border border-line bg-line">
+          {usage.map((u) => (
+            <div key={u.label} className="bg-surface px-5 py-4">
+              <dt className="text-xs font-medium uppercase tracking-[0.12em] text-ink-muted">{u.label}</dt>
+              <dd className="mt-1 font-sans text-2xl tracking-tight text-ink">{u.value}</dd>
+            </div>
+          ))}
+        </dl>
+      </div>
 
       <div className="mt-10">
         <PricingPlans
