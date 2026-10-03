@@ -2,6 +2,7 @@
 
 import {
   BarChart3,
+  BookOpen,
   FileText,
   LayoutGrid,
   Search,
@@ -55,6 +56,7 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
       <NavItem href="/dashboard/seo" label="Opportunities" icon={Search} onNavigate={onNavigate} />
       <NavItem href="/dashboard/content" label="Drafts & Editor" icon={FileText} onNavigate={onNavigate} />
       <NavItem href="/dashboard/analytics" label="Analytics" icon={BarChart3} onNavigate={onNavigate} />
+      <NavItem href="/dashboard/docs" label="Docs" icon={BookOpen} onNavigate={onNavigate} />
     </nav>
   );
 }
