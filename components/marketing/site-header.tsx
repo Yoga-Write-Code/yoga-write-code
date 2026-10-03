@@ -1,10 +1,13 @@
 import Link from "next/link";
 import { MarketingBrand } from "@/components/marketing/brand";
 
-const navigation = [
+const navigationLeft = [
   { label: "How it works", href: "/#how" },
-  { label: "Features", href: "/#features" },
   { label: "Live demo", href: "/#demo" },
+];
+
+const navigationRight = [
+  { label: "Features", href: "/#features" },
   { label: "About", href: "/about" },
 ];
 
@@ -13,7 +16,7 @@ export function SiteHeader() {
     <header className="sticky top-0 z-50 border-b border-line bg-surface/90 font-sans backdrop-blur-md">
       <div className="mx-auto grid h-[68px] max-w-[1160px] grid-cols-[1fr_auto_1fr] items-center px-5 sm:px-8">
         <nav className="hidden items-center gap-8 text-sm font-medium text-ink-secondary md:flex">
-          {navigation.map((item) => (
+          {navigationLeft.map((item) => (
             <Link key={item.href} href={item.href} className="transition-colors hover:text-ink">
               {item.label}
             </Link>
@@ -23,7 +26,15 @@ export function SiteHeader() {
           <MarketingBrand />
         </div>
 
-        <div className="flex items-center justify-end gap-2.5">
+        <div className="flex items-center justify-end gap-8">
+          <nav className="hidden items-center gap-8 text-sm font-medium text-ink-secondary md:flex">
+            {navigationRight.map((item) => (
+              <Link key={item.href} href={item.href} className="transition-colors hover:text-ink">
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+          <div className="flex items-center gap-2.5">
           <Link
             href="/login"
             className="hidden rounded-control border border-line bg-surface px-3.5 py-2 text-xs font-semibold text-ink transition-colors hover:border-line-strong sm:inline-flex"
@@ -36,6 +47,7 @@ export function SiteHeader() {
           >
             Try it free
           </Link>
+          </div>
         </div>
       </div>
     </header>
