@@ -37,13 +37,8 @@ export default async function PricingPage() {
   ];
 
   // Price IDs are server-only values passed to the client toggle as props.
-  const monthlyPriceId = process.env.NEXT_PUBLIC_PADDLE_PRICE_ID_MONTHLY;
-  const yearlyPriceId = process.env.NEXT_PUBLIC_PADDLE_PRICE_ID_YEARLY;
-  if (!monthlyPriceId || !yearlyPriceId) {
-    throw new Error(
-      "NEXT_PUBLIC_PADDLE_PRICE_ID_MONTHLY and NEXT_PUBLIC_PADDLE_PRICE_ID_YEARLY must be set.",
-    );
-  }
+  const monthlyPriceId = process.env.NEXT_PUBLIC_PADDLE_PRICE_ID_MONTHLY ?? "";
+  const yearlyPriceId = process.env.NEXT_PUBLIC_PADDLE_PRICE_ID_YEARLY ?? "";
 
   return (
     <div className="min-w-0">
