@@ -1,9 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import type { Paddle, PaddleEventData } from "@paddle/paddle-js";
-
-const PAYMENT_SUCCESS_URL = "https://app.yogawritecode.com/dashboard/payment-success";
 
 type PaddleCheckoutButtonProps = {
   priceId: string;
@@ -22,45 +19,12 @@ export function PaddleCheckoutButton({
   async function openCheckout() {
     setError(null);
     setLoading(true);
-
-    try {
-      const token = process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN;
-      if (!token) {
-        throw new Error("Paddle checkout is not configured.");
-      }
-
-      const environment =
-        process.env.NEXT_PUBLIC_PADDLE_ENVIRONMENT === "production"
-          ? "production"
-          : "sandbox";
-
-      const { initializePaddle } = await import("@paddle/paddle-js");
-
-      const paddle: Paddle | undefined = await initializePaddle({
-        token,
-        environment,
-        eventCallback(event: PaddleEventData) {
-          if (String(event.name) === "checkout.completed") {
-            setLoading(false);
-          }
-        },
-      });
-
-      if (!paddle) {
-        throw new Error("Paddle checkout failed to load. Please try again.");
-      }
-
-      paddle.Checkout.open({
-        items: [{ priceId, quantity: 1 }],
-        settings: {
-          displayMode: "overlay",
-          successUrl: PAYMENT_SUCCESS_URL,
-        },
-      });
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Could not start checkout.");
+    if (!priceId) {
+      setError("Paddle checkout is not configured.");
       setLoading(false);
+      return;
     }
+    window.location.href = `/dashboard/checkout?priceId=${encodeURIComponent(priceId)}`;
   }
 
   return (
