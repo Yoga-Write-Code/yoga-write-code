@@ -5,6 +5,7 @@ const navigation = [
   { label: "How it works", href: "/#how" },
   { label: "Features", href: "/#features" },
   { label: "Live demo", href: "/#demo" },
+  { label: "About", href: "/about" },
 ];
 
 export function SiteHeader() {
