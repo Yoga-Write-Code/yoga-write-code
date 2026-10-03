@@ -53,7 +53,9 @@ export async function getPaddleServerClient(): Promise<PaddleNode> {
 
   return new Paddle(apiKey, {
     environment:
-      resolvePaddleEnvironment(process.env.PADDLE_ENVIRONMENT) === "production"
+      resolvePaddleEnvironment(
+        process.env.PADDLE_ENVIRONMENT ?? process.env.NEXT_PUBLIC_PADDLE_ENVIRONMENT,
+      ) === "production"
         ? Environment.production
         : Environment.sandbox,
   });
