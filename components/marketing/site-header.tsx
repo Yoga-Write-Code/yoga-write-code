@@ -6,12 +6,12 @@ const navigationLeft = [
   { label: "How it works", href: "/#how" },
   { label: "Live demo", href: "/#demo" },
   { label: "Contact", href: "/contact" },
-  { label: "About", href: "/about" },
 ];
 
 const navigationRight = [
   { label: "Features", href: "/#features" },
   { label: "Pricing", href: "/pricing" },
+  { label: "About", href: "/about" },
 ];
 
 export function SiteHeader() {
