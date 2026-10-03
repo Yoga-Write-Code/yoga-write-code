@@ -32,10 +32,7 @@ export function Wordmark({
           fill="white"
         />
       </svg>
-      <span className="flex flex-col leading-tight">
-        <span className="font-heading text-[15px] font-bold tracking-tight text-ink">Yoga Write Code</span>
-        <span className="text-xs text-ink-muted">Content OS</span>
-      </span>
+      <span className="font-heading text-[15px] font-bold tracking-tight text-ink">Content OS</span>
     </Link>
   );
 }
