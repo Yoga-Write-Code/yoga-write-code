@@ -64,6 +64,22 @@ export function SiteFooter() {
       <div className="mx-auto mt-10 flex max-w-[1160px] flex-col gap-2 border-t border-line pt-5 text-xs text-ink-muted sm:flex-row sm:justify-between">
         <span>© 2026 Yoga Write Code. All rights reserved.</span>
         <div className="flex items-center gap-4">
+          <a
+            href="https://www.linkedin.com/company/yogawritecode"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="transition-colors hover:text-ink"
+          >
+            LinkedIn
+          </a>
+          <a
+            href="https://x.com/yogawritecode"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="transition-colors hover:text-ink"
+          >
+            X (Twitter)
+          </a>
           <CookieSettingsButton />
           <span>Built for modern content teams.</span>
         </div>
