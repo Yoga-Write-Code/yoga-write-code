@@ -9,7 +9,7 @@ export function MarketingBrand() {
       aria-label="Yoga Write Code home"
     >
       <Image src="/icon.svg" alt="" width={28} height={28} unoptimized />
-      <span>Yoga Write Code</span>
+      <span className="sr-only">Yoga Write Code</span>
     </Link>
   );
 }
