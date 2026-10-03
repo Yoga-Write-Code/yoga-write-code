@@ -10,11 +10,12 @@ export const metadata: Metadata = {
 export default function PrivacyPage() {
   return (
     <LegalDoc title="Privacy Policy" updated="September 26, 2026" path="/privacy">
-      <LegalSection n="1" title="Who we are">
+      <LegalSection n="1" title="Who I am">
         <p>
-          Yoga Write Code ("we", "us") operates the Yoga Write Code web application
-          (yogawritecode.com). We are currently based in Nepal. This policy explains what we
-          collect, why, and your choices.
+          Yoga Write Code operates the Yoga Write Code web application
+          (yogawritecode.com). It is built and run by Sachin Pandey as a solo,
+          bootstrapped product, currently based in Nepal. This policy explains
+          what is collected, why, and what choices you have.
         </p>
       </LegalSection>
 
