@@ -194,7 +194,7 @@ function SectionIntro({
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen overflow-x-hidden bg-surface font-sans text-ink">
+    <div className="min-h-screen overflow-x-clip bg-surface font-sans text-ink">
       <SiteHeader />
 
       <main>
