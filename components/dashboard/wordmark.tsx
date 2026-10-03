@@ -11,7 +11,7 @@ export function Wordmark({
     <Link
       href={href}
       onClick={onNavigate}
-      className="inline-flex shrink-0 items-center gap-2 font-heading text-[15px] font-bold tracking-tight text-ink focus:outline-none"
+      className="inline-flex shrink-0 items-center gap-2.5 focus:outline-none"
       title="Go to dashboard overview"
       aria-label="Yoga Write Code dashboard overview"
     >
@@ -32,7 +32,10 @@ export function Wordmark({
           fill="white"
         />
       </svg>
-      <span>Content OS</span>
+      <span className="flex flex-col leading-tight">
+        <span className="font-heading text-[15px] font-bold tracking-tight text-ink">Yoga Write Code</span>
+        <span className="text-xs text-ink-muted">Content OS</span>
+      </span>
     </Link>
   );
 }
