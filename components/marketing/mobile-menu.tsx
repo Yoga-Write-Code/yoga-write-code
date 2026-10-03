@@ -33,7 +33,7 @@ export function MobileMenu() {
             onClick={() => setOpen(false)}
             className="fixed inset-0 top-[68px] z-40 bg-ink/30"
           />
-          <nav className="absolute inset-x-0 top-full z-50 border-b border-line bg-surface px-5 py-4 shadow-pop">
+          <nav className="fixed inset-x-0 top-[68px] z-50 border-b border-line bg-surface px-5 py-4 shadow-pop">
             {links.map((link) => (
               <Link
                 key={link.href}
