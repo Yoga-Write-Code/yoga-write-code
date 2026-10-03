@@ -1,8 +1,9 @@
 "use client";
 
 import Script from "next/script";
-import { useEffect, useSyncExternalStore } from "react";
+import { Suspense, useEffect, useSyncExternalStore } from "react";
 import { AnalyticsConsentBanner } from "@/components/analytics/consent-banner";
+import { PostHogPageView } from "@/components/analytics/posthog-pageview";
 import { initPostHog } from "@/lib/posthog";
 import {
   clarityExcludedPaths,
@@ -103,6 +104,9 @@ export function TagManager() {
     <>
       {granted && gtmContainerId ? <GoogleTagManager containerId={gtmContainerId} /> : null}
       {granted && clarityProjectId ? <ClarityTags projectId={clarityProjectId} /> : null}
+      <Suspense fallback={null}>
+        <PostHogPageView />
+      </Suspense>
       {decision === null ? (
         <AnalyticsConsentBanner
           onAccept={() => saveAnalyticsConsent("granted")}
