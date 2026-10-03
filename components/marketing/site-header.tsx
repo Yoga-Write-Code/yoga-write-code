@@ -26,7 +26,7 @@ export function SiteHeader() {
           ))}
         </nav>
         <MarketingBrand />
-        <nav className="hidden items-center gap-10 text-sm font-medium text-ink-secondary md:flex">
+        <nav className="hidden items-center gap-10 text-sm font-medium text-ink-secondary md:mr-28 md:flex">
           {navigationRight.map((item) => (
             <Link key={item.href} href={item.href} className="transition-colors hover:text-ink">
               {item.label}
