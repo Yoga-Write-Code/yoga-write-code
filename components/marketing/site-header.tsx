@@ -17,8 +17,8 @@ const navigationRight = [
 export function SiteHeader() {
   return (
     <header className="sticky top-0 z-50 border-b border-line bg-surface/90 font-sans backdrop-blur-md">
-      <div className="relative mx-auto flex h-[68px] max-w-[1160px] items-center justify-center gap-14 px-5 sm:px-8">
-        <nav className="hidden items-center gap-14 text-sm font-medium text-ink-secondary md:flex">
+      <div className="relative mx-auto flex h-[68px] max-w-[1160px] items-center justify-center gap-10 px-5 sm:px-8">
+        <nav className="hidden items-center gap-10 text-sm font-medium text-ink-secondary md:flex">
           {navigationLeft.map((item) => (
             <Link key={item.href} href={item.href} className="transition-colors hover:text-ink">
               {item.label}
@@ -26,7 +26,7 @@ export function SiteHeader() {
           ))}
         </nav>
         <MarketingBrand />
-        <nav className="hidden items-center gap-14 text-sm font-medium text-ink-secondary md:flex">
+        <nav className="hidden items-center gap-10 text-sm font-medium text-ink-secondary md:flex">
           {navigationRight.map((item) => (
             <Link key={item.href} href={item.href} className="transition-colors hover:text-ink">
               {item.label}
