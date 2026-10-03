@@ -13,7 +13,7 @@ const footerGroups = [
   {
     title: "Company",
     links: [
-      { label: "Contact", href: "mailto:hello@yogawritecode.com" },
+      { label: "Contact", href: "/contact" },
       { label: "About Yoga Write Code", href: "/about" },
     ],
   },
