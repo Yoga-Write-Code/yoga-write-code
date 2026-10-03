@@ -8,11 +8,14 @@ export type PaddleCheckoutEvent = Pick<PaddleEventData, "name" | "data">;
 
 /**
  * Paddle reports its environment as "sandbox" or "production". Anything else
- * (including an unset value) falls back to sandbox so misconfiguration never
- * accidentally charges real customers.
+ * (including unset) is a misconfiguration — fail loudly rather than silently
+ * charging real customers against a sandbox key, or vice versa.
  */
 export function resolvePaddleEnvironment(value: string | undefined): PaddleEnvironment {
-  return value === "production" ? "production" : "sandbox";
+  if (value === "production" || value === "sandbox") return value;
+  throw new Error(
+    "NEXT_PUBLIC_PADDLE_ENVIRONMENT must be set to \"sandbox\" or \"production\".",
+  );
 }
 
 /**

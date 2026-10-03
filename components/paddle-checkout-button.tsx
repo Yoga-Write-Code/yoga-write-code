@@ -19,12 +19,32 @@ export function PaddleCheckoutButton({
   async function openCheckout() {
     setError(null);
     setLoading(true);
-    if (!priceId) {
-      setError("Paddle checkout is not configured.");
+    try {
+      if (!priceId) throw new Error("Paddle checkout is not configured.");
+
+      const token = process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN;
+      if (!token) throw new Error("Paddle checkout is not configured.");
+
+      const { resolvePaddleEnvironment } = await import("@/lib/paddle");
+      const environment = resolvePaddleEnvironment(process.env.NEXT_PUBLIC_PADDLE_ENVIRONMENT);
+
+      const { initializePaddle } = await import("@paddle/paddle-js");
+      const paddle = await initializePaddle({ token, environment });
+      if (!paddle) throw new Error("Paddle checkout failed to load.");
+
+      paddle.Checkout.open({
+        items: [{ priceId, quantity: 1 }],
+        settings: {
+          displayMode: "overlay",
+          variant: "one-page",
+          successUrl: "https://app.yogawritecode.com/welcome",
+        },
+      });
       setLoading(false);
-      return;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not start checkout.");
+      setLoading(false);
     }
-    window.location.href = `/dashboard/checkout?priceId=${encodeURIComponent(priceId)}`;
   }
 
   return (

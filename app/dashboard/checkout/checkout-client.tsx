@@ -3,8 +3,9 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import type { Paddle } from "@paddle/paddle-js";
+import { resolvePaddleEnvironment } from "@/lib/paddle";
 
-export function CheckoutClient() {
+export function CheckoutClient({ email }: { email?: string }) {
   const searchParams = useSearchParams();
   const priceId = searchParams.get("priceId") ?? "";
   const [error, setError] = useState<string | null>(null);
@@ -22,8 +23,7 @@ export function CheckoutClient() {
         const token = process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN;
         if (!token) throw new Error("Paddle checkout is not configured.");
 
-        const environment =
-          process.env.NEXT_PUBLIC_PADDLE_ENVIRONMENT === "production" ? "production" : "sandbox";
+        const environment = resolvePaddleEnvironment(process.env.NEXT_PUBLIC_PADDLE_ENVIRONMENT);
 
         const { initializePaddle } = await import("@paddle/paddle-js");
         const paddle: Paddle | undefined = await initializePaddle({ token, environment });
@@ -31,12 +31,13 @@ export function CheckoutClient() {
 
         paddle.Checkout.open({
           items: [{ priceId, quantity: 1 }],
+          ...(email ? { customer: { email } } : {}),
           settings: {
             displayMode: "inline",
             frameTarget: "paddle-checkout-frame",
             frameInitialHeight: 600,
             frameStyle: "width: 100%; min-height: 600px; border: none;",
-            successUrl: "https://app.yogawritecode.com/dashboard/payment-success",
+            successUrl: "https://app.yogawritecode.com/welcome",
           },
         });
       } catch (err) {
@@ -48,7 +49,7 @@ export function CheckoutClient() {
     return () => {
       cancelled = true;
     };
-  }, [priceId]);
+  }, [priceId, email]);
 
   return (
     <div className="mx-auto w-full max-w-xl">
