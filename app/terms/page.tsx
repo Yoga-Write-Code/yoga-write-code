@@ -13,7 +13,7 @@ export default function TermsPage() {
       <LegalSection n="1" title="Acceptance of these terms">
         <p>
           These Terms of Service ("Terms") govern your use of Yoga Write Code
-          ("Yoga Write Code", "we", "us"), a web-based software service available at
+          ("Yoga Write Code"), a web-based software service available at
           yogawritecode.com and its subdomains. By creating an account or using the service, you
           agree to these Terms. If you do not agree, do not use the service.
         </p>
@@ -38,7 +38,7 @@ export default function TermsPage() {
       <LegalSection n="4" title="Accounts">
         <p>
           You register with an email address and password. You are responsible for maintaining the
-          confidentiality of your credentials and for all activity under your account. Notify us
+          confidentiality of your credentials and for all activity under your account. Notify me
           immediately at support@yogawritecode.com if you suspect unauthorized use.
         </p>
       </LegalSection>
@@ -46,11 +46,11 @@ export default function TermsPage() {
       <LegalSection n="5" title="Billing and payments">
         <p>
           The core service is free. The optional Pro plan is billed on a recurring basis through
-          Paddle, our merchant of record, at the price shown at checkout. New Pro subscriptions
+          Paddle, my merchant of record, at the price shown at checkout. New Pro subscriptions
           include a 7-day free trial; unless you cancel before it ends, your payment method is
           charged and the subscription renews automatically each billing period until cancelled. To
-          cancel, use your account settings or email us. Refunds and cancellations are governed by
-          our Refund Policy at /refund-policy, which is incorporated into these Terms by reference.
+          cancel, use your account settings or email me. Refunds and cancellations are governed by
+          my Refund Policy at /refund-policy, which is incorporated into these Terms by reference.
         </p>
       </LegalSection>
 
@@ -68,7 +68,7 @@ export default function TermsPage() {
       <LegalSection n="7" title="Your content and website data">
         <p>
           You keep all rights to content you create in the service (drafts, edits) and to the
-          website URLs you submit. You grant us a limited license to process submitted URLs and
+          website URLs you submit. You grant me a limited license to process submitted URLs and
           fetched public page content solely to operate and provide the service to you. You
           represent that you are permitted to analyze the websites you submit.
         </p>
@@ -78,7 +78,7 @@ export default function TermsPage() {
         <p>
           The service uses third-party AI models (currently Amazon Bedrock) to generate analyses,
           opportunities, clusters, briefs, and outlines. Outputs are probabilistic suggestions,
-          not professional, legal, or financial advice. We do not guarantee that any output will
+          not professional, legal, or financial advice. I do not guarantee that any output will
           improve search rankings, traffic, conversions, or revenue. You are responsible for
           reviewing, editing, and validating all AI-generated content before publishing or relying
           on it.
@@ -88,7 +88,7 @@ export default function TermsPage() {
       <LegalSection n="9" title="Intellectual property">
         <p>
           The service, including its software, design, and branding, is owned by Yoga Write Code.
-          Except for your own content, nothing in these Terms transfers ownership of our
+          Except for your own content, nothing in these Terms transfers ownership of my
           intellectual property to you.
         </p>
       </LegalSection>
@@ -104,7 +104,7 @@ export default function TermsPage() {
 
       <LegalSection n="11" title="Availability and changes">
         <p>
-          We strive for high availability but do not promise uninterrupted service. We may modify,
+          I strive for high availability but do not promise uninterrupted service. I may modify,
           suspend, or discontinue features with reasonable notice where practical. Continued use
           after changes constitutes acceptance.
         </p>
@@ -112,7 +112,7 @@ export default function TermsPage() {
 
       <LegalSection n="12" title="Suspension and termination">
         <p>
-          You may delete your projects and drafts at any time from the dashboard. We may suspend
+          You may delete your projects and drafts at any time from the dashboard. I may suspend
           or terminate accounts that violate these Terms or abuse the service. Upon termination,
           your right to use the service ends; provisions that by nature survive (disclaimers,
           liability, governing law) continue to apply.
@@ -121,7 +121,7 @@ export default function TermsPage() {
 
       <LegalSection n="13" title="Privacy">
         <p>
-          Our handling of personal data is described in our Privacy Policy at /privacy, which is
+          My handling of personal data is described in my Privacy Policy at /privacy, which is
           incorporated into these Terms by reference.
         </p>
       </LegalSection>
@@ -136,16 +136,16 @@ export default function TermsPage() {
 
       <LegalSection n="15" title="Limitation of liability">
         <p>
-          To the maximum extent permitted by law, we are not liable for indirect, incidental,
+          To the maximum extent permitted by law, I am not liable for indirect, incidental,
           special, consequential, or punitive damages, or for lost profits, revenue, data, or
-          goodwill. Our total liability for any claim arising from the service is limited to the
-          amount you paid us in the twelve months before the claim (currently zero).
+          goodwill. My total liability for any claim arising from the service is limited to the
+          amount you paid me in the twelve months before the claim (currently zero).
         </p>
       </LegalSection>
 
       <LegalSection n="16" title="Indemnification">
         <p>
-          You will indemnify and hold us harmless from claims arising from your misuse of the
+          You will indemnify and hold me harmless from claims arising from your misuse of the
           service, your violation of these Terms, or your infringement of third-party rights.
         </p>
       </LegalSection>
@@ -153,14 +153,14 @@ export default function TermsPage() {
       <LegalSection n="17" title="Governing law">
         <p>
           These Terms are governed by the laws of Nepal, without regard to conflict-of-law
-          principles. Disputes will be resolved in the courts of Nepal unless we both agree
+          principles. Disputes will be resolved in the courts of Nepal unless I both agree
           otherwise.
         </p>
       </LegalSection>
 
       <LegalSection n="18" title="Changes to these terms">
         <p>
-          We may update these Terms from time to time. We will change the "Last updated" date and,
+          I may update these Terms from time to time. I will change the "Last updated" date and,
           for material changes, provide notice in the product. Continued use after changes means
           you accept them.
         </p>

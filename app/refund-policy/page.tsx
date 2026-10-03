@@ -13,7 +13,7 @@ export default function RefundPolicyPage() {
       <LegalSection n="1" title="Overview">
         <p>
           This Refund Policy explains how refunds and cancellations work for paid Yoga Write Code
-          subscriptions ("Pro"). It forms part of, and should be read together with, our{" "}
+          subscriptions ("Pro"). It forms part of, and should be read together with, my{" "}
           <a href="/terms" className="text-brand underline underline-offset-4">
             Terms of Service
           </a>{" "}
@@ -21,7 +21,7 @@ export default function RefundPolicyPage() {
           <a href="/privacy" className="text-brand underline underline-offset-4">
             Privacy Policy
           </a>
-          . We are based in Nepal and sell worldwide.
+          . I am based in Nepal and sell worldwide.
         </p>
       </LegalSection>
 
@@ -36,7 +36,7 @@ export default function RefundPolicyPage() {
 
       <LegalSection n="3" title="Payments and merchant of record">
         <p>
-          Payments are processed by Paddle, which acts as our merchant of record. Paddle handles the
+          Payments are processed by Paddle, which acts as my merchant of record. Paddle handles the
           checkout, charges your payment method, and appears on your bank or card statement. Where
           Paddle is the merchant of record, refunds are issued through Paddle to your original
           payment method.
@@ -46,7 +46,7 @@ export default function RefundPolicyPage() {
       <LegalSection n="4" title="Cancellations">
         <p>
           Subscriptions renew automatically until cancelled. You can cancel at any time from your
-          account settings or by emailing us. After cancelling, you keep access to Pro until the end
+          account settings or by emailing me. After cancelling, you keep access to Pro until the end
           of the period you have already paid for. Partial periods are not billed again.
         </p>
       </LegalSection>
@@ -55,15 +55,15 @@ export default function RefundPolicyPage() {
         <ul className="list-disc space-y-1 pl-5">
           <li>
             <strong>First purchase:</strong> if you are not satisfied, request a refund within 14
-            days of your first paid charge and we will refund it in full.
+            days of your first paid charge and I will refund it in full.
           </li>
           <li>
-            <strong>Renewals:</strong> if you forgot to cancel, contact us within 7 days of a renewal
-            charge and, provided you have not made substantial use of Pro during that period, we
+            <strong>Renewals:</strong> if you forgot to cancel, contact me within 7 days of a renewal
+            charge and, provided you have not made substantial use of Pro during that period, I
             will refund the renewal.
           </li>
           <li>
-            <strong>Annual plans:</strong> annual charges cancelled mid-term are handled at our
+            <strong>Annual plans:</strong> annual charges cancelled mid-term are handled at my
             discretion; where a refund is approved it may be pro-rated for the unused portion.
           </li>
           <li>
@@ -84,7 +84,7 @@ export default function RefundPolicyPage() {
       <LegalSection n="7" title="How to request a refund">
         <p>
           Email support@yogawritecode.com from the address on your account with your order or
-          transaction ID (shown in your Paddle receipt) and a short description of the issue. We
+          transaction ID (shown in your Paddle receipt) and a short description of the issue. I
           usually respond within 3 business days. Approved refunds are processed through Paddle and
           typically appear on your statement within 5–10 business days, depending on your bank.
         </p>
@@ -92,15 +92,15 @@ export default function RefundPolicyPage() {
 
       <LegalSection n="8" title="Chargebacks">
         <p>
-          If you believe a charge is wrong, please contact us before filing a chargeback so we can
-          resolve it quickly. Filing a chargeback without contacting us may result in the account
+          If you believe a charge is wrong, please contact me before filing a chargeback so I can
+          resolve it quickly. Filing a chargeback without contacting me may result in the account
           being suspended while the dispute is investigated.
         </p>
       </LegalSection>
 
       <LegalSection n="9" title="Changes to this policy">
         <p>
-          We may update this policy from time to time. We will change the "Last updated" date above,
+          I may update this policy from time to time. I will change the "Last updated" date above,
           and material changes will not apply retroactively to purchases already made.
         </p>
       </LegalSection>
