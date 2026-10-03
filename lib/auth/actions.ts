@@ -64,7 +64,7 @@ export async function signup(formData: FormData) {
   }
 
   revalidatePath("/dashboard", "layout");
-  redirect("/dashboard");
+  redirect("/dashboard?signup=1");
 }
 
 export async function logout() {

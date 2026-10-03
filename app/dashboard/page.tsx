@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { DeleteProjectButton } from "@/components/dashboard/delete-project-button";
+import { SignupTracker } from "@/components/analytics/signup-tracker";
 import { EmptyState } from "@/components/empty-state";
 import { PageHeader } from "@/components/page-header";
 import { Badge } from "@/components/ui/badge";
@@ -61,7 +62,12 @@ function Kpi({ label, value, delta, sub }: { label: string; value: number; delta
   );
 }
 
-export default async function OverviewPage() {
+export default async function OverviewPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ signup?: string }>;
+}) {
+  const { signup: signupParam } = (await searchParams) ?? {};
   const supabase = await createSupabaseServerClient();
   const { data: userData } = await supabase.auth.getUser();
   const { data: profile } = userData.user
@@ -150,6 +156,7 @@ export default async function OverviewPage() {
 
   return (
     <div className="min-w-0">
+      {signupParam === "1" ? <SignupTracker /> : null}
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div className="min-w-0">
           <h1 className="font-sans text-3xl font-semibold tracking-tight text-ink">

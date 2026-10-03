@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { AuthShell } from "@/components/auth/auth-shell";
+import { SignupTracker } from "@/components/analytics/signup-tracker";
 
 export const metadata: Metadata = { title: "Check your email" };
 
 export default function CheckEmailPage() {
   return (
     <AuthShell>
+      <SignupTracker />
       <h1 className="font-sans text-2xl font-semibold tracking-tight text-ink">
         Check your email
       </h1>
