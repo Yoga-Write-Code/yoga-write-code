@@ -47,11 +47,11 @@ export default function AboutPage() {
 
           <section className="space-y-4">
             <h2 className="font-heading text-2xl font-bold tracking-[-0.02em] text-ink">
-              Why we built it
+              Why YWC was built
             </h2>
             <p className="leading-7 text-ink-secondary">
               Most businesses know they need content. The hard part is deciding
-              what that content should be. What should we publish next? Which
+              what that content should be. What should a business publish next? Which
               topics are actually relevant to the business? Which opportunities
               are worth pursuing? How should related topics be organized? What
               should an SEO brief contain? And how does research become a
@@ -95,7 +95,7 @@ export default function AboutPage() {
 
           <section className="space-y-4">
             <h2 className="font-heading text-2xl font-bold tracking-[-0.02em] text-ink">
-              What we believe
+              What YWC believes
             </h2>
             <p className="leading-7 text-ink-secondary">
               Producing more AI content is not the goal. Choosing the right
@@ -107,14 +107,14 @@ export default function AboutPage() {
 
           <section className="space-y-4">
             <h2 className="font-heading text-2xl font-bold tracking-[-0.02em] text-ink">
-              How we&apos;re building it
+              How YWC is built
             </h2>
             <p className="leading-7 text-ink-secondary">
-              We build in small steps, ship what we have, and improve it based on real
-              usage — testing the workflow against real websites and listening
-              to the people using it. We&apos;d rather have a product that
-              solves one problem well than a long feature list that solves
-              nothing completely.
+              YWC ships in small steps: build, release what works, and improve
+              it based on real usage — testing the workflow against real
+              websites and listening to the
+              people using it. The product would rather solve one problem well
+              than carry a long feature list that solves nothing completely.
             </p>
           </section>
 
@@ -147,7 +147,7 @@ export default function AboutPage() {
               Today YWC is aimed at small businesses, founders, and marketing
               teams doing their own SEO content strategy — people who need
               structure but don&apos;t want to manage a stack of disconnected
-              tools. We&apos;re still validating exactly who gets the most
+              tools. YWC is still validating exactly who gets the most
               value, so the ideal customer profile is intentionally a work in
               progress.
             </p>
@@ -159,7 +159,7 @@ export default function AboutPage() {
             </h2>
             <p className="leading-7 text-ink-secondary">
               YWC is an early product in active validation. The core workflow
-              works end to end, and we&apos;re testing it with real websites
+              works end to end, and it is tested with real websites
               and potential users. Expect rough edges; expect changes. If
               you&apos;re here early, your feedback directly shapes what gets
               built next.
