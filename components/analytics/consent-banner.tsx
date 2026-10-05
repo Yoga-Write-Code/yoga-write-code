@@ -16,40 +16,47 @@ export function AnalyticsConsentBanner({
       role="dialog"
       aria-labelledby="analytics-consent-title"
       aria-describedby="analytics-consent-body"
-      className="fixed inset-x-0 bottom-0 z-50 border-t border-line bg-surface px-5 py-4 shadow-pop sm:px-8"
+      className="fixed inset-x-4 bottom-4 z-50 mx-auto max-w-2xl rounded-2xl border border-line bg-surface p-4 shadow-pop sm:bottom-6 sm:p-5"
     >
-      <div className="mx-auto flex max-w-[1160px] flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="max-w-[640px]">
-          <p id="analytics-consent-title" className="text-sm font-semibold text-ink">
-            Help us improve Yoga Write Code
+      <div className="flex items-center gap-4">
+        <span aria-hidden="true" className="hidden shrink-0 text-brand sm:block">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21.5 12.8A9 9 0 1 1 11.2 2.5a4.5 4.5 0 0 0 5 5 4.5 4.5 0 0 0 5.3 5.3z" />
+            <circle cx="9" cy="10" r="0.5" fill="currentColor" />
+            <circle cx="14" cy="15" r="0.5" fill="currentColor" />
+            <circle cx="10" cy="16" r="0.5" fill="currentColor" />
+          </svg>
+        </span>
+        <div className="min-w-0 flex-1">
+          <p id="analytics-consent-title" className="sr-only">
+            Cookie consent
           </p>
-          <p id="analytics-consent-body" className="mt-1 text-sm text-ink-secondary">
-            With your permission we use Google Tag Manager and Google Analytics to count page views,
-            and Microsoft Clarity for anonymous recordings of how the site is used, on public pages
-            only. All of it stays off and sets no cookies until you accept. Read our{" "}
-            <Link
-              href="/privacy"
-              className="font-medium text-brand underline underline-offset-2 hover:text-brand-hover"
-            >
-              Privacy Policy
-            </Link>
-            .
+          <p id="analytics-consent-body" className="text-sm leading-6 text-ink">
+            We use third-party cookies to personalize content, analyze site
+            traffic, and improve the product.
           </p>
+          <Link
+            href="/privacy"
+            className="mt-1 inline-flex items-center gap-1 text-sm font-medium text-ink-secondary underline-offset-2 hover:text-ink hover:underline"
+          >
+            Learn more
+            <span aria-hidden="true">&rsaquo;</span>
+          </Link>
         </div>
-        <div className="flex shrink-0 items-center gap-2">
+        <div className="flex shrink-0 flex-col items-center gap-2 sm:flex-row">
           <button
             type="button"
             onClick={onDecline}
-            className="inline-flex h-10 items-center justify-center rounded-field border border-line-strong bg-surface px-4 text-sm font-medium text-ink-secondary transition-colors hover:bg-surface-subtle"
+            className="text-sm font-medium text-ink-muted transition-colors hover:text-ink"
           >
             Decline
           </button>
           <button
             type="button"
             onClick={onAccept}
-            className="inline-flex h-10 items-center justify-center rounded-field bg-brand px-4 text-sm font-medium text-white transition-colors hover:bg-brand-hover"
+            className="inline-flex h-10 items-center justify-center rounded-field bg-ink px-5 text-sm font-medium text-white transition-colors hover:bg-ink/90"
           >
-            Accept
+            Okay
           </button>
         </div>
       </div>

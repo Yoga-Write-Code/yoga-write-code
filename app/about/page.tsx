@@ -9,12 +9,12 @@ import { siteBaseUrl } from "@/lib/site";
 export const metadata: Metadata = {
   title: "About",
   description:
-    "Yoga Write Code is a bootstrapped SaaS that turns your website into structured content planning — content opportunities, topic clusters, SEO briefs, and outlines.",
+    "Yoga Write Code is a SaaS that turns your website into structured content planning — content opportunities, topic clusters, SEO briefs, and outlines.",
   alternates: { canonical: "/about" },
   openGraph: {
     title: "About Yoga Write Code",
     description:
-      "A bootstrapped SEO content planning tool built by Sachin Pandey, from real SEO and content work.",
+      "An SEO content planning tool built by Sachin Pandey, from real SEO and content work.",
     url: "/about",
   },
 };
@@ -110,8 +110,7 @@ export default function AboutPage() {
               How we&apos;re building it
             </h2>
             <p className="leading-7 text-ink-secondary">
-              Yoga Write Code is bootstrapped and self-funded. We build in
-              small steps, ship what we have, and improve it based on real
+              We build in small steps, ship what we have, and improve it based on real
               usage — testing the workflow against real websites and listening
               to the people using it. We&apos;d rather have a product that
               solves one problem well than a long feature list that solves
@@ -185,7 +184,7 @@ export default function AboutPage() {
           url: new URL("/about", siteBaseUrl).toString(),
           name: "About Yoga Write Code",
           description:
-            "Yoga Write Code is a bootstrapped SaaS that turns your website into structured content planning.",
+            "Yoga Write Code is a SaaS that turns your website into structured content planning.",
         }}
       />
     </>
