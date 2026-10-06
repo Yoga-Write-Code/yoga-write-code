@@ -152,6 +152,21 @@ export default async function ProjectPage({ params, searchParams }: ProjectPageP
                         <span>{opp.search_intent}</span>
                       </div>
                       {opp.reason && <p className="mt-2 text-sm text-ink-secondary"><strong>Why:</strong> {d(opp.reason)}</p>}
+                      {Array.isArray(opp.keyword_gaps) && opp.keyword_gaps.length > 0 && (
+                        <div className="mt-3">
+                          <p className="text-xs font-medium uppercase tracking-[0.12em] text-ink-muted">Keyword gaps</p>
+                          <ul className="mt-1 space-y-1">
+                            {(opp.keyword_gaps as { title: string; url: string; score: number }[]).map((gap, i) => (
+                              <li key={i} className="text-sm">
+                                <a href={gap.url} target="_blank" rel="noreferrer" className="text-brand underline-offset-4 hover:underline">
+                                  {gap.title}
+                                </a>
+                                <span className="ml-2 text-xs text-ink-muted">score {gap.score}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
                     </div>
                     {!cluster && (
                       <GenerateButton

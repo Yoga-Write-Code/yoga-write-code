@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { ArrowRight, Check, X } from "lucide-react";
-import { PaddleCheckoutButton } from "@/components/paddle-checkout-button";
+import { DODO_PAYMENT_LINK } from "@/lib/dodo";
 
 type BillingCycle = "monthly" | "yearly";
 
@@ -40,20 +40,16 @@ function FeatureList({ features }: { features: ReadonlyArray<{ label: string; in
 }
 
 export function PricingPlans({
-  monthlyPriceId,
-  yearlyPriceId,
   isPro,
 }: {
-  monthlyPriceId: string;
-  yearlyPriceId: string;
+  monthlyPriceId?: string;
+  yearlyPriceId?: string;
   isPro: boolean;
 }) {
   const [cycle, setCycle] = useState<BillingCycle>("monthly");
 
-  const proPriceId = cycle === "yearly" && yearlyPriceId ? yearlyPriceId : monthlyPriceId;
   const proPrice = cycle === "yearly" ? "$189" : "$19";
   const proUnit = cycle === "yearly" ? "/ year" : "/ month";
-  const hasProPrice = Boolean(proPriceId);
 
   return (
     <div>
@@ -132,21 +128,13 @@ export function PricingPlans({
               >
                 Current Plan
               </button>
-            ) : hasProPrice ? (
-              <PaddleCheckoutButton priceId={proPriceId} fullWidth>
-                <span className="inline-flex items-center gap-2">
-                  Start 7-day free trial
-                  <ArrowRight size={16} />
-                </span>
-              </PaddleCheckoutButton>
-            ) : (
-              <button
-                type="button"
-                disabled
-                className="inline-flex h-11 w-full cursor-not-allowed items-center justify-center rounded-field bg-line text-sm font-medium text-ink-muted"
+            ) : (<a
+                href={DODO_PAYMENT_LINK}
+                className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-field bg-brand px-4 text-sm font-medium text-white transition-colors hover:bg-brand-hover"
               >
-                Coming soon
-              </button>
+                Start 7-day free trial
+                <ArrowRight size={16} />
+              </a>
             )}
           </div>
         </section>

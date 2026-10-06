@@ -29,7 +29,7 @@ export default function PaymentSuccessPage() {
           Payment Successful!
         </h1>
         <p className="mt-2 text-sm leading-6 text-ink-secondary">
-          Thank you for upgrading to YWC Pro. Your account has been updated.
+          Thank you for upgrading to YWC Pro. Your account is being activated.
         </p>
 
         <Link

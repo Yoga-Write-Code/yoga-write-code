@@ -11,6 +11,7 @@ import type {
   WebsiteAnalysisResult,
 } from "@/lib/ai/schemas";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { fetchKeywordGaps } from "@/lib/tavily";
 
 type ServerClient = Awaited<ReturnType<typeof createSupabaseServerClient>>;
 
@@ -155,17 +156,20 @@ export async function analyzeWebsite(formData: FormData): Promise<void> {
     fail(projectId, `Could not save the analysis: ${analysisError?.message ?? "unknown database error"}`);
   }
 
-  const opportunityRows = result.opportunities.map((opportunity) => ({
-    project_id: projectId,
-    analysis_id: analysis.id,
-    title: opportunity.title,
-    description: opportunity.description,
-    reason: opportunity.reason,
-    opportunity_score: opportunity.opportunityScore,
-    difficulty: opportunity.difficulty,
-    search_intent: opportunity.searchIntent,
-    funnel_stage: opportunity.funnelStage,
-  }));
+  const opportunityRows = await Promise.all(
+    result.opportunities.map(async (opportunity) => ({
+      project_id: projectId,
+      analysis_id: analysis.id,
+      title: opportunity.title,
+      description: opportunity.description,
+      reason: opportunity.reason,
+      opportunity_score: opportunity.opportunityScore,
+      difficulty: opportunity.difficulty,
+      search_intent: opportunity.searchIntent,
+      funnel_stage: opportunity.funnelStage,
+      keyword_gaps: await fetchKeywordGaps(opportunity.title),
+    }))
+  );
 
   const { error: opportunityError } = await supabase
     .from("content_opportunities")

@@ -50,7 +50,8 @@ export default function DocsPage() {
             <h3 className="font-semibold text-ink">Content opportunities</h3>
             <p className="text-[15px] leading-7 text-ink-secondary">
               Finds keyword and topic gaps based on your site. Each opportunity shows intent, difficulty
-              signal, and suggested priority.
+              signal, and suggested priority. When a Tavily API key is configured, each opportunity also
+              lists the top competing pages (keyword/traffic gaps) so you can see what already ranks.
             </p>
             <h3 className="font-semibold text-ink">Topic clusters</h3>
             <p className="text-[15px] leading-7 text-ink-secondary">
