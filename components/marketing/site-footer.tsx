@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { CookieSettingsButton } from "@/components/analytics/cookie-settings-button";
 import { MarketingBrand } from "@/components/marketing/brand";
+import { FooterSubscribe } from "@/components/marketing/footer-subscribe";
 
 const footerGroups = [
   {
@@ -63,6 +64,20 @@ export function SiteFooter() {
             </div>
           ))}
         </nav>
+      </div>
+      <div className="mx-auto mt-10 flex max-w-[1160px] flex-col items-start gap-4 rounded-lg border border-line bg-surface-subtle px-5 py-6 sm:flex-row sm:items-center sm:justify-between">
+        <div className="max-w-md">
+          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-ink-muted">
+            Newsletter
+          </p>
+          <h3 className="mt-1 font-heading text-lg font-semibold tracking-tight text-ink">
+            Get the Yoga Write Code newsletter
+          </h3>
+          <p className="mt-1 text-sm leading-6 text-ink-secondary">
+            Writing workflows, product updates, and content ops notes. No spam.
+          </p>
+        </div>
+        <FooterSubscribe />
       </div>
       <div className="mx-auto mt-10 flex max-w-[1160px] flex-col gap-2 border-t border-line pt-5 text-xs text-ink-muted sm:flex-row sm:justify-between">
         <span>© 2026 Yoga Write Code. All rights reserved.</span>
