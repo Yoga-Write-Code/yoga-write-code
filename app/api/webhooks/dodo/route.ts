@@ -48,7 +48,11 @@ export async function POST(request: Request) {
 
     const supabase = await getClient();
 
-    if (eventType === "subscription.created" || eventType === "payment.succeeded") {
+    // Dodo event names: subscription.active (new/renewed subscription),
+    // payment.succeeded (one-time or subscription payment), subscription.renewed.
+    const ACTIVATING_EVENTS = ["subscription.active", "subscription.renewed", "payment.succeeded"];
+
+    if (ACTIVATING_EVENTS.includes(eventType)) {
       if (!email) {
         console.error("[dodo webhook] event had no customer email", eventType);
         return NextResponse.json({ received: true, handled: false });
@@ -81,7 +85,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ received: true, handled: true });
     }
 
-    if (eventType === "subscription.canceled") {
+    if (eventType === "subscription.cancelled" || eventType === "subscription.expired") {
       if (!subscriptionId) {
         console.error("[dodo webhook] canceled event had no subscription id");
         return NextResponse.json({ received: true, handled: false });
@@ -97,6 +101,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ received: true, handled: true });
     }
 
+    console.error("[dodo webhook] unhandled event type", eventType);
     return NextResponse.json({ received: true, handled: false });
   } catch (error) {
     console.error("[dodo webhook] handler error", error);
