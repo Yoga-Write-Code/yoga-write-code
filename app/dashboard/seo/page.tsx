@@ -10,13 +10,6 @@ export const metadata: Metadata = { title: "Opportunities" };
 
 const cap = (s: string) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
 
-function intentTone(intent: string) {
-  if (intent === "commercial") return "brand" as const;
-  if (intent === "informational") return "info" as const;
-  if (intent === "transactional") return "success" as const;
-  return "neutral" as const;
-}
-
 function difficultyDot(difficulty: string) {
   if (difficulty === "low") return "bg-success";
   if (difficulty === "medium") return "bg-warning";
@@ -69,7 +62,7 @@ export default async function SeoPage() {
     <div className="min-w-0">
       <PageHeader
         title="Opportunities"
-        description="Your highest-scoring content opportunities across all projects."
+        description="Keywords, SERP competition, difficulty, and score — one row per opportunity."
       />
 
       {rows.length === 0 ? (
@@ -78,57 +71,68 @@ export default async function SeoPage() {
           message="Run a website analysis and your opportunities will be ranked here."
         />
       ) : (
-        <div className="mt-8 space-y-4">
-          {rows.map((o) => (
-            <article key={o.id} className="rounded-card border border-line bg-surface p-5">
-              <div className="flex flex-wrap items-start justify-between gap-3">
-                <div className="min-w-0 flex-1">
-                  <p className="text-xs text-ink-muted">{o.projects?.name}</p>
-                  <h2 className="mt-0.5 text-base font-semibold text-ink">{o.title}</h2>
-                  {o.description ? (
-                    <p className="mt-1 text-sm leading-6 text-ink-secondary">{o.description}</p>
-                  ) : null}
-                </div>
-                <Badge tone="brand">{o.opportunity_score}</Badge>
-              </div>
-
-              <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
-                <Badge tone={intentTone(o.search_intent)}>{o.search_intent}</Badge>
-                <span className="inline-flex items-center gap-1.5 text-ink-secondary">
-                  <span className={`h-1.5 w-1.5 rounded-full ${difficultyDot(o.difficulty)}`} />
-                  {cap(o.difficulty)}
-                </span>
-                <Badge tone="neutral">{o.funnel_stage}</Badge>
-              </div>
-
-              <OpportunitySerp
-                targetKeywords={o.target_keywords}
-                keywordGaps={o.keyword_gaps}
-                defaultExpanded={false}
-              />
-
-              {o.reason ? (
-                <p className="mt-3 text-sm text-ink-secondary" title={o.reason}>
-                  <span className="font-medium text-ink">Why it matters: </span>
-                  {o.reason}
-                </p>
-              ) : null}
-
-              <div className="mt-4 border-t border-line pt-3 text-right">
-                <form action={generateBrief} className="inline">
-                  <input type="hidden" name="projectId" value={o.projects?.id ?? ""} />
-                  <input type="hidden" name="opportunityId" value={o.id} />
-                  <button type="submit" className="text-xs font-medium text-brand hover:underline">
-                    Generate brief
-                  </button>
-                </form>
-              </div>
-            </article>
-          ))}
-          <p className="text-xs text-ink-muted">
-            Score reflects relevance, impact, and feasibility from the AI analysis.
+        <section className="mt-8 min-w-0 rounded-card border border-line bg-surface">
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[880px] text-left text-sm">
+              <thead>
+                <tr className="border-b border-line text-xs text-ink-muted">
+                  <th className="px-5 py-3 font-medium">Opportunity</th>
+                  <th className="px-3 py-3 font-medium">Keywords &amp; SERP</th>
+                  <th className="px-3 py-3 font-medium">Difficulty</th>
+                  <th className="px-3 py-3 font-medium">Score</th>
+                  <th className="px-5 py-3" />
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-line">
+                {rows.map((o) => (
+                  <tr key={o.id} className="align-top transition-colors hover:bg-surface-subtle">
+                    <td className="max-w-60 px-5 py-4">
+                      <p className="font-medium text-ink">{o.title}</p>
+                      <p className="mt-0.5 truncate text-xs text-ink-muted">{o.projects?.name}</p>
+                      {o.reason ? (
+                        <p className="mt-1 line-clamp-2 text-xs leading-5 text-ink-secondary" title={o.reason}>
+                          {o.reason}
+                        </p>
+                      ) : null}
+                      <p className="mt-1.5 text-[11px] text-ink-muted">
+                        {o.search_intent} · {o.funnel_stage} funnel
+                      </p>
+                    </td>
+                    <td className="min-w-64 max-w-90 px-3 py-4">
+                      <OpportunitySerp
+                        targetKeywords={o.target_keywords}
+                        keywordGaps={o.keyword_gaps}
+                        fallbackTitle={o.title}
+                        defaultExpanded={false}
+                      />
+                    </td>
+                    <td className="whitespace-nowrap px-3 py-4">
+                      <span className="inline-flex items-center gap-1.5 text-xs text-ink-secondary">
+                        <span className={`h-1.5 w-1.5 rounded-full ${difficultyDot(o.difficulty)}`} />
+                        {cap(o.difficulty)}
+                      </span>
+                    </td>
+                    <td className="whitespace-nowrap px-3 py-4">
+                      <Badge tone="brand">{o.opportunity_score}</Badge>
+                    </td>
+                    <td className="whitespace-nowrap px-5 py-4 text-right">
+                      <form action={generateBrief} className="inline">
+                        <input type="hidden" name="projectId" value={o.projects?.id ?? ""} />
+                        <input type="hidden" name="opportunityId" value={o.id} />
+                        <button type="submit" className="text-xs font-medium text-brand hover:underline">
+                          Generate brief
+                        </button>
+                      </form>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="border-t border-line px-5 py-3 text-xs text-ink-muted">
+            Score reflects relevance, impact, and feasibility. SERP score is live-search relevance per ranking page.
           </p>
-        </div>
+        </section>
       )}
     </div>
   );

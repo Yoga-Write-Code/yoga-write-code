@@ -156,6 +156,7 @@ export default async function ProjectPage({ params, searchParams }: ProjectPageP
                       <OpportunitySerp
                         targetKeywords={opp.target_keywords}
                         keywordGaps={opp.keyword_gaps}
+                        fallbackTitle={opp.title}
                         defaultExpanded={false}
                       />
                     </div>

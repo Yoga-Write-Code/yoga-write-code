@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { deriveFallbackKeywords } from "@/lib/keywords";
 
 export type SerpResult = {
   keyword?: string;
@@ -37,46 +38,47 @@ function asSerpResults(value: unknown): SerpResult[] {
 export function OpportunitySerp({
   targetKeywords,
   keywordGaps,
+  fallbackTitle,
   defaultExpanded = false,
 }: {
   targetKeywords: unknown;
   keywordGaps: unknown;
+  fallbackTitle?: string;
   defaultExpanded?: boolean;
 }) {
   const [expanded, setExpanded] = useState(defaultExpanded);
-  const keywords = asKeywords(targetKeywords);
+  const stored = asKeywords(targetKeywords);
+  const keywords = stored.length > 0 ? stored : fallbackTitle ? deriveFallbackKeywords(fallbackTitle) : [];
   const results = asSerpResults(keywordGaps);
 
-  if (keywords.length === 0 && results.length === 0) return null;
+  if (keywords.length === 0 && results.length === 0) {
+    return <span className="text-xs text-ink-muted">No keyword data yet — re-run analysis.</span>;
+  }
 
   return (
-    <div className="mt-3 rounded-field border border-line bg-surface-subtle/60">
+    <div className="min-w-0">
       {keywords.length > 0 ? (
-        <div className="px-3 pt-3">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-muted">
-            Target keywords
-          </p>
-          <div className="mt-2 flex flex-wrap gap-1.5">
-            {keywords.map((kw) => (
-              <span
-                key={kw}
-                className="inline-flex items-center gap-1.5 rounded-full border border-line bg-surface px-2.5 py-1 text-xs font-medium text-ink"
-              >
-                <span aria-hidden="true" className="text-ink-muted">⌕</span>
-                {kw}
-              </span>
-            ))}
-          </div>
+        <div className="flex flex-wrap gap-1.5">
+          {keywords.map((kw) => (
+            <span
+              key={kw}
+              className="inline-flex max-w-full items-center gap-1.5 rounded-full border border-line bg-surface-subtle px-2.5 py-1 text-xs font-medium text-ink"
+              title={kw}
+            >
+              <span aria-hidden="true" className="shrink-0 text-ink-muted">⌕</span>
+              <span className="truncate">{kw}</span>
+            </span>
+          ))}
         </div>
       ) : null}
 
       {results.length > 0 ? (
-        <div className="px-3 py-3">
+        <div className="mt-2">
           <button
             type="button"
             onClick={() => setExpanded((v) => !v)}
             aria-expanded={expanded}
-            className="flex w-full items-center justify-between gap-2 text-left text-xs font-semibold text-ink-secondary transition-colors hover:text-ink"
+            className="flex items-center gap-1.5 text-left text-xs font-semibold text-ink-secondary transition-colors hover:text-ink"
           >
             <span>
               SERP · top {results.length} ranking {results.length === 1 ? "page" : "pages"}
@@ -86,13 +88,13 @@ export function OpportunitySerp({
             </span>
           </button>
           {expanded ? (
-            <ol className="mt-2 space-y-2">
+            <ol className="mt-2 space-y-1.5">
               {results.map((r, i) => (
                 <li
                   key={`${r.url}-${i}`}
-                  className="rounded-control border border-line bg-surface px-3 py-2"
+                  className="rounded-control border border-line bg-surface px-2.5 py-1.5"
                 >
-                  <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-start justify-between gap-2">
                     <span className="grid h-5 w-5 shrink-0 place-items-center rounded-full bg-surface-subtle text-[11px] font-bold text-ink-muted">
                       {i + 1}
                     </span>
@@ -107,11 +109,8 @@ export function OpportunitySerp({
                       >
                         {r.title}
                       </a>
-                      <p className="mt-0.5 truncate text-[11px] text-ink-muted" title={r.url}>
-                        {r.url}
-                      </p>
                     </div>
-                    <span className="shrink-0 rounded-full bg-surface-subtle px-2 py-0.5 text-[11px] font-semibold text-ink-secondary">
+                    <span className="shrink-0 rounded-full bg-surface-subtle px-2 py-0.5 text-[11px] font-semibold text-ink-secondary" title="Relevance score from live search">
                       {r.score}
                     </span>
                   </div>
@@ -128,7 +127,9 @@ export function OpportunitySerp({
             </p>
           )}
         </div>
-      ) : null}
+      ) : (
+        <p className="mt-1.5 text-[11px] text-ink-muted">No live SERP data (search enrichment off).</p>
+      )}
     </div>
   );
 }
