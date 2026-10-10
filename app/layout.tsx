@@ -16,18 +16,52 @@ const satoshi = localFont({
 export const metadata: Metadata = {
   // Resolves every relative metadata URL (og:image, twitter:image, icons) to an absolute URL.
   metadataBase: siteBaseUrl,
-  title: { default: siteConfig.name, template: `%s · ${siteConfig.name}` },
-  description: siteConfig.tagline,
-  icons: { icon: "/icon.svg" },
-  // Inherited by every route. The image itself comes from app/opengraph-image.tsx.
+  title: {
+    default: `${siteConfig.name} — ${siteConfig.tagline}`,
+    template: `%s · ${siteConfig.name}`,
+  },
+  description:
+    "Yoga Write Code is an AI content operating system that turns your website into structured content planning — content opportunities, topic clusters, SEO briefs, and outlines.",
+  keywords: [
+    "AI content planning",
+    "SEO content strategy",
+    "content marketing",
+    "topic clusters",
+    "SEO briefs",
+    "content outlines",
+    "SaaS content",
+    "content operations",
+    "SEO workflow",
+    "AI writing tool",
+    "content calendar",
+    "digital marketing",
+  ],
+  authors: [{ name: "Sachin Pandey", url: "https://sachinpandey.com.np" }],
+  creator: "Sachin Pandey",
+  alternates: { canonical: "/" },
   openGraph: {
     type: "website",
     siteName: siteConfig.name,
     locale: "en_US",
     url: siteConfig.url,
+    title: `${siteConfig.name} — ${siteConfig.tagline}`,
+    description:
+      "Turn your website into structured content planning — content opportunities, topic clusters, SEO briefs, and outlines.",
+    images: [
+      {
+        url: "/opengraph-image",
+        width: 1200,
+        height: 630,
+        alt: siteConfig.name,
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
+    title: `${siteConfig.name} — ${siteConfig.tagline}`,
+    description:
+      "Turn your website into structured content planning — content opportunities, topic clusters, SEO briefs, and outlines.",
+    images: ["/opengraph-image"],
   },
   verification: {
     // Google Search Console ownership token. Unrelated to the GTM container ID,
