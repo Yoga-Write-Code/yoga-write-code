@@ -14,6 +14,7 @@ interface NavItem {
 const navigation: NavItem[] = [
   { label: "Features", href: "/features" },
   { label: "Solutions", href: "/solutions" },
+  { label: "Compare", href: "/compare" },
   { label: "Blog", href: "/resources/blog" },
   { label: "FAQs", href: "/resources/faqs" },
 ];
@@ -26,6 +27,11 @@ const megaMenu: Record<string, NavItem[]> = {
   Solutions: [
     { label: "Agencies", href: "/solutions/agencies" },
     { label: "SaaS Founders", href: "/solutions#saas-founders" },
+  ],
+  Compare: [
+    { label: "vs SurferSEO", href: "/compare/surfer-seo" },
+    { label: "vs Frase", href: "/compare/frase" },
+    { label: "vs Jasper", href: "/compare/jasper" },
   ],
 };
 

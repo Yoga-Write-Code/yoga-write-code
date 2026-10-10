@@ -4,7 +4,53 @@
 - **Product name:** Yoga Write Code (YWC)
 - **One-line description:** AI-powered SEO content strategist that analyzes any website and generates a complete content pipeline — from opportunities to publishable outlines.
 - **Problem being solved:** Content creators, bloggers, and small agencies waste hours researching topics, planning clusters, and writing briefs. Most SEO tools give data but not actionable structure.
-- **Why this problem matters:** Quality content requires strategy. Without a clear pipeline (analysis → opportunities → clusters → briefs → outlines), creators produce scattered content that doesn't rank.
+- **Why this problem matters:** Quality content requires strategy. Without a clear pipeline (analysis → opportunities → clusters → briefs → outlines), creators produce scattered content that doesn't rank.I need to build a "Comparison" (Alternative To) section for my Next.js 16.3.1 App Router marketing site to capture high-intent SEO traffic.
+
+Before starting, read PRD.md, ARCHITECTURE.md, and CODING_RULES.md.
+
+Please execute the following tasks automatically:
+
+1. Folder Structure:
+- Create a new folder inside the marketing route group: `app/(marketing)/compare/`.
+
+2. Create a Reusable Comparison Table Component:
+- Create `components/marketing/comparison-table.tsx`.
+- It should be a "use client" component.
+- It must accept `competitorName` and `features` (an array of objects with `name`, `ywc` (boolean), and `competitor` (boolean)) as props.
+- Design it using the Design System:
+  - Clean table layout with borders (#E5E7EB).
+  - Left column: Feature name.
+  - Middle column: "Yoga Write Code" (with green checkmarks for true).
+  - Right column: "{competitorName}" (with gray X's for false).
+  - Highlight the "Yoga Write Code" column header with a light violet background (#EDE9FE) and text (#7C3AED).
+
+3. Create the Main Comparison Hub Page:
+- Create `app/(marketing)/compare/page.tsx`.
+- Add dynamic SEO metadata (Title: "Yoga Write Code vs The Competition | Best AI SEO Tool").
+- Include an H1: "The Smarter Alternative to Legacy SEO Tools".
+- Briefly explain why YWC is better (Full 5-step pipeline vs just text generation).
+- Add 3 large cards linking to the specific competitor pages below.
+
+4. Create Specific Competitor Pages:
+Create the following pages, each using the `ComparisonTable` component:
+- `app/(marketing)/compare/surfer-seo/page.tsx` (Focus: YWC is cheaper, easier, and includes AI generation, whereas Surfer is just an analyzer).
+- `app/(marketing)/compare/frase/page.tsx` (Focus: YWC has better topic clustering and live SERP analysis).
+- `app/(marketing)/compare/jasper/page.tsx` (Focus: YWC provides the strategy and briefs, Jasper just writes blindly).
+- Each page must have its own SEO metadata (e.g., Title: "Best SurferSEO Alternative 2026 | Yoga Write Code").
+
+5. Update the Mega Menu:
+- Open `components/marketing/header.tsx`.
+- Add a "Compare" link in the desktop navigation that links to `/compare`.
+
+6. Verification (Crucial):
+- Run `npm run build`.
+- If there are any TypeScript errors (strict null checks, missing props), read the logs, fix the code automatically, and run the build again.
+- Once successful, run:
+  `git add .`
+  `git commit -m "feat: Add Comparison pages (SurferSEO, Frase, Jasper alternatives)"`
+  `git push origin main`
+
+Do not ask for permission. Just read the context, write the code, fix any errors, and push to GitHub.
 
 ## 2. Target Users
 - **Primary user:** Independent bloggers, content marketers, and small SaaS founders who want to grow organic traffic.
