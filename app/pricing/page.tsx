@@ -25,6 +25,9 @@ export default function PricingPage() {
           <p className="mt-4 max-w-xl text-lg text-ink-secondary">
             Simple, transparent pricing for serious content teams. Cancel anytime.
           </p>
+          <p className="mt-3 max-w-xl text-sm text-ink-muted">
+            Start with a 7-day free trial of Pro. No credit card required to begin. Free plan includes 2 projects and core features.
+          </p>
 
           <div className="mt-10">
             <PricingPlans monthlyPriceId={monthlyPriceId} yearlyPriceId={yearlyPriceId} isPro={false} />

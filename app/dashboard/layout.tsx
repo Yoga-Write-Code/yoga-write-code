@@ -4,6 +4,7 @@ import { MobileHeader } from "@/components/dashboard/mobile-header";
 import { Sidebar } from "@/components/dashboard/sidebar";
 import type { ProjectNavItem } from "@/components/dashboard/sidebar-nav";
 import { getUserDisplayName } from "@/lib/auth/user";
+import { getPlanStatus } from "@/lib/plan";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
@@ -35,6 +36,7 @@ export default async function DashboardLayout({
   }
 
   const projects = (projectsData ?? []) as ProjectNavItem[];
+  const planStatus = getPlanStatus(data.user, projects.length);
 
   return (
     <div className="min-h-screen">

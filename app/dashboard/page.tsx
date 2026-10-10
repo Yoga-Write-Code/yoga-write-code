@@ -6,6 +6,8 @@ import { SignupTracker } from "@/components/analytics/signup-tracker";
 import { EmptyState } from "@/components/empty-state";
 import { PageHeader } from "@/components/page-header";
 import { Badge } from "@/components/ui/badge";
+import { PlanBanner } from "@/components/dashboard/plan-banner";
+import { getPlanStatus } from "@/lib/plan";
 import { generateBrief } from "@/app/dashboard/projects/[id]/actions";
 import { getUserDisplayName } from "@/lib/auth/user";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -125,6 +127,7 @@ export default async function OverviewPage({
     ]);
 
   const states = (projectsRes.data ?? []) as ProjState[];
+  const planStatus = getPlanStatus(userData.user, states.length);
   const totalOpps = oppsRes.count ?? 0;
   const oppsDelta = (oppsWeek.count ?? 0) - (oppsPrev.count ?? 0);
   const draftsDelta = (draftsWeek.count ?? 0) - (draftsPrev.count ?? 0);
@@ -157,6 +160,7 @@ export default async function OverviewPage({
   return (
     <div className="min-w-0">
       {signupParam === "1" ? <SignupTracker /> : null}
+      <PlanBanner planStatus={planStatus} />
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div className="min-w-0">
           <h1 className="font-sans text-3xl font-semibold tracking-tight text-ink">
