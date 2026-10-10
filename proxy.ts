@@ -51,13 +51,33 @@ export async function proxy(request: NextRequest) {
   }
 
   const APP_HOST = "app.yogawritecode.com";
-  const MARKETING_HOSTS = ["yogawritecode.com", "www.yogawritecode.com"];
+  const MARKETING_HOST = "yogawritecode.com";
+  const MARKETING_HOSTS = [MARKETING_HOST, "www.yogawritecode.com"];
 
-  // App subdomain: redirect root to dashboard
-  if (hostname === APP_HOST && pathname === "/") {
-    const url = request.nextUrl.clone();
-    url.pathname = "/dashboard";
-    return NextResponse.redirect(url);
+  // App subdomain serves the product only. Marketing pages (pricing, privacy,
+  // terms, about, features, blog, …) always live on the main domain, so a
+  // visit like app.yogawritecode.com/privacy is redirected to yogawritecode.com/privacy.
+  if (hostname === APP_HOST) {
+    const isAppRoute =
+      pathname === "/" ||
+      pathname.startsWith("/dashboard") ||
+      pathname === "/login" ||
+      pathname === "/signup" ||
+      pathname === "/onboarding" ||
+      pathname === "/check-email" ||
+      pathname.startsWith("/auth/") ||
+      pathname === "/auth";
+    if (!isAppRoute) {
+      const url = request.nextUrl.clone();
+      url.hostname = MARKETING_HOST;
+      url.protocol = "https:";
+      return NextResponse.redirect(url);
+    }
+    if (pathname === "/") {
+      const url = request.nextUrl.clone();
+      url.pathname = "/dashboard";
+      return NextResponse.redirect(url);
+    }
   }
 
   // Marketing domains: send auth/dashboard routes to the app subdomain
