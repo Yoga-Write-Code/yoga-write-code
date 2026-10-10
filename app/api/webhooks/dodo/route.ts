@@ -53,10 +53,27 @@ export async function POST(request: Request) {
         console.error("[dodo webhook] event had no customer email", eventType);
         return NextResponse.json({ received: true, handled: false });
       }
-      const update: Record<string, string> = { subscription_status: "active" };
-      if (subscriptionId) update.dodo_subscription_id = subscriptionId;
-      if (customerId) update.dodo_customer_id = customerId;
-      const { error } = await supabase.from("profiles").update(update).eq("email", email);
+      const fullUpdate: Record<string, string> = { subscription_status: "active" };
+      if (subscriptionId) fullUpdate.dodo_subscription_id = subscriptionId;
+      if (customerId) fullUpdate.dodo_customer_id = customerId;
+
+      let { error } = await supabase.from("profiles").update(fullUpdate).eq("email", email);
+
+      // The billing-columns migration may not have been applied yet. Retry
+      // with just the status so the payment is never lost to a missing column.
+      if (error?.code === "PGRST204") {
+        console.error(
+          "[dodo webhook] billing columns missing, retrying with status only. " +
+            "Run supabase/migrations/20261006010000_profiles_dodo_columns.sql",
+          error.message,
+        );
+        const retry = await supabase
+          .from("profiles")
+          .update({ subscription_status: "active" })
+          .eq("email", email);
+        error = retry.error;
+      }
+
       if (error) {
         console.error("[dodo webhook] profile update failed", error);
         return NextResponse.json({ error: "Could not update profile." }, { status: 500 });
