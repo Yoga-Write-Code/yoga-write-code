@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { Webhook } from "standardwebhooks";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export const runtime = "nodejs";
@@ -16,9 +17,31 @@ async function getClient() {
 }
 
 export async function POST(request: Request) {
+  // Raw bytes are required for signature verification — never parse first.
+  const rawBody = await request.text();
+
+  const webhookKey = process.env.DODO_PAYMENTS_WEBHOOK_KEY;
+  if (webhookKey) {
+    try {
+      await new Webhook(webhookKey).verify(rawBody, {
+        "webhook-id": request.headers.get("webhook-id") ?? "",
+        "webhook-signature": request.headers.get("webhook-signature") ?? "",
+        "webhook-timestamp": request.headers.get("webhook-timestamp") ?? "",
+      });
+    } catch {
+      console.error("[dodo webhook] signature verification failed");
+      return NextResponse.json({ error: "Invalid signature." }, { status: 401 });
+    }
+  } else {
+    console.error(
+      "[dodo webhook] DODO_PAYMENTS_WEBHOOK_KEY is not configured; accepting unsigned payload. " +
+        "Add the signing secret from Dodo Dashboard → Developer → Webhooks.",
+    );
+  }
+
   let payload: Record<string, unknown>;
   try {
-    payload = (await request.json()) as Record<string, unknown>;
+    payload = JSON.parse(rawBody) as Record<string, unknown>;
   } catch {
     return NextResponse.json({ error: "Invalid JSON body." }, { status: 400 });
   }
