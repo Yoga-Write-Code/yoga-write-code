@@ -167,6 +167,7 @@ export async function analyzeWebsite(formData: FormData): Promise<void> {
       difficulty: opportunity.difficulty,
       search_intent: opportunity.searchIntent,
       funnel_stage: opportunity.funnelStage,
+      target_keywords: opportunity.keywords,
       keyword_gaps: await fetchKeywordGaps(opportunity.title),
     }))
   );
@@ -176,11 +177,28 @@ export async function analyzeWebsite(formData: FormData): Promise<void> {
     .insert(opportunityRows);
 
   if (opportunityError) {
-    // Do not leave an apparently successful analysis behind when its required
-    // workflow output could not be saved.
-    await supabase.from("website_analyses").delete().eq("id", analysis.id);
-    console.error("[analyzeWebsite] opportunity insert failed", opportunityError);
-    fail(projectId, `Could not save content opportunities: ${opportunityError.message}`);
+    // Older databases may not have the target_keywords column yet (migration
+    // 20261010000000 not applied). Retry without it so analysis never breaks.
+    const missingKeywordsColumn = /target_keywords|column.*does not exist/i.test(
+      opportunityError.message,
+    );
+    if (missingKeywordsColumn) {
+      const legacyRows = opportunityRows.map(({ target_keywords: _dropped, ...rest }) => rest);
+      const { error: retryError } = await supabase
+        .from("content_opportunities")
+        .insert(legacyRows);
+      if (retryError) {
+        await supabase.from("website_analyses").delete().eq("id", analysis.id);
+        console.error("[analyzeWebsite] opportunity insert failed", retryError);
+        fail(projectId, `Could not save content opportunities: ${retryError.message}`);
+      }
+    } else {
+      // Do not leave an apparently successful analysis behind when its required
+      // workflow output could not be saved.
+      await supabase.from("website_analyses").delete().eq("id", analysis.id);
+      console.error("[analyzeWebsite] opportunity insert failed", opportunityError);
+      fail(projectId, `Could not save content opportunities: ${opportunityError.message}`);
+    }
   }
 
   revalidateWorkflow(projectId);

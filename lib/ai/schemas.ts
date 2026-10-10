@@ -16,6 +16,7 @@ export const WebsiteAnalysisSchema = z.object({
         searchIntent: z.enum(["informational", "commercial", "transactional", "navigational"]),
         funnelStage: z.enum(["top", "middle", "bottom"]),
         reason: z.string().min(1),
+        keywords: z.array(z.string().min(1)).min(3).max(5),
       })
     )
     .min(1)

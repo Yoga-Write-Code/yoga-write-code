@@ -6,7 +6,7 @@ const JSON_RULE =
 export function websiteAnalysisPrompt(url: string, websiteText: string | null) {
   return `You are an SEO strategist. Website: ${url}.
 ${websiteText ? `Extracted page text (truncated): ${websiteText}` : "No extracted text available; infer from the URL and domain only."}
-Return JSON with exactly this shape: { companySummary, productCategory, targetAudience, positioning, opportunities: [{ title, description, opportunityScore (0-100), difficulty ("low" | "medium" | "hard"), businessRelevance ("low" | "medium" | "high"), searchIntent ("informational" | "commercial" | "transactional" | "navigational"), funnelStage ("top" | "middle" | "bottom"), reason }] }.
+Return JSON with exactly this shape: { companySummary, productCategory, targetAudience, positioning, opportunities: [{ title, description, opportunityScore (0-100), difficulty ("low" | "medium" | "hard"), businessRelevance ("low" | "medium" | "high"), searchIntent ("informational" | "commercial" | "transactional" | "navigational"), funnelStage ("top" | "middle" | "bottom"), reason, keywords (array of 3-5 specific search keywords a user would type into Google for this topic) }] }.
 Generate 3-5 specific opportunities grounded in the website signals.
 ${JSON_RULE}`;
 }

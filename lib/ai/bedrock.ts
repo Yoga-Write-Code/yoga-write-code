@@ -167,6 +167,25 @@ function normalizeStructuredValue(value: unknown): unknown {
         if (Number.isFinite(score)) normalizedOpportunity.opportunityScore = score;
       }
       normalizedOpportunity.businessRelevance ??= "medium";
+      // Backfill keywords for models that omit them: derive from the title.
+      if (!Array.isArray(normalizedOpportunity.keywords)) {
+        const fallback = typeof normalizedOpportunity.title === "string" ? normalizedOpportunity.title : "";
+        const base = fallback.split(":")[0]?.trim() || fallback.trim();
+        normalizedOpportunity.keywords = base ? [base.toLowerCase()] : [];
+      } else {
+        normalizedOpportunity.keywords = (normalizedOpportunity.keywords as unknown[])
+          .map((k) => String(k).trim())
+          .filter(Boolean)
+          .slice(0, 5);
+      }
+      if (
+        Array.isArray(normalizedOpportunity.keywords) &&
+        (normalizedOpportunity.keywords as unknown[]).length === 0
+      ) {
+        const fallback = typeof normalizedOpportunity.title === "string" ? normalizedOpportunity.title : "";
+        const base = fallback.split(":")[0]?.trim() || fallback.trim();
+        if (base) normalizedOpportunity.keywords = [base.toLowerCase()];
+      }
       if (normalizedOpportunity.difficulty === "easy") {
         normalizedOpportunity.difficulty = "low";
       }

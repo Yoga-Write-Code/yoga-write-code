@@ -63,6 +63,7 @@ export class MockAIProvider implements AIProvider {
           searchIntent: "informational",
           funnelStage: "top",
           reason: `"${term1}" is the most frequent topic on the homepage — core to the site's messaging.`,
+          keywords: [`${term1} guide`, `how to use ${term1}`, `${term1} for beginners`, `${term1} best practices`],
         },
         {
           title: `${cap(term1)} vs alternatives: an honest comparison`,
@@ -73,6 +74,7 @@ export class MockAIProvider implements AIProvider {
           searchIntent: "commercial",
           funnelStage: "bottom",
           reason: `The page already discusses "${term2}"; comparison searches convert evaluators.`,
+          keywords: [`${term1} vs alternatives`, `best ${term1} tools`, `${term2} comparison`],
         },
         {
           title: `How to get the most from ${term3}`,
@@ -83,6 +85,7 @@ export class MockAIProvider implements AIProvider {
           searchIntent: "informational",
           funnelStage: "middle",
           reason: `Supports retention and links back to the "${term1}" pillar.`,
+          keywords: [`${term3} tips`, `how to use ${term3}`, `${term3} tutorial`],
         },
       ],
     });
