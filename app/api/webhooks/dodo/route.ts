@@ -84,7 +84,13 @@ export async function POST(request: Request) {
       if (subscriptionId) fullUpdate.dodo_subscription_id = subscriptionId;
       if (customerId) fullUpdate.dodo_customer_id = customerId;
 
-      let { error } = await supabase.from("profiles").update(fullUpdate).eq("email", email);
+      const firstAttempt = await supabase
+        .from("profiles")
+        .update(fullUpdate)
+        .eq("email", email)
+        .select("id");
+      let error = firstAttempt.error;
+      let matched = (firstAttempt.data ?? []).length > 0;
 
       // The billing-columns migration may not have been applied yet. Retry
       // with just the status so the payment is never lost to a missing column.
@@ -97,13 +103,19 @@ export async function POST(request: Request) {
         const retry = await supabase
           .from("profiles")
           .update({ subscription_status: "active" })
-          .eq("email", email);
+          .eq("email", email)
+          .select("id");
         error = retry.error;
+        matched = (retry.data ?? []).length > 0;
       }
 
       if (error) {
         console.error("[dodo webhook] profile update failed", error);
         return NextResponse.json({ error: "Could not update profile." }, { status: 500 });
+      }
+      if (!matched) {
+        console.error("[dodo webhook] no profile found for customer email", email);
+        return NextResponse.json({ error: "No matching profile." }, { status: 404 });
       }
       return NextResponse.json({ received: true, handled: true });
     }
