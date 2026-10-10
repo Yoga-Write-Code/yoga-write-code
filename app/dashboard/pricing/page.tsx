@@ -22,7 +22,7 @@ export default async function PricingPage() {
     : { data: null };
 
   const profileRow = profile as { subscription_status?: string | null } | null;
-  const isPro = profileRow?.subscription_status === "active";
+  const isPro = profileRow?.subscription_status === "active" || profileRow?.subscription_status === "trialing";
 
   // Current workspace usage, shown so upgrading feels informed rather than pushy.
   const [projectsRes, analysesRes, draftsRes] = await Promise.all([

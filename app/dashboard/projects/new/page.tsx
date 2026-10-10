@@ -21,8 +21,17 @@ export default async function NewProjectPage({
     .from("projects")
     .select("id", { count: "exact", head: true });
 
+  const { data: statusProfile } = userData.user
+    ? await supabase
+        .from("profiles")
+        .select("subscription_status")
+        .eq("id", userData.user.id)
+        .maybeSingle()
+    : { data: null };
+
   const projectCount = count ?? 0;
-  const planStatus = getPlanStatus(userData.user, projectCount);
+  const statusRow = statusProfile as { subscription_status?: string | null } | null;
+  const planStatus = getPlanStatus(userData.user, projectCount, statusRow?.subscription_status);
   const isLocked = !planStatus.canCreateProject;
 
   return (

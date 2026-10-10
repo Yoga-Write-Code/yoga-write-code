@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
 import { getUserDisplayName } from "@/lib/auth/user";
+import { getPlanStatus } from "@/lib/plan";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = { title: "Settings" };
@@ -21,7 +22,13 @@ export default async function SettingsPage() {
     : "Your account";
   const email = data.user?.email ?? "";
   const profileRow = profile as { subscription_status?: string | null } | null;
-  const isPro = profileRow?.subscription_status === "active";
+  const planStatus = getPlanStatus(data.user, 0, profileRow?.subscription_status);
+  const isPro = planStatus.isPro;
+  const planLabel = planStatus.isTrialActive
+    ? `Pro Trial (${planStatus.daysLeftInTrial} days left)`
+    : isPro
+      ? "Pro Writer"
+      : "Starter (Free)";
 
   return (
     <>
@@ -47,7 +54,7 @@ export default async function SettingsPage() {
           <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
             <div>
               <p className="text-xs font-medium uppercase tracking-[0.12em] text-ink-muted">Plan</p>
-              <p className="mt-1 text-sm text-ink">{isPro ? "Pro Writer" : "Starter (Free)"}</p>
+              <p className="mt-1 text-sm text-ink">{planLabel}</p>
             </div>
             {!isPro ? (
               <Link

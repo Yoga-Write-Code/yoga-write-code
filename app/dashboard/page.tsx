@@ -75,7 +75,7 @@ export default async function OverviewPage({
   const { data: profile } = userData.user
     ? await supabase
         .from("profiles")
-        .select("full_name")
+        .select("full_name, subscription_status")
         .eq("id", userData.user.id)
         .maybeSingle()
     : { data: null };
@@ -127,7 +127,8 @@ export default async function OverviewPage({
     ]);
 
   const states = (projectsRes.data ?? []) as ProjState[];
-  const planStatus = getPlanStatus(userData.user, states.length);
+  const profileRow = profile as { subscription_status?: string | null } | null;
+  const planStatus = getPlanStatus(userData.user, states.length, profileRow?.subscription_status);
   const totalOpps = oppsRes.count ?? 0;
   const oppsDelta = (oppsWeek.count ?? 0) - (oppsPrev.count ?? 0);
   const draftsDelta = (draftsWeek.count ?? 0) - (draftsPrev.count ?? 0);

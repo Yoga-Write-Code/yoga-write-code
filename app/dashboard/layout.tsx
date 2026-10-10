@@ -21,7 +21,7 @@ export default async function DashboardLayout({
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("full_name")
+    .select("full_name, subscription_status")
     .eq("id", data.user.id)
     .maybeSingle();
   const name = getUserDisplayName(data.user, profile?.full_name);
@@ -36,7 +36,8 @@ export default async function DashboardLayout({
   }
 
   const projects = (projectsData ?? []) as ProjectNavItem[];
-  const planStatus = getPlanStatus(data.user, projects.length);
+  const profileRow = profile as { subscription_status?: string | null } | null;
+  const planStatus = getPlanStatus(data.user, projects.length, profileRow?.subscription_status);
 
   return (
     <div className="min-h-screen">
