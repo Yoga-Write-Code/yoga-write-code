@@ -20,6 +20,14 @@ const footerLinks = [
     ],
   },
   {
+    title: "Compare",
+    links: [
+      { label: "vs SurferSEO", href: "/compare/surfer-seo" },
+      { label: "vs Frase", href: "/compare/frase" },
+      { label: "vs Jasper", href: "/compare/jasper" },
+    ],
+  },
+  {
     title: "Resources",
     links: [
       { label: "Blog", href: "/resources/blog" },
