@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PricingPlans } from "@/components/pricing-plans";
-import { SiteFooter } from "@/components/marketing/site-footer";
-import { SiteHeader } from "@/components/marketing/site-header";
 
 export const metadata: Metadata = {
   title: "Pricing",
@@ -16,7 +14,6 @@ export default function PricingPage() {
 
   return (
     <>
-      <SiteHeader />
       <main className="bg-canvas">
         <div className="mx-auto max-w-[1160px] px-5 py-16 sm:px-8 sm:py-20">
           <h1 className="font-heading text-4xl font-bold tracking-[-0.03em] text-ink sm:text-5xl">
@@ -50,7 +47,6 @@ export default function PricingPage() {
           </p>
         </div>
       </main>
-      <SiteFooter />
     </>
   );
 }

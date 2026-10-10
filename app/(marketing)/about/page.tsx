@@ -3,8 +3,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { JsonLd } from "@/components/json-ld";
 import { MarketingCta } from "@/components/marketing/marketing-cta";
-import { SiteFooter } from "@/components/marketing/site-footer";
-import { SiteHeader } from "@/components/marketing/site-header";
 import { siteBaseUrl } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -32,7 +30,6 @@ const workflow = [
 export default function AboutPage() {
   return (
     <>
-      <SiteHeader />
       <main className="bg-canvas">
         <div className="mx-auto max-w-3xl px-5 py-20 font-sans sm:px-8 sm:py-28 space-y-14">
           <section>
@@ -187,7 +184,6 @@ export default function AboutPage() {
           secondaryHref="mailto:hello@yogawritecode.com"
         />
       </main>
-      <SiteFooter />
       <JsonLd
         data={{
           "@context": "https://schema.org",

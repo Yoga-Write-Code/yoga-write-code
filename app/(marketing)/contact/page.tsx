@@ -1,6 +1,4 @@
 import type { Metadata } from "next";
-import { SiteFooter } from "@/components/marketing/site-footer";
-import { SiteHeader } from "@/components/marketing/site-header";
 
 export const metadata: Metadata = {
   title: "Contact",
@@ -11,7 +9,6 @@ export const metadata: Metadata = {
 export default function ContactPage() {
   return (
     <>
-      <SiteHeader />
       <main className="bg-canvas">
         <div className="mx-auto max-w-2xl px-5 py-20 font-sans sm:px-8 sm:py-28">
           <h1 className="font-heading text-4xl font-bold tracking-[-0.03em] text-ink sm:text-5xl">
@@ -48,7 +45,6 @@ export default function ContactPage() {
           </p>
         </div>
       </main>
-      <SiteFooter />
     </>
   );
 }

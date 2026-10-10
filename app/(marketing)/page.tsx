@@ -2,8 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { JsonLd } from "@/components/json-ld";
 import { MarketingCta } from "@/components/marketing/marketing-cta";
-import { SiteFooter } from "@/components/marketing/footer";
-import { SiteHeader } from "@/components/marketing/header";
 import { WorkflowPreview } from "@/components/marketing/workflow-preview";
 import { WorkspacePreview } from "@/components/marketing/workspace-preview";
 import { siteBaseUrl } from "@/lib/site";
@@ -195,8 +193,6 @@ function SectionIntro({
 export default function HomePage() {
   return (
     <div className="min-h-screen overflow-x-clip bg-surface font-sans text-ink">
-      <SiteHeader />
-
       <main>
         <section className="relative overflow-hidden px-5 pb-16 pt-20 text-center sm:px-8 sm:pt-24">
           <div
@@ -322,8 +318,6 @@ export default function HomePage() {
           </div>
         </section>
       </main>
-
-      <SiteFooter />
 
       <JsonLd data={jsonLd} />
     </div>

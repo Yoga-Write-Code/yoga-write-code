@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
-import { TagManager } from "@/components/analytics/tag-manager";
 import { SiteFooter } from "@/components/marketing/footer";
 import { SiteHeader } from "@/components/marketing/header";
-import "../globals.css";
 
 export const metadata: Metadata = {
   title: {
@@ -17,13 +15,10 @@ export default function MarketingLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className="bg-canvas font-sans text-ink antialiased">
-        <SiteHeader />
-        <main>{children}</main>
-        <SiteFooter />
-        <TagManager />
-      </body>
-    </html>
+    <>
+      <SiteHeader />
+      <main>{children}</main>
+      <SiteFooter />
+    </>
   );
 }

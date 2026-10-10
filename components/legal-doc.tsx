@@ -1,7 +1,5 @@
 import type { ReactNode } from "react";
 import { JsonLd } from "@/components/json-ld";
-import { SiteFooter } from "@/components/marketing/site-footer";
-import { SiteHeader } from "@/components/marketing/site-header";
 import { siteBaseUrl, siteConfig } from "@/lib/site";
 
 export function LegalDoc({
@@ -51,7 +49,6 @@ export function LegalDoc({
 
   return (
     <div className="min-h-screen bg-surface font-sans text-ink">
-      <SiteHeader />
       <main className="mx-auto w-full max-w-3xl px-6 pb-24 pt-16">
         <p className="text-xs font-medium uppercase tracking-[0.16em] text-brand">
           Yoga Write Code
@@ -60,7 +57,6 @@ export function LegalDoc({
         <p className="mt-2 text-sm text-ink-muted">Last updated: {updated}</p>
         <div className="mt-10 space-y-10">{children}</div>
       </main>
-      <SiteFooter />
       <JsonLd data={jsonLd} />
     </div>
   );
