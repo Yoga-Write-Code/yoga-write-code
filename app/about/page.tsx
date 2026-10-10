@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { JsonLd } from "@/components/json-ld";
 import { MarketingCta } from "@/components/marketing/marketing-cta";
@@ -122,8 +123,17 @@ export default function AboutPage() {
             <h2 className="font-heading text-2xl font-bold tracking-[-0.02em] text-ink">
               Founder
             </h2>
-            <p className="leading-7 text-ink-secondary">
-              Yoga Write Code is built by{" "}
+            <div className="flex items-start gap-6">
+              <Image
+                src="/images/sachin-pandey.png"
+                alt="Sachin Pandey, founder of Yoga Write Code"
+                width={120}
+                height={120}
+                className="h-30 w-30 rounded-full object-cover"
+                priority
+              />
+              <p className="leading-7 text-ink-secondary flex-1">
+                Yoga Write Code is built by{" "}
               <a
                 href="https://sachinpandey.com.np/about"
                 target="_blank"
@@ -136,7 +146,8 @@ export default function AboutPage() {
               marketing, automation, and software. The product comes from
               problems observed through that real SEO and content work — not
               from a whiteboard.
-            </p>
+              </p>
+            </div>
           </section>
 
           <section className="space-y-4">
