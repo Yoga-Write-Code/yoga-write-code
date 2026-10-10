@@ -16,7 +16,7 @@ export default async function CheckoutPage() {
 
   return (
     <div className="min-w-0">
-      <PageHeader title="Checkout" description="Secure payment powered by Paddle." />
+      <PageHeader title="Checkout" description="Secure payment powered by Dodo Payments." />
       <div className="mt-8">
         <Suspense fallback={<p className="text-sm text-ink-secondary">Loading checkout…</p>}>
           <CheckoutClient email={userEmail} />

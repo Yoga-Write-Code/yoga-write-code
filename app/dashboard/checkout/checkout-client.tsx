@@ -21,20 +21,20 @@ export function CheckoutClient({ email }: { email?: string }) {
     async function start() {
       try {
         const token = process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN;
-        if (!token) throw new Error("Paddle checkout is not configured.");
+        if (!token) throw new Error("Dodo Payments checkout is not configured.");
 
         const environment = resolvePaddleEnvironment(process.env.NEXT_PUBLIC_PADDLE_ENVIRONMENT);
 
         const { initializePaddle } = await import("@paddle/paddle-js");
         const paddle: Paddle | undefined = await initializePaddle({ token, environment });
-        if (!paddle || cancelled) throw new Error("Paddle checkout failed to load.");
+        if (!paddle || cancelled) throw new Error("Dodo Payments checkout failed to load.");
 
         paddle.Checkout.open({
           items: [{ priceId, quantity: 1 }],
           ...(email ? { customer: { email } } : {}),
           settings: {
             displayMode: "inline",
-            frameTarget: "paddle-checkout-frame",
+            frameTarget: "dodo-checkout-frame",
             frameInitialHeight: 600,
             frameStyle: "width: 100%; min-height: 600px; border: none;",
             successUrl: "https://app.yogawritecode.com/welcome",
@@ -58,7 +58,7 @@ export function CheckoutClient({ email }: { email?: string }) {
           {error}
         </p>
       ) : null}
-      <div id="paddle-checkout-frame" className="w-full" />
+      <div id="dodo-checkout-frame" className="w-full" />
     </div>
   );
 }

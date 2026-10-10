@@ -66,7 +66,7 @@ export default async function SettingsPage() {
             )}
           </div>
           <p className="mt-4 border-t border-line pt-4 text-xs text-ink-muted">
-            Payments are processed by Paddle. Read our{" "}
+            Payments are processed by Dodo Payments. Read our{" "}
             <Link href="/terms" className="underline underline-offset-4 hover:text-ink">
               Terms of Service
             </Link>

@@ -68,7 +68,7 @@ export default async function PricingPage() {
       </div>
 
       <div className="mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-line pt-5 text-xs text-ink-muted">
-        <p>Secure payments powered by Paddle. Cancel anytime.</p>
+        <p>Secure payments powered by Dodo Payments. Cancel anytime.</p>
         <Link
           href="/dashboard"
           className="font-medium text-ink-secondary transition-colors hover:text-ink"

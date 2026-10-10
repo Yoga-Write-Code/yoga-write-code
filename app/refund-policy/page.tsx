@@ -36,9 +36,9 @@ export default function RefundPolicyPage() {
 
       <LegalSection n="3" title="Payments and merchant of record">
         <p>
-          Payments are processed by Paddle, which acts as my merchant of record. Paddle handles the
+          Payments are processed by Dodo Payments, which acts as my merchant of record. Dodo Payments handles the
           checkout, charges your payment method, and appears on your bank or card statement. Where
-          Paddle is the merchant of record, refunds are issued through Paddle to your original
+          Dodo Payments is the merchant of record, refunds are issued through Dodo Payments to your original
           payment method.
         </p>
       </LegalSection>
@@ -84,8 +84,8 @@ export default function RefundPolicyPage() {
       <LegalSection n="7" title="How to request a refund">
         <p>
           Email support@yogawritecode.com from the address on your account with your order or
-          transaction ID (shown in your Paddle receipt) and a short description of the issue. I
-          usually respond within 3 business days. Approved refunds are processed through Paddle and
+          transaction ID (shown in your Dodo Payments receipt) and a short description of the issue. I
+          usually respond within 3 business days. Approved refunds are processed through Dodo Payments and
           typically appear on your statement within 5–10 business days, depending on your bank.
         </p>
       </LegalSection>

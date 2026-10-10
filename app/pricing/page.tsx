@@ -31,7 +31,7 @@ export default function PricingPage() {
           </div>
 
           <p className="mt-8 text-xs text-ink-muted">
-            Secure payments powered by Paddle. Cancel anytime. By subscribing you agree to our{" "}
+            Secure payments powered by Dodo Payments. Cancel anytime. By subscribing you agree to our{" "}
             <Link href="/terms" className="underline underline-offset-4 hover:text-ink">
               Terms
             </Link>

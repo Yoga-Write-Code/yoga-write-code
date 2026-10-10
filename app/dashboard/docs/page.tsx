@@ -76,7 +76,7 @@ export default function DocsPage() {
           <section id="billing" className="scroll-mt-24 space-y-4">
             <h2 className="font-heading text-2xl font-bold tracking-tight text-ink">Billing & plans</h2>
             <p className="text-[15px] leading-7 text-ink-secondary">
-              Plans are billed monthly through Paddle. You can upgrade, downgrade, or cancel from{" "}
+              Plans are billed monthly through Dodo Payments. You can upgrade, downgrade, or cancel from{" "}
               <strong className="text-ink">Dashboard → Upgrade</strong> (manage) and{" "}
               <strong className="text-ink">Dashboard → Settings</strong>.
             </p>

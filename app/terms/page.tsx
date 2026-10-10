@@ -46,7 +46,7 @@ export default function TermsPage() {
       <LegalSection n="5" title="Billing and payments">
         <p>
           The core service is free. The optional Pro plan is billed on a recurring basis through
-          Paddle, my merchant of record, at the price shown at checkout. New Pro subscriptions
+          Dodo Payments, my merchant of record, at the price shown at checkout. New Pro subscriptions
           include a 7-day free trial; unless you cancel before it ends, your payment method is
           charged and the subscription renews automatically each billing period until cancelled. To
           cancel, use your account settings or email me. Refunds and cancellations are governed by
